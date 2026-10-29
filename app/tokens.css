@@ -1,0 +1,64 @@
+/* Trybe design tokens — see scratchpad/design-brief.md for provenance.
+   Source: project/DesignSystem.dc.html on the Design canvas. */
+
+:root {
+  /* ── Site-wide brand palette ─────────────────────────── */
+  --trybe-purple: #62358c;
+  --indigo: #452c86;
+  --periwinkle: #5c549f;
+  --lavender: #9273b1;
+  --orchid: #ba85ba;
+  --blush: #f4e7f3;
+  --white: #ffffff;
+
+  /* Semantic site tokens (what components reach for) */
+  --surface: var(--white);
+  --surface-soft: var(--blush);
+  --surface-sunk: #faf4fa;
+  --ink: var(--indigo);
+  --ink-muted: var(--periwinkle);
+  --border: var(--blush);
+  --accent: var(--trybe-purple);
+  --accent-strong: var(--indigo);
+  --focus: var(--trybe-purple);
+
+  /* Button sizing — common */
+  --btn-h: 52px;
+  --btn-h-sm: 48px;
+
+  /* Radii */
+  --r-input: 14px;
+  --r-tile: 20px;
+  --r-card: 28px;
+  --r-block: 32px;
+  --r-pill: 999px;
+
+  /* Spacing scale (also exposed to Tailwind theme) */
+  --s-1: 8px;
+  --s-2: 16px;
+  --s-4: 32px;
+  --s-8: 64px;
+  --s-14: 112px;
+  --s-15: 120px;
+}
+
+/* ── Studio Stars theme — route-scoped ────────────────── *
+ * Set data-theme="studio-stars" on the <body> or route layout
+ * element to swap the palette for /studio-stars and /studio-stars/book. */
+[data-theme="studio-stars"] {
+  --sunshine: #ffd447;
+  --night: #24123f;
+  --cream: #fff6cf;
+  --muted-plum: #5a4b70;
+  --border-plum: #cdbbd9;
+  --border-lilac: #e4d8f0;
+
+  --surface: var(--night);
+  --surface-soft: var(--cream);
+  --ink: var(--white);
+  --ink-muted: #e4d8f0;
+  --border: var(--border-lilac);
+  --accent: var(--sunshine);
+  --accent-strong: var(--sunshine);
+  --focus: var(--white);
+}

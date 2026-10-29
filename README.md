@@ -1,36 +1,69 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Trybe Website
 
-## Getting Started
+Fun-filled experiences, activities and events that bring children and families together.
 
-First, run the development server:
+**Domain:** [trybe.uk](https://trybe.uk) (Vercel preview URL during build-out)
+**Source designs:** [Trybe Website canvas](https://claude.ai/artifact/UcEAGC9UJadt8zhYJzThNZ)
+
+## Stack
+
+- **Next.js 16** (App Router, Cache Components, Turbopack)
+- **React 19**
+- **Tailwind v4** with CSS variables mapped from the brand design system
+- **TypeScript**
+- **Self-hosted fonts** — Bricolage Grotesque + Catamaran via `@fontsource-variable`
+- **Supabase** — bookings database + admin auth
+- **Resend + React Email** — transactional and marketing email
+- **Stripe Checkout** — Studio Stars ticket payments
+- **Vercel** — hosting
+
+## Getting started
 
 ```bash
+npm install
+cp .env.example .env.local  # fill in Supabase, Resend, Stripe keys
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Project structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+app/
+  tokens.css                 # Brand design tokens (CSS variables)
+  globals.css                # Tailwind entry + base styles
+  layout.tsx                 # Root layout with fonts and nav/footer
+  page.tsx                   # Home (Phase 2)
+  studio-stars/
+    layout.tsx               # Scopes [data-theme="studio-stars"] to this route
+    page.tsx                 # Studio Stars event page (Phase 2)
+    book/page.tsx            # Booking flow (Phase 2 → wired in Phase 3)
+components/
+  site-nav.tsx               # Top nav (brand-palette on site, yellow/night on Studio Stars)
+  site-footer.tsx            # Indigo footer with sitemap + legal
+```
 
-## Learn More
+## Design system
 
-To learn more about Next.js, take a look at the following resources:
+Everything maps back to `app/tokens.css`. Two palettes:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **Site-wide** (Trybe Purple, Indigo, Periwinkle, Lavender, Orchid, Blush) — nav, home, generic pages
+- **Studio Stars** (Sunshine `#FFD447`, Night `#24123F`) — scoped to `/studio-stars/*` via `data-theme="studio-stars"` on the route layout
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Components reach for semantic tokens (`--surface`, `--ink`, `--accent`) so the palette flip is automatic.
 
-## Deploy on Vercel
+See `scratchpad/design-brief.md` for the full component inventory, type scale, and spacing scale.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Scripts
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `npm run dev` — dev server with Turbopack
+- `npm run build` — production build
+- `npm run start` — serve the production build
+- `npm run lint` — ESLint
+
+## Deployment
+
+Push to a GitHub repo and import on Vercel. Add the env vars from `.env.example` under Vercel → Project → Settings → Environment Variables.
+
+Custom domain (`trybe.uk`) is wired up after the first deploy under Settings → Domains.

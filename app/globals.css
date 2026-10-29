@@ -1,26 +1,103 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/* Self-hosted fonts (fontsource) — avoids Google Fonts runtime fetch. */
+@import "@fontsource-variable/bricolage-grotesque/wght.css";
+@import "@fontsource-variable/bricolage-grotesque/wdth.css";
+@import "@fontsource-variable/catamaran/wght.css";
 
+@import "./tokens.css";
+
+/* Expose brand tokens to Tailwind utilities (bg-trybe-purple, text-indigo, etc.) */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-trybe-purple: var(--trybe-purple);
+  --color-indigo: var(--indigo);
+  --color-periwinkle: var(--periwinkle);
+  --color-lavender: var(--lavender);
+  --color-orchid: var(--orchid);
+  --color-blush: var(--blush);
+  --color-sunshine: var(--sunshine);
+  --color-night: var(--night);
+  --color-cream: var(--cream);
+
+  --color-surface: var(--surface);
+  --color-surface-soft: var(--surface-soft);
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-border: var(--border);
+  --color-accent: var(--accent);
+
+  --font-display: "Bricolage Grotesque Variable", "Arial Narrow", sans-serif;
+  --font-sans: "Catamaran Variable", "Segoe UI", system-ui, sans-serif;
+
+  --radius-input: var(--r-input);
+  --radius-tile: var(--r-tile);
+  --radius-card: var(--r-card);
+  --radius-block: var(--r-block);
+  --radius-pill: var(--r-pill);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* Base element styles */
+html {
+  background: var(--surface);
+  color: var(--ink);
+  font-family: "Catamaran Variable", "Segoe UI", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  min-height: 100dvh;
+  background: var(--surface);
+  color: var(--ink);
+}
+
+a {
+  color: var(--accent);
+}
+a:hover {
+  color: var(--accent-strong);
+}
+
+/* Display type helper — matches Bricolage display spec from design system */
+.display {
+  font-family: "Bricolage Grotesque Variable", "Arial Narrow", sans-serif;
+  font-weight: 800;
+  font-stretch: 75%;
+  text-transform: uppercase;
+  line-height: 0.92;
+}
+
+/* Eyebrow — recurring label pattern */
+.eyebrow {
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+/* Focus ring — visible, brand-colored, inset-safe */
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* On-dark focus ring — doubles up with background spacer for contrast */
+[data-theme="studio-stars"] :where(a, button):focus-visible {
+  outline-color: var(--white);
+  box-shadow: 0 0 0 4px var(--night);
+}
+
+/* Respect motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
