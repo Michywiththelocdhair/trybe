@@ -16,7 +16,7 @@ import { RadioTile } from "@/components/form/radio-tile";
 import { RadioTileGroup } from "@/components/form/radio-tile-group";
 import { TextInput } from "@/components/form/text-input";
 import { createBookingSession } from "./actions";
-import type { BookingInput, BookingResult } from "./schema";
+import type { BookingInput, BookingResult } from "@/lib/booking/schema";
 import {
   MAX_CHILD_AGE,
   MIN_CHILD_AGE,
@@ -24,7 +24,7 @@ import {
   SIBLING_PRICE_PENCE,
   calculateTotal,
   formatGbp,
-} from "./pricing";
+} from "@/lib/booking/pricing";
 
 /*
  * Four-step wizard, matching Booking.dc.html:

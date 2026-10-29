@@ -12,6 +12,16 @@ import type {
 
 export const LONDON_TZ = "Europe/London";
 
+/**
+ * Current time in ms. Admin pages are async Server Components that render once
+ * per request (after reading cookies, so Cache Components treats them as
+ * request-time), so reading the clock is correct. react-hooks/purity flags a
+ * bare Date.now() inside a component, so pages call this instead.
+ */
+export function currentTimeMs(): number {
+  return Date.now();
+}
+
 export const BOOKING_STATUS_LABEL: Record<BookingStatus, string> = {
   pending_payment: "Pending payment",
   confirmed: "Confirmed",

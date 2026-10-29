@@ -6,6 +6,13 @@ import { Notice, Panel } from "@/components/admin/ui";
 
 export const metadata: Metadata = { title: "Sign in" };
 
+/**
+ * Live, per-request, session-gated data: this page is meant to stream in rather
+ * than prerender, so opt out of Cache Components' instant-navigation warnings.
+ */
+export const instant = false;
+
+
 const MESSAGES: Record<string, string> = {
   "not-authorized":
     "That email isn't on the admin list. Contact Nyah to request access.",

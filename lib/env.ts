@@ -1,34 +1,37 @@
 /**
  * Type-safe environment variable access.
  *
- * Parses process.env at boot through zod. A missing or malformed variable
- * fails loudly at startup rather than crashing mid-request.
+ * ── Why this file is picky about `process.env` ──
+ * Next.js inlines public env vars (NEXT_PUBLIC_*) into the client bundle at
+ * build time — but only when it sees LITERAL property accesses in the source:
+ *   process.env.NEXT_PUBLIC_FOO    // inlined (string literal)
+ *   process.env["NEXT_PUBLIC_FOO"] // inlined
+ *   process.env                    // NOT inlined — becomes `{}` in the browser
  *
- * Scoping:
- * - Server fields (secrets) are typed on `env` unconditionally, but only
- *   READ at runtime on the server. If a Client Component imports this file,
- *   webpack tree-shakes away the server-only values (they're `undefined` in
- *   the client bundle) — anything calling `requireEnv("SOMETHING_SECRET")`
- *   from the browser will throw at call time. Combine with `import
- *   "server-only"` in files that must stay server-side (lib/stripe.ts,
- *   lib/supabase/service.ts).
- * - Client fields (NEXT_PUBLIC_*) are always inlined by Next.js into the
- *   client bundle.
+ * Passing `process.env` straight to a zod `safeParse()` means the client build
+ * sees `{}` and every NEXT_PUBLIC_* value comes back undefined — Worker C hit
+ * exactly this during Phase 3.
  *
- * All secrets are optional at parse time so `next build` succeeds locally
- * without a .env.local. The server helpers that need a secret call
- * `requireEnv("KEY")` which throws a clear message when it's missing.
+ * The fix is to destructure each variable explicitly below. On the server all
+ * of them resolve. In the browser, only the NEXT_PUBLIC_ ones are inlined;
+ * the server-only ones become `undefined`, and since the schema marks them
+ * optional, parse still succeeds. `requireEnv("SOMETHING_SECRET")` from the
+ * browser throws a clear error, which is what we want.
+ *
+ * Files that MUST stay server-side (lib/stripe.ts, lib/supabase/service.ts)
+ * additionally import "server-only" so webpack errors at build time if a
+ * Client Component tries to pull them in.
  */
 import { z } from "zod";
 
 const envSchema = z.object({
-  // Public — bundled into the client.
+  // Public — bundled into the client via explicit property access below.
   NEXT_PUBLIC_SUPABASE_URL: z.string().url().optional(),
   NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().min(1).optional(),
   NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: z.string().min(1).optional(),
   NEXT_PUBLIC_SITE_URL: z.string().url().default("http://localhost:3000"),
 
-  // Server-only — never bundled, undefined in the browser.
+  // Server-only — undefined in the browser bundle.
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(1).optional(),
   STRIPE_SECRET_KEY: z.string().min(1).optional(),
   STRIPE_WEBHOOK_SECRET: z.string().min(1).optional(),
@@ -39,7 +42,25 @@ const envSchema = z.object({
   CRON_SECRET: z.string().min(1).optional(),
 });
 
-const parsed = envSchema.safeParse(process.env);
+// Explicit property access so Next.js inlines each NEXT_PUBLIC_* in the client
+// bundle. Do NOT replace this with `process.env` — see the file header.
+const raw = {
+  NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
+  NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+  NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY:
+    process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
+  NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
+  SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
+  STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
+  STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET,
+  RESEND_API_KEY: process.env.RESEND_API_KEY,
+  RESEND_FROM_EMAIL: process.env.RESEND_FROM_EMAIL,
+  BOOKING_HOLD_MINUTES: process.env.BOOKING_HOLD_MINUTES,
+  TERMS_VERSION: process.env.TERMS_VERSION,
+  CRON_SECRET: process.env.CRON_SECRET,
+};
+
+const parsed = envSchema.safeParse(raw);
 
 if (!parsed.success) {
   console.error("Invalid environment variables:", parsed.error.flatten());

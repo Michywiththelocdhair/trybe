@@ -10,13 +10,15 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
+// The shell reads the session on every request; see the note on each page.
+export const instant = false;
+
 /**
  * Admin shell.
  *
- * - The root layout wraps every route in the public SiteNav / SiteFooter. This
- *   shell is a full-viewport fixed layer (z-50, above the sticky nav) so the
- *   dashboard reads as its own app. See the report for the cleaner long-term
- *   fix (a route group for the public site).
+ * - /admin lives OUTSIDE the (site) route group, so it doesn't inherit the
+ *   public SiteNav / SiteFooter. The dashboard renders in normal flow with
+ *   just its own sidebar.
  * - Auth is read in <AdminShell>, inside <Suspense>, because the site runs with
  *   Cache Components: anything touching cookies must sit under a boundary.
  * - This layout does NOT redirect. It also wraps /admin/login, which must be
@@ -25,7 +27,7 @@ export const metadata: Metadata = {
  */
 export default function AdminLayout({ children }: LayoutProps<"/admin">) {
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-[color:var(--surface-sunk)] text-ink">
+    <div className="min-h-dvh bg-[color:var(--surface-sunk)] text-ink">
       <Suspense fallback={<ShellFallback />}>
         <AdminShell>{children}</AdminShell>
       </Suspense>

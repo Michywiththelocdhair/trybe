@@ -2,11 +2,12 @@
 
 import type Stripe from "stripe";
 import { z } from "zod";
+import { formatEventDate } from "@/lib/dates";
 import { env } from "@/lib/env";
 import { stripe } from "@/lib/stripe";
 import { supabaseService } from "@/lib/supabase/service";
-import { calculateTotal } from "./pricing";
-import { BookingSchema, type BookingInput, type BookingResult } from "./schema";
+import { calculateTotal } from "@/lib/booking/pricing";
+import { BookingSchema, type BookingInput, type BookingResult } from "@/lib/booking/schema";
 
 /**
  * Booking Server Action (Phase 3).
@@ -55,23 +56,6 @@ const RPC_ERROR_CODE_BY_MESSAGE: Record<string, string> = {
   event_not_bookable: "P0003",
   capacity_exceeded: "P0004",
 };
-
-const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"] as const;
-const MONTHS = [
-  "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
-] as const;
-
-/**
- * "2026-12-05" -> "Sat 5 Dec 2026". Pure and ICU-independent so server and
- * emails always agree. Falls back to the raw string if it isn't a date.
- * (The confirmation page keeps its own copy: this file can't export it.)
- */
-function formatEventDate(dateStr: string): string {
-  const date = new Date(`${dateStr}T00:00:00Z`);
-  if (Number.isNaN(date.getTime())) return dateStr;
-  return `${WEEKDAYS[date.getUTCDay()]} ${date.getUTCDate()} ${MONTHS[date.getUTCMonth()]} ${date.getUTCFullYear()}`;
-}
 
 /** First message per field path, e.g. "children.0.age" or "parentEmail". */
 function toFieldErrors(error: z.ZodError): Record<string, string> {
@@ -291,9 +275,18 @@ async function startCheckout(data: BookingInput): Promise<BookingResult> {
   }
 
   // 5. Link the session to the booking so the webhook and cron can find it.
+  //    Also align the booking hold's expires_at with the Stripe session's
+  //    expires_at (which may be clamped up to Stripe's 30-minute minimum).
+  //    Both Worker A and Worker B flagged that the RPC's 15-minute default
+  //    could leave a window where a parent pays for seats already released;
+  //    bumping the DB hold to match the session closes that window.
+  const sessionExpiresAt = new Date(session.expires_at * 1000).toISOString();
   const { error: linkError } = await db
     .from("bookings")
-    .update({ stripe_checkout_session_id: session.id })
+    .update({
+      stripe_checkout_session_id: session.id,
+      expires_at: sessionExpiresAt,
+    })
     .eq("id", booking.id);
 
   if (linkError) {

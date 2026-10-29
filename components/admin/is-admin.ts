@@ -11,6 +11,7 @@
 import "server-only";
 import { cache } from "react";
 import { redirect } from "next/navigation";
+import { connection } from "next/server";
 import type { User } from "@supabase/supabase-js";
 import type { AdminRole } from "@/lib/supabase/types";
 import { adminReadClient } from "./db";
@@ -24,6 +25,10 @@ type Resolved =
   | { kind: "admin"; user: User; admin: AdminRow };
 
 const resolve = cache(async (): Promise<Resolved> => {
+  // Auth is per-request and time-dependent (token expiry), so never prerender
+  // it. This also keeps Cache Components from flagging the clock reads inside
+  // the Supabase client.
+  await connection();
   const supabase = await adminReadClient();
   const {
     data: { user },

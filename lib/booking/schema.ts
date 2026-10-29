@@ -11,7 +11,7 @@ import {
   MAX_CHILD_AGE,
   MAX_CHILDREN_PER_BOOKING,
   MIN_CHILD_AGE,
-} from "./pricing";
+} from "@/lib/booking/pricing";
 
 export const BookingSchema = z.object({
   children: z

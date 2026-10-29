@@ -67,6 +67,7 @@ export interface Database {
         > &
           Partial<Pick<Database["public"]["Tables"]["events"]["Row"], "id">>;
         Update: Partial<Database["public"]["Tables"]["events"]["Insert"]>;
+        Relationships: [];
       };
       bookings: {
         Row: {
@@ -99,6 +100,7 @@ export interface Database {
         > &
           Partial<Pick<Database["public"]["Tables"]["bookings"]["Row"], "id">>;
         Update: Partial<Database["public"]["Tables"]["bookings"]["Insert"]>;
+        Relationships: [];
       };
       children: {
         Row: {
@@ -119,6 +121,7 @@ export interface Database {
         > &
           Partial<Pick<Database["public"]["Tables"]["children"]["Row"], "id">>;
         Update: Partial<Database["public"]["Tables"]["children"]["Insert"]>;
+        Relationships: [];
       };
       waitlist_entries: {
         Row: {
@@ -139,6 +142,7 @@ export interface Database {
         > &
           Partial<Pick<Database["public"]["Tables"]["waitlist_entries"]["Row"], "id">>;
         Update: Partial<Database["public"]["Tables"]["waitlist_entries"]["Insert"]>;
+        Relationships: [];
       };
       email_log: {
         Row: {
@@ -156,6 +160,7 @@ export interface Database {
         > &
           Partial<Pick<Database["public"]["Tables"]["email_log"]["Row"], "id" | "sent_at">>;
         Update: Partial<Database["public"]["Tables"]["email_log"]["Insert"]>;
+        Relationships: [];
       };
       stripe_webhook_events: {
         Row: {
@@ -170,6 +175,7 @@ export interface Database {
         > &
           Partial<Pick<Database["public"]["Tables"]["stripe_webhook_events"]["Row"], "processed_at">>;
         Update: Partial<Database["public"]["Tables"]["stripe_webhook_events"]["Insert"]>;
+        Relationships: [];
       };
       newsletter_subscribers: {
         Row: {
@@ -186,6 +192,7 @@ export interface Database {
         > &
           Partial<Pick<Database["public"]["Tables"]["newsletter_subscribers"]["Row"], "id" | "consent_at">>;
         Update: Partial<Database["public"]["Tables"]["newsletter_subscribers"]["Insert"]>;
+        Relationships: [];
       };
       admin_users: {
         Row: {
@@ -200,6 +207,7 @@ export interface Database {
         > &
           Partial<Pick<Database["public"]["Tables"]["admin_users"]["Row"], "created_at">>;
         Update: Partial<Database["public"]["Tables"]["admin_users"]["Insert"]>;
+        Relationships: [];
       };
     };
     Views: Record<string, never>;

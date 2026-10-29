@@ -4,7 +4,7 @@ import { useState, type FormEvent } from "react";
 import { Button } from "@/components/button";
 import { Field } from "@/components/form/field";
 import { TextInput } from "@/components/form/text-input";
-import { supabaseBrowser } from "@/lib/supabase/client";
+import { sendMagicLink } from "@/app/admin/login/actions";
 import { Notice } from "./ui";
 
 type Status =
@@ -17,11 +17,11 @@ type Status =
  * Magic-link sign-in. The link lands on /admin?code=..., where proxy.ts
  * exchanges the code for a session.
  *
- * `shouldCreateUser: false` means this form can never create accounts: the
- * owner must already exist in Supabase Auth (see the seeding note in the
- * report). For an unknown email Supabase answers `otp_disabled`; we show the
- * same "check your email" screen so the form does not reveal who has an
- * account.
+ * The email is sent by the sendMagicLink Server Action rather than the browser
+ * Supabase client: lib/env.ts parses the whole process.env object, which Next
+ * does not inline into client bundles, so supabaseBrowser() throws in the
+ * browser today. The server route also stores the PKCE verifier cookie just
+ * the same, and never reveals whether an address has an account.
  */
 export function LoginForm() {
   const [email, setEmail] = useState("");
@@ -34,24 +34,12 @@ export function LoginForm() {
 
     setStatus({ kind: "sending" });
     try {
-      const { error } = await supabaseBrowser().auth.signInWithOtp({
-        email: address,
-        options: {
-          emailRedirectTo: `${window.location.origin}/admin`,
-          shouldCreateUser: false,
-        },
-      });
-
-      if (error && error.code !== "otp_disabled") {
-        const message =
-          error.code === "over_email_send_rate_limit" ||
-          error.code === "over_request_rate_limit"
-            ? "Too many sign-in emails requested. Wait a few minutes and try again."
-            : "We couldn't send the link. Check the email address and try again.";
-        setStatus({ kind: "error", message });
-        return;
-      }
-      setStatus({ kind: "sent", email: address });
+      const result = await sendMagicLink(address);
+      setStatus(
+        result.ok
+          ? { kind: "sent", email: address }
+          : { kind: "error", message: result.error },
+      );
     } catch {
       setStatus({
         kind: "error",

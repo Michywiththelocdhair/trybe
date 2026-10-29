@@ -3,8 +3,9 @@ import { Suspense, type ReactNode } from "react";
 import { z } from "zod";
 import { Button } from "@/components/button";
 import { Container } from "@/components/layout/container";
+import { formatEventDate } from "@/lib/dates";
 import { supabaseService } from "@/lib/supabase/service";
-import { formatGbp } from "../pricing";
+import { formatGbp } from "@/lib/booking/pricing";
 
 export const metadata: Metadata = {
   title: "Booking confirmation — Studio Stars",
@@ -146,19 +147,6 @@ async function loadOutcome(params: SearchParams): Promise<Outcome> {
     });
     return processing;
   }
-}
-
-const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"] as const;
-const MONTHS = [
-  "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
-] as const;
-
-/** "2026-12-05" -> "Sat 5 Dec 2026". Same output as the Server Action's helper. */
-function formatEventDate(dateStr: string): string {
-  const date = new Date(`${dateStr}T00:00:00Z`);
-  if (Number.isNaN(date.getTime())) return dateStr;
-  return `${WEEKDAYS[date.getUTCDay()]} ${date.getUTCDate()} ${MONTHS[date.getUTCMonth()]} ${date.getUTCFullYear()}`;
 }
 
 /* ── Panels ───────────────────────────────────────────────────── */

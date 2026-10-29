@@ -1,6 +1,6 @@
 import type { NextRequest } from "next/server";
 import type Stripe from "stripe";
-import { calculateTotal } from "@/app/studio-stars/book/pricing";
+import { calculateTotal } from "@/lib/booking/pricing";
 import { requireEnv } from "@/lib/env";
 import { stripe } from "@/lib/stripe";
 import { supabaseService } from "@/lib/supabase/service";
