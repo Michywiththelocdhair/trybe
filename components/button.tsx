@@ -3,13 +3,19 @@ import type {
   ButtonHTMLAttributes,
   ReactNode,
 } from "react";
+import Link from "next/link";
 
 export type ButtonVariant =
   | "primary"
   | "outline"
   | "on-dark"
   | "studio-stars"
-  | "studio-stars-outline";
+  | "studio-stars-outline"
+  /** Night-colored outline for Studio Stars CTAs sitting on a LIGHT
+   *  background (the event page uses this on its white hero). The
+   *  plain `studio-stars-outline` variant is white-on-night and only
+   *  works on dark surfaces. */
+  | "studio-stars-outline-light";
 
 export type ButtonSize = "md" | "sm";
 
@@ -73,6 +79,10 @@ const variants: Record<ButtonVariant, string> = {
   // 2px white border for secondary actions on night.
   "studio-stars-outline":
     "border-2 border-white bg-transparent text-white font-bold not-disabled:hover:bg-white/10",
+
+  // 2px night border for secondary actions on light Studio Stars surfaces.
+  "studio-stars-outline-light":
+    "border-2 border-night bg-transparent text-night font-bold not-disabled:hover:bg-night/5",
 };
 
 export function Button({
@@ -90,6 +100,23 @@ export function Button({
       ButtonAsAnchorProps,
       keyof CommonProps | "as"
     >;
+    // Internal routes go through next/link for client-side navigation and
+    // prefetching. Everything else (external URLs, hash links, mailto:, tel:)
+    // stays a plain <a>, which Link would otherwise warn or error on.
+    const isInternalRoute =
+      typeof anchorProps.href === "string" &&
+      anchorProps.href.startsWith("/") &&
+      !anchorProps.href.startsWith("//");
+
+    if (isInternalRoute) {
+      // `next/link` accepts the same anchor attributes; it just wraps the
+      // navigation in client-side routing.
+      return (
+        <Link {...anchorProps} className={classes}>
+          {children}
+        </Link>
+      );
+    }
     return (
       <a {...anchorProps} className={classes}>
         {children}

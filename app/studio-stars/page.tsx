@@ -360,13 +360,10 @@ export default function StudioStarsPage() {
                     className="hidden size-[18px] md:block"
                   />
                 </Button>
-                {/* studio-stars-outline is white-on-night; the artboard's hero
-                    sits on a light surface so the colours are flipped here. */}
                 <Button
                   as="a"
                   href="#how"
-                  variant="studio-stars-outline"
-                  className="border-night! text-night! hover:bg-night/10!"
+                  variant="studio-stars-outline-light"
                 >
                   Find Out How It Works
                 </Button>

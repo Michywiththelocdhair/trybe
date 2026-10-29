@@ -15,11 +15,8 @@ import { Field } from "@/components/form/field";
 import { RadioTile } from "@/components/form/radio-tile";
 import { RadioTileGroup } from "@/components/form/radio-tile-group";
 import { TextInput } from "@/components/form/text-input";
-import {
-  createBookingSession,
-  type BookingInput,
-  type BookingResult,
-} from "./actions";
+import { createBookingSession } from "./actions";
+import type { BookingInput, BookingResult } from "./schema";
 import {
   MAX_CHILD_AGE,
   MIN_CHILD_AGE,

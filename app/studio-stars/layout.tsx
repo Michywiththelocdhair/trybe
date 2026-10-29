@@ -1,14 +1,20 @@
 /**
- * Scopes the Studio Stars palette (sunshine yellow + night) to the
- * /studio-stars and /studio-stars/book routes. All children inherit the
- * swapped CSS variables defined in tokens.css under [data-theme="studio-stars"].
+ * Scopes the Studio Stars palette to /studio-stars and its subroutes.
+ *
+ * Sets ONLY data-theme="studio-stars", which overrides the semantic tokens
+ * (--surface, --ink, --accent, --focus) under this subtree so any descendant
+ * reaching for `bg-accent`, `text-ink`, etc. paints with sunshine + night
+ * without the call site knowing which route it's on.
+ *
+ * It does NOT paint a background or set a text color — Studio Stars pages
+ * can be light (the event page, which uses white cards and the sunshine
+ * accent) or dark (future variants). Each page decides its own surface.
  */
-export default function StudioStarsLayout({ children }: LayoutProps<"/studio-stars">) {
+export default function StudioStarsLayout({
+  children,
+}: LayoutProps<"/studio-stars">) {
   return (
-    <div
-      data-theme="studio-stars"
-      className="bg-night text-white min-h-full"
-    >
+    <div data-theme="studio-stars" className="min-h-full">
       {children}
     </div>
   );
