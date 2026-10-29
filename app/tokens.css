@@ -1,8 +1,20 @@
 /* Trybe design tokens — see scratchpad/design-brief.md for provenance.
-   Source: project/DesignSystem.dc.html on the Design canvas. */
+   Source: project/DesignSystem.dc.html on the Design canvas.
+
+   Shape of this file:
+   1. All raw color tokens live on :root so they're always resolvable.
+      This matters because Tailwind utilities like `bg-night` or
+      `bg-sunshine` reach for the variable at any point in the tree.
+   2. Semantic tokens (--surface, --ink, --accent, --focus, --border)
+      map onto the Trybe brand palette by default.
+   3. The Studio Stars route layout sets [data-theme="studio-stars"]
+      which overrides JUST the semantic tokens — the raw colors stay
+      what they are. That's how a Button `bg-accent` renders purple
+      on the home page and sunshine on /studio-stars with no code
+      change at the call site.                                        */
 
 :root {
-  /* ── Site-wide brand palette ─────────────────────────── */
+  /* ── Raw site-wide palette ───────────────────────────── */
   --trybe-purple: #62358c;
   --indigo: #452c86;
   --periwinkle: #5c549f;
@@ -11,7 +23,19 @@
   --blush: #f4e7f3;
   --white: #ffffff;
 
-  /* Semantic site tokens (what components reach for) */
+  /* ── Raw Studio Stars palette ────────────────────────── *
+   * Reserved for the /studio-stars route and the Studio Stars
+   * event brand — but defined at :root so any surface that needs
+   * one of these colors (e.g. a Studio Stars tag chip appearing
+   * on the home page, or Section bg="night") can resolve them.    */
+  --sunshine: #ffd447;
+  --night: #24123f;
+  --cream: #fff6cf;
+  --muted-plum: #5a4b70;
+  --border-plum: #cdbbd9;
+  --border-lilac: #e4d8f0;
+
+  /* ── Semantic tokens — site-wide default theme ───────── */
   --surface: var(--white);
   --surface-soft: var(--blush);
   --surface-sunk: #faf4fa;
@@ -22,18 +46,18 @@
   --accent-strong: var(--indigo);
   --focus: var(--trybe-purple);
 
-  /* Button sizing — common */
+  /* ── Button sizing ───────────────────────────────────── */
   --btn-h: 52px;
   --btn-h-sm: 48px;
 
-  /* Radii */
+  /* ── Radii ───────────────────────────────────────────── */
   --r-input: 14px;
   --r-tile: 20px;
   --r-card: 28px;
   --r-block: 32px;
   --r-pill: 999px;
 
-  /* Spacing scale (also exposed to Tailwind theme) */
+  /* ── Spacing scale ───────────────────────────────────── */
   --s-1: 8px;
   --s-2: 16px;
   --s-4: 32px;
@@ -42,21 +66,15 @@
   --s-15: 120px;
 }
 
-/* ── Studio Stars theme — route-scoped ────────────────── *
- * Set data-theme="studio-stars" on the <body> or route layout
- * element to swap the palette for /studio-stars and /studio-stars/book. */
+/* ── Studio Stars route-scoped semantic overrides ─────── *
+ * Flips just the semantic tokens so a component authored as
+ * `bg-accent text-ink` paints correctly on both themes without
+ * knowing which route it's on.                                 */
 [data-theme="studio-stars"] {
-  --sunshine: #ffd447;
-  --night: #24123f;
-  --cream: #fff6cf;
-  --muted-plum: #5a4b70;
-  --border-plum: #cdbbd9;
-  --border-lilac: #e4d8f0;
-
   --surface: var(--night);
   --surface-soft: var(--cream);
   --ink: var(--white);
-  --ink-muted: #e4d8f0;
+  --ink-muted: var(--border-lilac);
   --border: var(--border-lilac);
   --accent: var(--sunshine);
   --accent-strong: var(--sunshine);

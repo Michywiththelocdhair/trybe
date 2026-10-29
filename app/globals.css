@@ -25,6 +25,7 @@
   --color-ink-muted: var(--ink-muted);
   --color-border: var(--border);
   --color-accent: var(--accent);
+  --color-accent-strong: var(--accent-strong);
 
   --font-display: "Bricolage Grotesque Variable", "Arial Narrow", sans-serif;
   --font-sans: "Catamaran Variable", "Segoe UI", system-ui, sans-serif;
@@ -36,30 +37,48 @@
   --radius-pill: var(--r-pill);
 }
 
-/* Base element styles */
-html {
-  background: var(--surface);
-  color: var(--ink);
-  font-family: "Catamaran Variable", "Segoe UI", system-ui, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
+/* ─────────────────────────────────────────────────────────────
+   Base layer — put every element-level default in here so that
+   Tailwind utilities (which live in the utilities layer) win.
+   Rules outside @layer always beat layered utilities in the
+   cascade, which is what tripped up the Phase 1 subagents.
+   ───────────────────────────────────────────────────────────── */
+@layer base {
+  html {
+    background: var(--surface);
+    color: var(--ink);
+    font-family: "Catamaran Variable", "Segoe UI", system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100dvh;
+    background: var(--surface);
+    color: var(--ink);
+  }
+
+  /* Default <a> color — overridable by any Tailwind text-* utility.
+     Buttons styled as anchors (bg-accent text-white, etc.) will win. */
+  a {
+    color: var(--accent);
+    text-decoration-skip-ink: auto;
+  }
+  a:hover {
+    color: var(--accent-strong);
+  }
+
+  /* Reset agent-ish spacing nobody wants to override one-by-one */
+  h1, h2, h3, h4, h5, h6, p {
+    margin: 0;
+  }
 }
 
-body {
-  margin: 0;
-  min-height: 100dvh;
-  background: var(--surface);
-  color: var(--ink);
-}
-
-a {
-  color: var(--accent);
-}
-a:hover {
-  color: var(--accent-strong);
-}
-
-/* Display type helper — matches Bricolage display spec from design system */
+/* Display type helper — matches Bricolage display spec from design system.
+   Lives OUTSIDE @layer base intentionally so .display stays authoritative
+   when applied; still, if a component wants to override line-height etc.
+   with inline style or a Tailwind utility, those win. */
 .display {
   font-family: "Bricolage Grotesque Variable", "Arial Narrow", sans-serif;
   font-weight: 800;
@@ -68,7 +87,8 @@ a:hover {
   line-height: 0.92;
 }
 
-/* Eyebrow — recurring label pattern */
+/* Eyebrow — recurring label pattern. Color uses --accent so it flips
+   automatically between site (trybe-purple) and Studio Stars (sunshine). */
 .eyebrow {
   font-size: 14px;
   font-weight: 800;
@@ -77,27 +97,32 @@ a:hover {
   color: var(--accent);
 }
 
-/* Focus ring — visible, brand-colored, inset-safe */
-:where(a, button, input, select, textarea, [tabindex]):focus-visible {
-  outline: 2px solid var(--focus);
-  outline-offset: 2px;
-  border-radius: 4px;
-}
+/* Focus ring — visible, brand-colored.
+   No forced border-radius here: elements keep their own shape (pill
+   buttons stay pill, inputs stay rounded-input). The outline is drawn
+   outside the box via outline-offset so corner shape doesn't matter. */
+@layer base {
+  :where(a, button, input, select, textarea, [tabindex]):focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+  }
 
-/* On-dark focus ring — doubles up with background spacer for contrast */
-[data-theme="studio-stars"] :where(a, button):focus-visible {
-  outline-color: var(--white);
-  box-shadow: 0 0 0 4px var(--night);
-}
+  /* On Studio Stars (dark) routes, pad the ring with a night-colored
+     halo so the white ring reads cleanly on any adjacent color. */
+  [data-theme="studio-stars"] :where(a, button, input):focus-visible {
+    outline-color: var(--white);
+    box-shadow: 0 0 0 4px var(--night);
+  }
 
-/* Respect motion preference */
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
+  /* Respect motion preference */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 }
