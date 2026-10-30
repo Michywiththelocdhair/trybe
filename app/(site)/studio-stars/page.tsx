@@ -284,11 +284,51 @@ const FAQS: ReadonlyArray<{ q: string; a: ReactNode }> = [
    Page
    ──────────────────────────────────────────────────────────── */
 
+const eventJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Event",
+  name: "Studio Stars — Christmas Singing Experience",
+  description:
+    "Your child's very own 20-minute session in the spotlight, singing a Christmas song they choose.",
+  startDate: "2026-12-05T09:00:00+00:00",
+  eventStatus: "https://schema.org/EventScheduled",
+  eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+  location: {
+    "@type": "Place",
+    name: "The Qube",
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: "London",
+      addressCountry: "GB",
+    },
+  },
+  image: ["https://trybe.uk/studio-stars/opengraph-image"],
+  url: "https://trybe.uk/studio-stars",
+  offers: {
+    "@type": "Offer",
+    url: "https://trybe.uk/studio-stars",
+    price: "100.00",
+    priceCurrency: "GBP",
+    availability: "https://schema.org/InStock",
+  },
+  organizer: {
+    "@type": "Organization",
+    name: "Trybe",
+    url: "https://trybe.uk",
+  },
+};
+
 export default function StudioStarsPage() {
   return (
     // The artboard is a light page with night + sunshine blocks, so the page
     // paints its own white surface over the route's night background.
     <div className="bg-white text-night">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(eventJsonLd).replace(/</g, "\\u003c"),
+        }}
+      />
       <Container className="flex flex-col gap-16 pb-16 pt-0 md:gap-28 md:pb-28 md:pt-4">
         {/* ── BREADCRUMB + HERO ───────────────────────────── */}
         <div className="flex flex-col gap-2">

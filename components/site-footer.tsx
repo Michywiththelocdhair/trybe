@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Container } from "@/components/layout/container";
+import { NewsletterSignup } from "@/components/newsletter-signup";
 
 const EXPLORE_LINKS = [
   { label: "Home", href: "/" },
@@ -49,6 +50,7 @@ export async function SiteFooter() {
               Fun events, experiences and activities that bring children and
               families together.
             </p>
+            <NewsletterSignup />
           </div>
 
           <nav aria-label="Footer">
