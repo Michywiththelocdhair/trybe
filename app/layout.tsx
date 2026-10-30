@@ -24,12 +24,24 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_GB",
   },
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#62358c" },
+    { media: "(prefers-color-scheme: dark)", color: "#452c86" },
+  ],
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en-GB">
-      <body className="min-h-dvh flex flex-col">{children}</body>
+      <body className="min-h-dvh flex flex-col">
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-pill focus:bg-trybe-purple focus:px-5 focus:py-3 focus:text-base focus:font-bold focus:text-white focus:shadow-lg"
+        >
+          Skip to content
+        </a>
+        {children}
+      </body>
     </html>
   );
 }
