@@ -24,22 +24,27 @@
  */
 import { z } from "zod";
 
+/** Accept a non-empty string OR treat "" / undefined as "not configured". */
+const optStr = z.string().min(1).optional().or(z.literal("")).transform(v => v || undefined);
+const optUrl = z.string().url().optional().or(z.literal("")).transform(v => v || undefined);
+
 const envSchema = z.object({
   // Public — bundled into the client via explicit property access below.
-  NEXT_PUBLIC_SUPABASE_URL: z.string().url().optional(),
-  NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().min(1).optional(),
-  NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: z.string().min(1).optional(),
+  NEXT_PUBLIC_SUPABASE_URL: optUrl,
+  NEXT_PUBLIC_SUPABASE_ANON_KEY: optStr,
+  NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: optStr,
   NEXT_PUBLIC_SITE_URL: z.string().url().default("http://localhost:3000"),
 
   // Server-only — undefined in the browser bundle.
-  SUPABASE_SERVICE_ROLE_KEY: z.string().min(1).optional(),
-  STRIPE_SECRET_KEY: z.string().min(1).optional(),
-  STRIPE_WEBHOOK_SECRET: z.string().min(1).optional(),
-  RESEND_API_KEY: z.string().min(1).optional(),
+  SUPABASE_SERVICE_ROLE_KEY: optStr,
+  STRIPE_SECRET_KEY: optStr,
+  STRIPE_WEBHOOK_SECRET: optStr,
+  RESEND_API_KEY: optStr,
   RESEND_FROM_EMAIL: z.string().min(1).default("Trybe <hello@trybe.uk>"),
+  RESEND_AUDIENCE_ID: optStr,
   BOOKING_HOLD_MINUTES: z.coerce.number().int().positive().default(15),
   TERMS_VERSION: z.string().min(1).default("v1-2026-10"),
-  CRON_SECRET: z.string().min(1).optional(),
+  CRON_SECRET: optStr,
 });
 
 // Explicit property access so Next.js inlines each NEXT_PUBLIC_* in the client
