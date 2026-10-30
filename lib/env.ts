@@ -63,8 +63,13 @@ const raw = {
 const parsed = envSchema.safeParse(raw);
 
 if (!parsed.success) {
-  console.error("Invalid environment variables:", parsed.error.flatten());
-  throw new Error("Invalid environment variables");
+  const issues = parsed.error.flatten().fieldErrors;
+  console.error("❌ Invalid environment variables:", JSON.stringify(issues, null, 2));
+  throw new Error(
+    `Invalid environment variables:\n${Object.entries(issues)
+      .map(([key, msgs]) => `  ${key}: ${(msgs as string[]).join(", ")}`)
+      .join("\n")}`,
+  );
 }
 
 export const env = parsed.data;
