@@ -1,6 +1,13 @@
 import type { NextRequest } from "next/server";
 import type Stripe from "stripe";
+import { loadBookingEmailData } from "@/lib/booking/email-data";
 import { calculateTotal } from "@/lib/booking/pricing";
+import { sendBookingEmail } from "@/lib/email/send";
+import {
+  BookingConfirmedEmail,
+  bookingConfirmedSubject,
+} from "@/lib/email/templates/booking-confirmed";
+import { ReceiptEmail, receiptSubject } from "@/lib/email/templates/receipt";
 import { requireEnv } from "@/lib/env";
 import { stripe } from "@/lib/stripe";
 import { supabaseService } from "@/lib/supabase/service";
@@ -231,7 +238,63 @@ async function confirmBooking(
     return;
   }
 
-  // TODO(phase-4): send confirmation email
+  // The booking is confirmed and paid; emails are best effort from here. Never
+  // throw: a failure would release the event claim and Stripe would retry a
+  // webhook whose work is already done.
+  await sendConfirmationEmails(db, booking.id);
+}
+
+async function sendConfirmationEmails(db: Db, bookingId: string): Promise<void> {
+  try {
+    const data = await loadBookingEmailData(db, bookingId);
+    if (!data) {
+      console.error("[stripe-webhook] no booking/event data for confirmation email", {
+        bookingId,
+      });
+      return;
+    }
+
+    // sendBookingEmail is idempotent per (booking, template) and reports
+    // failures in its result rather than throwing.
+    const results = await Promise.allSettled([
+      sendBookingEmail({
+        bookingId,
+        recipientEmail: data.recipientEmail,
+        template: "confirmation",
+        subject: bookingConfirmedSubject(data.confirmation),
+        component: BookingConfirmedEmail(data.confirmation),
+      }),
+      sendBookingEmail({
+        bookingId,
+        recipientEmail: data.recipientEmail,
+        template: "receipt",
+        subject: receiptSubject(data.receipt),
+        component: ReceiptEmail(data.receipt),
+      }),
+    ]);
+
+    const templates = ["confirmation", "receipt"] as const;
+    results.forEach((result, i) => {
+      const message =
+        result.status === "rejected"
+          ? result.reason instanceof Error
+            ? result.reason.message
+            : String(result.reason)
+          : result.value.error;
+      if (message) {
+        console.error("[stripe-webhook] email failed", {
+          bookingId,
+          template: templates[i],
+          message,
+        });
+      }
+    });
+  } catch (err) {
+    console.error("[stripe-webhook] could not send confirmation emails", {
+      bookingId,
+      message: err instanceof Error ? err.message : String(err),
+    });
+  }
 }
 
 async function expireBooking(
