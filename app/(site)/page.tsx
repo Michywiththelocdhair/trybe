@@ -427,7 +427,7 @@ export default function HomePage() {
       <Section id="nyah" aria-labelledby="nyah-title" className={BAND}>
         <div className="grid gap-3 md:gap-4 lg:grid-cols-[1fr_1.5fr]">
           <Photo
-            src="https://picsum.photos/seed/nyah-portrait/800/1000"
+            src="public/images/nyah-portrait-D3Pk63zA.jpg"
             alt="Portrait of Nyah, founder of Trybe, smiling at the camera"
             chip="Photo: Nyah"
             className="h-80 rounded-card bg-lavender md:h-[480px] md:rounded-[36px] lg:h-auto lg:min-h-[560px]"
