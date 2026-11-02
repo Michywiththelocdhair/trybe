@@ -95,8 +95,7 @@ function Photo({
 }) {
   return (
     <div className={`relative overflow-hidden ${className}`}>
-      {/* PLACEHOLDER PHOTO — user to replace */}
-      {/* eslint-disable-next-line @next/next/no-img-element -- placeholder photos come from picsum.photos */}
+      {/* eslint-disable-next-line @next/next/no-img-element -- local photos served from /public */}
       <img
         src={src}
         alt={alt}
@@ -173,8 +172,8 @@ export default function HomePage() {
 
           <div className="grid grid-cols-2 gap-3 lg:flex lg:flex-col lg:gap-4">
             <Photo
-              src="https://picsum.photos/seed/family-candid/800/600"
-              alt="A parent and child laughing together at a Trybe event"
+              src="/images/nyah-kizzy.jpg"
+              alt="Nyah and Kizzy together at a Trybe event"
               loading="eager"
               className="h-[170px] rounded-[24px] bg-lavender md:h-[240px] lg:h-auto lg:min-h-[340px] lg:flex-1 lg:rounded-[36px]"
             />
@@ -427,8 +426,8 @@ export default function HomePage() {
       <Section id="nyah" aria-labelledby="nyah-title" className={BAND}>
         <div className="grid gap-3 md:gap-4 lg:grid-cols-[1fr_1.5fr]">
           <Photo
-            src="public/images/nyah-portrait-D3Pk63zA.jpg"
-            alt="Portrait of Nyah, founder of Trybe, smiling at the camera"
+            src="/images/nyah-portrait.jpg"
+            alt="Portrait of Nyah, founder of Trybe, at a YouTube Legacy event"
             chip="Photo: Nyah"
             className="h-80 rounded-card bg-lavender md:h-[480px] md:rounded-[36px] lg:h-auto lg:min-h-[560px]"
           />
@@ -498,8 +497,8 @@ export default function HomePage() {
 
           <div className="grid grid-cols-2 gap-3 md:gap-4 lg:grid-rows-[1fr_auto]">
             <Photo
-              src="https://picsum.photos/seed/kids-activity/800/600"
-              alt="Children laughing and taking part in a group activity together"
+              src="/images/studio-stars-4.jpg"
+              alt="Kids and adult together in the recording studio with headphones"
               className="col-span-2 h-[170px] rounded-[20px] bg-orchid md:h-[260px] md:rounded-[36px] lg:h-auto lg:min-h-[260px]"
             />
             <div className="flex flex-col gap-3 rounded-[18px] bg-periwinkle p-4 text-white md:rounded-[28px] md:p-6">

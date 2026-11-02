@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/button";
 import { Container } from "@/components/layout/container";
@@ -26,14 +27,19 @@ export function SiteNav() {
   return (
     <header className="sticky top-0 z-30 w-full border-b border-border bg-surface/95 backdrop-blur-sm">
       <Container className="flex items-center justify-between gap-4 py-3 md:py-[14px]">
-        {/* TODO: swap the text wordmark for the Trybe SVG logo once supplied. */}
         <Link
           href="/"
           aria-label="Trybe home"
-          className="display text-[32px] tracking-[-0.01em] text-ink no-underline"
-          style={{ lineHeight: 0.95 }}
+          className="relative block shrink-0"
         >
-          Trybe
+          <Image
+            src="/images/logo.png"
+            alt="Trybe"
+            width={120}
+            height={40}
+            className="h-8 w-auto md:h-10"
+            priority
+          />
         </Link>
 
         <nav aria-label="Primary" className="hidden md:block md:flex-1">

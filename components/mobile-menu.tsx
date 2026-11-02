@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
@@ -125,10 +126,15 @@ export function MobileMenu({ links, cta }: MobileMenuProps) {
                   href="/"
                   onClick={close}
                   aria-label="Trybe home"
-                  className="display text-[32px] tracking-[-0.01em] text-white no-underline focus-visible:outline-white"
-                  style={{ lineHeight: 0.95 }}
+                  className="relative block focus-visible:outline-white"
                 >
-                  Trybe
+                  <Image
+                    src="/images/logo-light.jpg"
+                    alt="Trybe"
+                    width={120}
+                    height={40}
+                    className="h-8 w-auto"
+                  />
                 </Link>
                 <button
                   ref={closeRef}

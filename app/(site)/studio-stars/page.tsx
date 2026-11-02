@@ -39,9 +39,13 @@ const STRIPES =
 const spotlight = (strength: number) =>
   `radial-gradient(ellipse at top, color-mix(in srgb, var(--sunshine) ${strength}%, transparent), transparent 70%)`;
 
-// Placeholder photography. PLACEHOLDER PHOTO — user to replace.
-const photo = (seed: string, w: number, h: number) =>
-  `url("https://picsum.photos/seed/${seed}/${w}/${h}")`;
+// Real photos served from /public/images/.
+const STUDIO_PHOTOS: Record<string, string> = {
+  "studio-stars-singing": "/images/studio-stars-1.jpg",
+  "studio-stars-studio": "/images/studio-stars-2.jpg",
+};
+const photo = (seed: string) =>
+  `url("${STUDIO_PHOTOS[seed] ?? `/images/studio-stars-1.jpg`}")`;
 
 // Secondary text on light surfaces (--muted-plum is not a Tailwind colour).
 const MUTED = "text-[color:var(--muted-plum)]";
@@ -456,7 +460,7 @@ export default function StudioStarsPage() {
                   role="img"
                   aria-label="A child singing into a microphone"
                   className="absolute left-[20%] top-[3%] h-[52%] w-[42%] rounded-[22px] bg-trybe-purple bg-cover bg-center md:rounded-block"
-                  style={{ backgroundImage: photo("studio-stars-singing", 520, 600) }}
+                  style={{ backgroundImage: photo("studio-stars-singing") }}
                 />
 
                 <a
@@ -476,7 +480,7 @@ export default function StudioStarsPage() {
                   role="img"
                   aria-label="A child in headphones smiling in the studio"
                   className="absolute left-[65%] top-[18%] h-[42%] w-[35%] rounded-[22px] bg-orchid bg-cover bg-center md:rounded-block"
-                  style={{ backgroundImage: photo("studio-stars-studio", 440, 500) }}
+                  style={{ backgroundImage: photo("studio-stars-studio") }}
                 />
 
                 {/* Studio artwork: microphone under a stage light */}

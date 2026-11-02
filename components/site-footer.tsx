@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { Container } from "@/components/layout/container";
 import { NewsletterSignup } from "@/components/newsletter-signup";
@@ -37,14 +38,18 @@ export async function SiteFooter() {
       <Container>
         <div className="grid grid-cols-2 gap-x-4 gap-y-10 md:grid-cols-[1.4fr_1fr_1fr_1fr] md:gap-x-8">
           <div className="col-span-2 flex flex-col gap-4 md:col-span-1">
-            {/* TODO: swap the text wordmark for the Trybe SVG logo once supplied. */}
             <Link
               href="/"
               aria-label="Trybe home"
-              className="display self-start text-[48px] text-white no-underline"
-              style={{ lineHeight: 0.95 }}
+              className="relative block self-start"
             >
-              Trybe
+              <Image
+                src="/images/logo-light.jpg"
+                alt="Trybe"
+                width={160}
+                height={54}
+                className="h-12 w-auto md:h-14"
+              />
             </Link>
             <p className={`hidden max-w-xs text-[17px] leading-[1.55] md:block ${MUTED}`}>
               Fun events, experiences and activities that bring children and
