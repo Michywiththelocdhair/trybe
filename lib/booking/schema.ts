@@ -12,6 +12,7 @@ import {
   MAX_CHILDREN_PER_BOOKING,
   MIN_CHILD_AGE,
 } from "@/lib/booking/pricing";
+import { SESSION_START_TIMES } from "@/lib/booking/session-times";
 
 export const BookingSchema = z.object({
   children: z
@@ -40,10 +41,7 @@ export const BookingSchema = z.object({
       MAX_CHILDREN_PER_BOOKING,
       `You can book up to ${MAX_CHILDREN_PER_BOOKING} children at once`,
     ),
-  timeSlot: z.enum(
-    ["morning", "midday", "afternoon", "any"],
-    "Please choose a preferred time",
-  ),
+  sessionStartTime: z.enum(SESSION_START_TIMES, "Please choose a session time"),
   parentName: z
     .string()
     .trim()

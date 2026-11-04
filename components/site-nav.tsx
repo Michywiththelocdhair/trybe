@@ -1,3 +1,5 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/button";
@@ -5,8 +7,7 @@ import { Container } from "@/components/layout/container";
 import { MobileMenu } from "@/components/mobile-menu";
 
 /**
- * Hrefs use "/#section" (not bare "#section") so the links also work when the
- * nav is shown on other routes such as /studio-stars.
+ * Shared navigation used across the home, Studio Stars and Christmas Fair pages.
  */
 const NAV_LINKS = [
   { label: "Home", href: "/" },
@@ -16,17 +17,17 @@ const NAV_LINKS = [
 ] as const;
 
 const BOOK_HREF = "/studio-stars/book";
-const BOOK_LABEL = "Book your child's slot";
+const BOOK_LABEL = "Book Studio Stars";
 
 /**
  * SiteNav — sticky brand-palette header.
- * Mobile (<768px): wordmark, "Book" pill and a hamburger that opens MobileMenu.
+ * Mobile (<768px): wordmark, booking pill and a hamburger that opens MobileMenu.
  * Desktop (>=768px): wordmark, centred links and the primary booking CTA.
  */
 export function SiteNav() {
   return (
     <header className="sticky top-0 z-30 w-full border-b border-border bg-surface/95 backdrop-blur-sm">
-      <Container className="flex items-center justify-between gap-4 py-3 md:py-[14px]">
+      <Container className="flex items-center justify-between gap-2 py-3 md:gap-4 md:py-[14px]">
         <Link
           href="/"
           aria-label="Trybe home"
@@ -35,9 +36,9 @@ export function SiteNav() {
           <Image
             src="/images/logo.png"
             alt="Trybe"
-            width={120}
-            height={40}
-            className="h-8 w-auto md:h-10"
+            width={1244}
+            height={1244}
+            className="h-16 w-auto md:h-20"
             priority
           />
         </Link>
@@ -59,15 +60,13 @@ export function SiteNav() {
 
         <div className="hidden md:block">
           <Button as="a" href={BOOK_HREF} size="sm">
-            {/* [REPLACE: confirm the shorter "Book a slot" label shown at md widths] */}
-            <span className="lg:hidden">Book a slot</span>
-            <span className="hidden lg:inline">Book your child&apos;s slot</span>
+            Book Studio Stars
           </Button>
         </div>
 
         <div className="flex items-center gap-2 md:hidden">
-          <Button as="a" href={BOOK_HREF} size="sm">
-            Book
+          <Button as="a" href={BOOK_HREF} size="sm" className="whitespace-nowrap px-3 text-sm">
+            Book Studio Stars
           </Button>
           <MobileMenu
             links={NAV_LINKS}

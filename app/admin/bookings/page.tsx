@@ -10,6 +10,7 @@ import {
   formatDateTime,
   formatEventDate,
 } from "@/components/admin/format";
+import { formatClockTime } from "@/lib/dates";
 import { ExportCsvButton } from "@/components/admin/export-csv-button";
 import { requireAdmin } from "@/components/admin/is-admin";
 import { BookingStatusBadge } from "@/components/admin/status-badge";
@@ -26,7 +27,7 @@ import { formatGbp } from "@/lib/booking/pricing";
 import {
   BOOKING_STATUSES,
   PAGE_SIZE,
-  TIME_WINDOWS,
+  SESSION_TIMES,
   bookingsHref,
   hasActiveFilters,
   parseBookingFilters,
@@ -110,17 +111,17 @@ export default async function AdminBookingsPage({
             </select>
           </FilterField>
 
-          <FilterField id="f-window" label="Time window" wide>
+          <FilterField id="f-window" label="Session start" wide>
             <select
               id="f-window"
-              name="time_window"
-              defaultValue={filters.time_window ?? ""}
+              name="session_start_time"
+              defaultValue={filters.session_start_time ?? ""}
               className={controlClass}
             >
-              <option value="">All windows</option>
-              {TIME_WINDOWS.map((w) => (
-                <option key={w} value={w}>
-                  {TIME_WINDOW_LABEL[w]}
+              <option value="">All times</option>
+              {SESSION_TIMES.map((time) => (
+                <option key={time} value={time}>
+                  {formatClockTime(time)}
                 </option>
               ))}
             </select>
@@ -187,7 +188,7 @@ export default async function AdminBookingsPage({
                   <Th>Parent</Th>
                   <Th>Event</Th>
                   <Th className="text-right">Children</Th>
-                  <Th>Time window</Th>
+                  <Th>Session start</Th>
                   <Th>Status</Th>
                   <Th className="text-right">Total</Th>
                   <Th>
@@ -207,7 +208,9 @@ export default async function AdminBookingsPage({
                     </Td>
                     <Td className="whitespace-nowrap">{eventById.get(b.event_id)?.name ?? "—"}</Td>
                     <Td className="text-right tabular-nums">{b.child_count}</Td>
-                    <Td className="whitespace-nowrap">{TIME_WINDOW_LABEL[b.time_window]}</Td>
+                    <Td className="whitespace-nowrap">
+                      {b.session_start_time ? formatClockTime(b.session_start_time) : TIME_WINDOW_LABEL[b.time_window]}
+                    </Td>
                     <Td>
                       <BookingStatusBadge status={b.status} />
                     </Td>

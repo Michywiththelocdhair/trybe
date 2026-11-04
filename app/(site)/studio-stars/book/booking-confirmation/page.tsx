@@ -6,6 +6,7 @@ import { Container } from "@/components/layout/container";
 import { formatEventDate } from "@/lib/dates";
 import { supabaseService } from "@/lib/supabase/service";
 import { formatGbp } from "@/lib/booking/pricing";
+import { formatClockTime } from "@/lib/dates";
 
 export const metadata: Metadata = {
   title: "Booking confirmation — Studio Stars",
@@ -56,11 +57,13 @@ type Outcome =
       parentEmail: string;
       childCount: number;
       totalPence: number;
+      sessionStartTime: string | null;
       event: {
         name: string;
         subtitle: string | null;
         venue: string | null;
         eventDate: string;
+        venueAddress: string | null;
       } | null;
     }
   | { kind: "processing"; retryHref: string | null }
@@ -91,7 +94,7 @@ async function loadOutcome(params: SearchParams): Promise<Outcome> {
     const { data: booking, error } = await db
       .from("bookings")
       .select(
-        "id, event_id, status, parent_name, parent_email, child_count, subtotal_pence, stripe_checkout_session_id",
+        "id, event_id, status, parent_name, parent_email, child_count, subtotal_pence, session_start_time, stripe_checkout_session_id",
       )
       .eq("id", parsedId.data)
       .maybeSingle();
@@ -111,7 +114,7 @@ async function loadOutcome(params: SearchParams): Promise<Outcome> {
 
     const { data: event, error: eventError } = await db
       .from("events")
-      .select("name, subtitle, venue, event_date")
+      .select("name, subtitle, venue, venue_address, event_date")
       .eq("id", booking.event_id)
       .maybeSingle();
     if (eventError) {
@@ -130,12 +133,14 @@ async function loadOutcome(params: SearchParams): Promise<Outcome> {
       parentEmail: booking.parent_email,
       childCount: booking.child_count,
       totalPence: booking.subtotal_pence,
+      sessionStartTime: booking.session_start_time,
       event: event
         ? {
             name: event.name,
             subtitle: event.subtitle,
             venue: event.venue,
             eventDate: event.event_date,
+            venueAddress: event.venue_address,
           }
         : null,
     };
@@ -178,6 +183,7 @@ function ConfirmedPanel({
   parentEmail,
   childCount,
   totalPence,
+  sessionStartTime,
   event,
 }: Extract<Outcome, { kind: "confirmed" }>) {
   const rows: Array<{ label: string; value: ReactNode }> = [];
@@ -188,8 +194,18 @@ function ConfirmedPanel({
     });
     rows.push({ label: "Date", value: formatEventDate(event.eventDate) });
     if (event.venue) rows.push({ label: "Venue", value: event.venue });
+    if (event.venueAddress) rows.push({ label: "Address", value: event.venueAddress });
   }
   rows.push({ label: childCount === 1 ? "Child" : "Children", value: childCount });
+  if (sessionStartTime) {
+    rows.push({
+      label: childCount === 1 ? "Session start" : "First session starts",
+      value:
+        childCount === 1
+          ? formatClockTime(sessionStartTime)
+          : `${formatClockTime(sessionStartTime)} · siblings follow in consecutive 20-minute slots`,
+    });
+  }
   rows.push({ label: "Total paid", value: formatGbp(totalPence) });
 
   return (

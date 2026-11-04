@@ -9,7 +9,7 @@ export function EmailButton({
   href,
   children,
   background = emailColors.sunshine,
-  color = emailColors.night,
+  color = emailColors.white,
   width = 220,
   height = 48,
 }: {

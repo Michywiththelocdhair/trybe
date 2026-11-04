@@ -8,13 +8,13 @@ import { Container } from "@/components/layout/container";
 export const metadata: Metadata = {
   title: "Studio Stars — Christmas singing for kids",
   description:
-    "Your child's 20-minute Christmas spotlight — book their session at The Qube, Sat 5 Dec 2026. £100 per child, siblings 20% off.",
+    "Your child's 20-minute Christmas spotlight at The Qube, Sat 5 Dec 2026, 10am–2pm. £100 per child, siblings 20% off.",
   // openGraph is shallow-merged with the root layout, so siteName and locale
   // are repeated here to keep them.
   openGraph: {
     title: "Studio Stars — Christmas singing for kids",
     description:
-      "Your child's 20-minute Christmas spotlight at The Qube. Sat 5 Dec 2026.",
+      "Your child's 20-minute Christmas spotlight at The Qube, 10am–2pm. Sat 5 Dec 2026.",
     type: "website",
     siteName: "Trybe",
     locale: "en_GB",
@@ -30,10 +30,6 @@ const BOOK_HREF = "/studio-stars/book";
 // 4-pointed star used for every decorative sparkle.
 const STAR_PATH =
   "M12 0C13 7 17 11 24 12C17 13 13 17 12 24C11 17 7 13 0 12C7 11 11 7 12 0Z";
-
-// Striped "photo not here yet" pattern (the artboard's .ph treatment).
-const STRIPES =
-  "repeating-linear-gradient(135deg, color-mix(in srgb, var(--white) 16%, transparent) 0 2px, transparent 2px 16px)";
 
 // Stage-light glow: sunshine fading out downwards.
 const spotlight = (strength: number) =>
@@ -182,12 +178,12 @@ const GLANCE: ReadonlyArray<{ icon: IconName; title: string; text: string }> = [
   {
     icon: "pin",
     title: "The Qube",
-    text: "Parking available at the venue",
+    text: "168 Dukes Road, London, W3 0SL",
   },
   {
     icon: "clock",
     title: "20-minute sessions",
-    text: "With 10-minute buffers, so no one is rushed",
+    text: "10:00 am–2:00 pm ",
   },
   {
     icon: "tag",
@@ -209,7 +205,7 @@ const STEPS: ReadonlyArray<{
 }> = [
   {
     title: "Book a session",
-    text: "Choose your preferred time and book a dedicated 20-minute session for each child.",
+    text: "Choose an exact start time and book a dedicated 20-minute session for each child.",
     icon: "calendar",
   },
   {
@@ -231,9 +227,9 @@ const STEPS: ReadonlyArray<{
 
 const BOOK_STEPS = [
   "Your children’s names and ages",
-  "Your preferred time of day",
+  "Choose an exact 20-minute start time",
   "Your contact details",
-  "Pay securely with Stripe",
+  "Pay to book your spot!",
 ];
 
 const CHILD_COUNTS: ReadonlyArray<{ label: string; aria: string }> = [
@@ -246,19 +242,17 @@ const CHILD_COUNTS: ReadonlyArray<{ label: string; aria: string }> = [
 const FAQS: ReadonlyArray<{ q: string; a: ReactNode }> = [
   {
     q: "How long is each session?",
-    a: "Each child has their own 20-minute session, with a 10-minute buffer between sessions. Recording starts from 9:00 am on Saturday 5 December 2026.",
+    a: "Each child has their own 20-minute session. Sessions run from 10:00 am to 2:00 pm.",
   },
   {
     q: "How will I know my exact session time?",
-    a: "You’ll tell us your preferred time of day when you book, and we’ll confirm your exact session time by email.",
+    a: "Choose an available exact start time when you book. If you book siblings, their sessions are scheduled one after another in consecutive 20-minute slots.",
   },
   {
     q: "Can I stay with my child, or drop them off?",
     a: (
       <>
         Either — you’re welcome to stay or to drop your child off.{" "}
-        {/* [REPLACE: drop-off and collection arrangements once confirmed] */}
-        <Tag variant="tbc">[Drop-off and collection arrangements — TBC]</Tag>
       </>
     ),
   },
@@ -294,7 +288,8 @@ const eventJsonLd = {
   name: "Studio Stars — Christmas Singing Experience",
   description:
     "Your child's very own 20-minute session in the spotlight, singing a Christmas song they choose.",
-  startDate: "2026-12-05T09:00:00+00:00",
+  startDate: "2026-12-05T10:00:00+00:00",
+  endDate: "2026-12-05T14:00:00+00:00",
   eventStatus: "https://schema.org/EventScheduled",
   eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
   location: {
@@ -302,7 +297,9 @@ const eventJsonLd = {
     name: "The Qube",
     address: {
       "@type": "PostalAddress",
+      streetAddress: "168 Dukes Road",
       addressLocality: "London",
+      postalCode: "W3 0SL",
       addressCountry: "GB",
     },
   },
@@ -367,10 +364,7 @@ export default function StudioStarsPage() {
             className="flex flex-col gap-[22px] pb-1 pt-5 md:gap-[26px] md:pt-10 lg:flex-row lg:items-center lg:gap-12"
           >
             <div className="contents lg:flex lg:min-w-0 lg:flex-1 lg:flex-col lg:gap-[26px]">
-              <Tag variant="studio-stars" className="order-1 gap-2 self-start">
-                <Star className="size-3.5 text-sunshine" />
-                Trybe presents · Studio Stars
-              </Tag>
+              
 
               <h1
                 id="ss-title"
@@ -420,21 +414,13 @@ export default function StudioStarsPage() {
                   className={`border-r-[1.5px] ${BORDER_LILAC} pr-2.5 md:mr-7 md:py-1 md:pr-7`}
                 />
                 <Stat
-                  // [REPLACE: confirm the 5pm end time — the brief only confirms "from 9:00 am"]
                   value={
                     <>
-                      <span className="md:hidden">9–5</span>
-                      <span className="hidden md:inline">9AM–5PM</span>
+                      <span className="md:hidden text-[28px]">10–2</span>
+                      <span className="hidden md:inline">10AM–2PM</span>
                     </>
                   }
-                  label={
-                    <>
-                      <span className="md:hidden">From 9:00 am</span>
-                      <span className="hidden md:inline">
-                        Sessions from 9:00 am
-                      </span>
-                    </>
-                  }
+                  label="20-minute sessions"
                   className={`border-r-[1.5px] ${BORDER_LILAC} px-2.5 md:mr-7 md:py-1 md:pl-0 md:pr-7`}
                 />
                 <Stat
@@ -661,8 +647,7 @@ export default function StudioStarsPage() {
                   Venue: The Qube
                 </h3>
                 <p className="text-[15px] leading-normal text-blush md:text-lg">
-                  {/* [REPLACE: full street address for The Qube] */}
-                  <Tag variant="tbc">[Full venue address — TBC]</Tag>
+                  168 Dukes Road, London, W3 0SL
                 </p>
                 <p className="flex items-center gap-2 text-base font-bold md:text-lg">
                   <Icon
@@ -672,16 +657,14 @@ export default function StudioStarsPage() {
                   Parking available at the venue
                 </p>
               </div>
-              {/* [REPLACE: map embed once the address is confirmed] */}
-              <div
-                role="img"
-                aria-label="Map placeholder for The Qube"
-                className="hidden min-h-[200px] items-center justify-center rounded-tile bg-periwinkle md:flex md:flex-1"
-                style={{ backgroundImage: STRIPES }}
-              >
-                <span className="rounded-xl bg-night/80 px-3 py-1.5 text-[15px] font-semibold">
-                  Map — added once address is confirmed
-                </span>
+              <div className="flex min-h-[220px] flex-1 overflow-hidden rounded-tile bg-periwinkle md:min-h-[260px]">
+                <iframe
+                  title="Map to The Qube, 168 Dukes Road, London W3 0SL"
+                  src="https://www.google.com/maps?q=168+Dukes+Road%2C+London%2C+W3+0SL&output=embed"
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  className="min-h-[220px] w-full border-0 md:min-h-[260px]"
+                />
               </div>
             </div>
 
@@ -692,9 +675,9 @@ export default function StudioStarsPage() {
                 Sessions &amp; timings
               </h3>
               <p className="text-base leading-[1.45] md:text-lg md:leading-normal">
-                Recording starts from 9:00 am. Each child has a 20-minute
-                session, with 10-minute buffers between sessions. We’ll confirm
-                your exact time by email.
+                Sessions run from 10:00 am to 2:00 pm. Each child has a
+                dedicated 20-minute session. Choose an exact
+                start time when you book.
               </p>
             </div>
           </div>
@@ -711,9 +694,7 @@ export default function StudioStarsPage() {
               <p className="text-[15px] leading-[1.4] text-night/80 md:text-lg md:leading-normal">
                 You’re welcome to stay with your child or drop them off.{" "}
                 {/* [REPLACE: drop-off and collection arrangements once confirmed] */}
-                <Tag variant="tbc">
-                  [Drop-off and collection arrangements — TBC]
-                </Tag>
+                
               </p>
             </div>
             <div className="flex flex-col gap-1 rounded-tile bg-blush p-[18px] md:gap-3 md:rounded-block md:p-9">

@@ -1,6 +1,6 @@
 import "server-only";
 import type * as React from "react";
-import { Resend } from "resend";
+import { Resend, type Attachment } from "resend";
 import { render } from "@react-email/components";
 import { env, requireEnv } from "@/lib/env";
 import { supabaseService } from "@/lib/supabase/service";
@@ -28,6 +28,7 @@ async function deliver(opts: {
   recipientEmail: string;
   subject: string;
   component: React.ReactElement;
+  attachments?: Attachment[];
 }): Promise<{ messageId?: string; error?: string }> {
   try {
     const html = await render(opts.component);
@@ -38,6 +39,7 @@ async function deliver(opts: {
       subject: opts.subject,
       html,
       text,
+      attachments: opts.attachments,
     });
     if (error) return { error: error.message ?? errMessage(error) };
     return { messageId: data?.id };
@@ -106,6 +108,7 @@ export async function sendEmail(opts: {
   recipientEmail: string;
   subject: string;
   component: React.ReactElement;
+  attachments?: Attachment[];
 }): Promise<{ sent: boolean; messageId?: string; error?: string }> {
   const result = await deliver(opts);
   if (result.error) return { sent: false, error: result.error };

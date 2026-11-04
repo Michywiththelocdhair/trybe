@@ -13,6 +13,7 @@ export type Reminder48hEmailProps = {
   venue: string;
   venueAddress: string;
   childNames: string[];
+  sessionTimes: string[];
   siteUrl?: string;
 };
 
@@ -27,7 +28,7 @@ const checklist = [
 ];
 
 export function Reminder48hEmail(props: Reminder48hEmailProps) {
-  const { parentName, eventName, eventDate, venue, venueAddress, childNames } = props;
+  const { parentName, eventName, eventDate, venue, venueAddress, childNames, sessionTimes } = props;
   const date = formatEventDate(eventDate);
   return (
     <EmailLayout previewText={`${eventName} is on ${date} — here's everything you need.`}>
@@ -42,6 +43,7 @@ export function Reminder48hEmail(props: Reminder48hEmailProps) {
         <DetailRow label="Date" value={date} />
         <DetailRow label="Venue" value={venue} />
         <DetailRow label="Address" value={venueAddress} />
+        <DetailRow label="Session time(s)" value={sessionTimes.join(", ") || "To be confirmed"} />
       </Card>
 
       <Text style={h2}>Quick checklist</Text>
@@ -68,4 +70,5 @@ Reminder48hEmail.PreviewProps = {
   venue: "The Studio",
   venueAddress: "1 Example Street, London, N1 1AA",
   childNames: ["Ava", "Leo"],
+  sessionTimes: ["10:00 am", "10:20 am"],
 } satisfies Reminder48hEmailProps;

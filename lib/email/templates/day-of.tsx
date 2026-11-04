@@ -10,6 +10,7 @@ export type DayOfEmailProps = {
   venue: string;
   venueAddress: string;
   childNames: string[];
+  sessionTimes: string[];
 };
 
 export function dayOfSubject(props: Pick<DayOfEmailProps, "eventName">): string {
@@ -17,7 +18,7 @@ export function dayOfSubject(props: Pick<DayOfEmailProps, "eventName">): string 
 }
 
 export function DayOfEmail(props: DayOfEmailProps) {
-  const { parentName, eventName, venue, venueAddress, childNames } = props;
+  const { parentName, eventName, venue, venueAddress, childNames, sessionTimes } = props;
   const mapsHref = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
     `${venue}, ${venueAddress}`,
   )}`;
@@ -32,6 +33,7 @@ export function DayOfEmail(props: DayOfEmailProps) {
       <Card>
         <DetailRow label="Venue" value={venue} />
         <DetailRow label="Address" value={venueAddress} />
+        <DetailRow label="Session time(s)" value={sessionTimes.join(", ") || "To be confirmed"} />
       </Card>
 
       <Text style={p}>
@@ -53,4 +55,5 @@ DayOfEmail.PreviewProps = {
   venue: "The Studio",
   venueAddress: "1 Example Street, London, N1 1AA",
   childNames: ["Ava", "Leo"],
+  sessionTimes: ["10:00 am", "10:20 am"],
 } satisfies DayOfEmailProps;

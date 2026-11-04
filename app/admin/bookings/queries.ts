@@ -12,7 +12,7 @@ import type { AdminClient, BookingRow } from "@/components/admin/db";
 import type { BookingFilters } from "./filters";
 
 export const LIST_COLUMNS =
-  "id, created_at, parent_name, parent_email, event_id, child_count, time_window, status, subtotal_pence" as const;
+  "id, created_at, parent_name, parent_email, event_id, child_count, session_start_time, time_window, status, subtotal_pence" as const;
 
 export type BookingListRow = Pick<
   BookingRow,
@@ -22,13 +22,14 @@ export type BookingListRow = Pick<
   | "parent_email"
   | "event_id"
   | "child_count"
+  | "session_start_time"
   | "time_window"
   | "status"
   | "subtotal_pence"
 >;
 
 export const EXPORT_COLUMNS =
-  "id, created_at, status, event_id, parent_name, parent_email, parent_phone, child_count, time_window, attendance, subtotal_pence" as const;
+  "id, created_at, status, event_id, parent_name, parent_email, parent_phone, child_count, session_start_time, time_window, attendance, subtotal_pence" as const;
 
 export type BookingExportRow = Pick<
   BookingRow,
@@ -40,6 +41,7 @@ export type BookingExportRow = Pick<
   | "parent_email"
   | "parent_phone"
   | "child_count"
+  | "session_start_time"
   | "time_window"
   | "attendance"
   | "subtotal_pence"
@@ -58,7 +60,7 @@ function applyFilters<Q extends FilterChain<Q>>(query: Q, filters: BookingFilter
   let q = query;
   if (filters.status) q = q.eq("status", filters.status);
   if (filters.event) q = q.eq("event_id", filters.event);
-  if (filters.time_window) q = q.eq("time_window", filters.time_window);
+  if (filters.session_start_time) q = q.eq("session_start_time", filters.session_start_time);
   if (filters.from) {
     const start = londonDayStartIso(filters.from);
     if (start) q = q.gte("created_at", start);

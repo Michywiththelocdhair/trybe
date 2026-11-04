@@ -87,6 +87,33 @@
   line-height: 0.92;
 }
 
+/* Christmas Fair reference styling shared by the landing and booking pages. */
+.fair-grid-paper {
+  background-color: #fbf5ec;
+  background-image: linear-gradient(#ece1ef 1px, transparent 1px), linear-gradient(90deg, #ece1ef 1px, transparent 1px);
+  background-size: 36px 36px;
+}
+.fair-ticket {
+  -webkit-mask: radial-gradient(circle 15px at 0 50%, transparent 97%, #000) left/51% 100% no-repeat, radial-gradient(circle 15px at 100% 50%, transparent 97%, #000) right/51% 100% no-repeat;
+  mask: radial-gradient(circle 15px at 0 50%, transparent 97%, #000) left/51% 100% no-repeat, radial-gradient(circle 15px at 100% 50%, transparent 97%, #000) right/51% 100% no-repeat;
+}
+.fair-sticker { border: 6px solid #fff; border-radius: 28px; box-shadow: 0 9px 18px rgb(69 44 134 / 20%); }
+.fair-stamp { outline: 6px dotted #fff; outline-offset: -5px; }
+.fair-holes span { display: block; width: 11px; height: 11px; border-radius: 999px; background: #c8312b; }
+.fair-checker {
+  background-color: #fff;
+  background-image: conic-gradient(#f7c6da 25%, transparent 0 50%, #f7c6da 0 75%, transparent 0);
+  background-size: 24px 24px;
+}
+.fair-scallop { height: 22px; background-image: radial-gradient(circle at 12px -1px, transparent 13px, #fbf5ec 13.5px); background-size: 24px 22px; }
+.fair-scallop-up { transform: rotate(180deg); }
+.fair-step-number { outline: 6px dotted #fbf5ec; outline-offset: -4px; }
+.tbc { border: 1px dashed #9273b1; border-radius: 6px; background: #f4e7f3; color: #452c86; padding: 0 6px; }
+.fair-final-stamp { outline: 7px dotted #c8312b; outline-offset: -4px; }
+.fair-door { transition: transform .2s ease; }
+.fair-door:hover { transform: translateY(-4px) rotate(-1deg); }
+.fair-map-placeholder { background-image: linear-gradient(45deg, transparent 49.5%, #f4e7f3 49.5% 50.5%, transparent 50.5%), linear-gradient(-45deg, transparent 49.5%, #f4e7f3 49.5% 50.5%, transparent 50.5%); background-size: 32px 32px; }
+
 /* Eyebrow — recurring label pattern. Color uses --accent so it flips
    automatically between site (trybe-purple) and Studio Stars (sunshine). */
 .eyebrow {

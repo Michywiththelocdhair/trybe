@@ -3,6 +3,7 @@ import type { DayOfEmailProps } from "@/lib/email/templates/day-of";
 import type { Reminder48hEmailProps } from "@/lib/email/templates/reminder-48h";
 import type { ReceiptEmailProps } from "@/lib/email/templates/receipt";
 import type { ThankYouEmailProps } from "@/lib/email/templates/thank-you";
+import { formatLondonTime } from "@/lib/dates";
 import { supabaseService } from "@/lib/supabase/service";
 
 /**
@@ -42,7 +43,7 @@ export async function loadBookingEmailData(
     db.from("events").select("*").eq("id", booking.event_id).maybeSingle(),
     db
       .from("children")
-      .select("first_name, age, position")
+      .select("first_name, age, position, scheduled_at")
       .eq("booking_id", booking.id)
       .order("position", { ascending: true }),
   ]);
@@ -55,6 +56,9 @@ export async function loadBookingEmailData(
   const venue = event.venue ?? "";
   const venueAddress = event.venue_address ?? "";
   const childNames = kids.map((c) => c.first_name);
+  const sessionTimes = kids
+    .map((child) => formatLondonTime(child.scheduled_at))
+    .filter(Boolean);
 
   return {
     bookingId: booking.id,
@@ -62,11 +66,16 @@ export async function loadBookingEmailData(
     confirmation: {
       parentName: booking.parent_name,
       parentEmail: booking.parent_email,
-      children: kids.map((c) => ({ firstName: c.first_name, age: c.age })),
+      children: kids.map((c) => ({
+        firstName: c.first_name,
+        age: c.age,
+        sessionTime: formatLondonTime(c.scheduled_at),
+      })),
       eventName: event.name,
       eventSubtitle: event.subtitle ?? "",
       eventDate: event.event_date,
       venue,
+      venueAddress,
       totalPence: booking.subtotal_pence,
       bookingRef: booking.id,
     },
@@ -90,6 +99,7 @@ export async function loadBookingEmailData(
       venue,
       venueAddress,
       childNames,
+      sessionTimes,
     },
     dayOf: {
       parentName: booking.parent_name,
@@ -97,6 +107,7 @@ export async function loadBookingEmailData(
       venue,
       venueAddress,
       childNames,
+      sessionTimes,
     },
     thankYou: {
       parentName: booking.parent_name,

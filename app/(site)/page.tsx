@@ -1,9 +1,7 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { Button } from "@/components/button";
-import { LinkCard } from "@/components/link-card";
 import { Tag } from "@/components/tag";
-import { Bento } from "@/components/layout/bento";
 import { Section } from "@/components/layout/section";
 
 /**
@@ -132,9 +130,6 @@ export default function HomePage() {
             <Star className="absolute right-32 top-28 hidden size-[26px] text-blush md:block" />
 
             <div className="flex flex-col items-start gap-5 md:gap-6">
-              <p className="rounded-pill border-[1.5px] border-white/50 px-3 py-1 text-[13px] font-bold uppercase tracking-[0.08em]">
-                Events · Experiences
-              </p>
               <h1
                 id="hero-title"
                 className="display text-balance text-[44px] tracking-[-0.01em] md:text-[72px] lg:text-[64px] xl:text-[88px]"
@@ -226,14 +221,7 @@ export default function HomePage() {
           </p>
         </div>
 
-        {/*
-          Both event cards are inlined instead of using <EventCard>:
-          - EventCard only takes a one-line `metadata` string, but the Studio Stars
-            card needs a 2x2 grid of facts (date, venue, format, pricing) plus two CTAs.
-          - The Christmas Fair card needs real <Tag variant="tbc"> placeholders, which
-            a string prop can't carry, and a "Coming soon" tag variant it doesn't have.
-          The shell classes match EventCard so the two stay visually consistent.
-        */}
+        {/* Event cards are inlined to support the structured facts and multiple calls to action. */}
         <div className="mt-[18px] grid gap-3 md:mt-8 md:gap-4 lg:grid-cols-[2fr_1fr]">
           {/* Featured: Studio Stars */}
           <article className="flex flex-col overflow-hidden rounded-card border-[1.5px] border-border bg-surface text-ink md:rounded-[36px] lg:flex-row">
@@ -299,7 +287,7 @@ export default function HomePage() {
                   <span>
                     <strong>Sat 5 Dec 2026</strong>
                     <br />
-                    From 9:00 am
+                    Sessions 10:00 am–2:00 pm
                   </span>
                 </li>
                 <li className="flex items-start gap-2.5">
@@ -353,36 +341,15 @@ export default function HomePage() {
             </div>
           </article>
 
-          {/* Coming soon: Christmas Fair */}
+          {/* Christmas Fair */}
           <article className="flex flex-col overflow-hidden rounded-card border-[1.5px] border-border bg-surface text-ink md:rounded-[36px]">
-            <div className="relative flex h-[150px] items-center justify-center bg-periwinkle md:h-60">
+            <div className="relative flex h-[150px] items-center justify-center bg-periwinkle bg-cover bg-center md:h-60" style={{ backgroundImage: "linear-gradient(0deg, rgba(36,18,63,.25), rgba(36,18,63,.08)), url('/images/christmas-fair-1.png')" }}>
               <div
                 role="img"
-                aria-label="Placeholder artwork for the Trybe Christmas Fair"
-                className="absolute inset-0 flex items-center justify-center"
-              >
-                <svg
-                  aria-hidden="true"
-                  viewBox="0 0 48 48"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="hidden size-24 text-white md:block"
-                >
-                  <path d="M6 20h36l-4-10H10z" />
-                  <path d="M10 20v22h28V20" />
-                  <path d="M20 42V30h8v12" />
-                  <path d="M6 20c0 3 2 5 4.5 5S15 23 15 20c0 3 2 5 4.5 5S24 23 24 20c0 3 2 5 4.5 5S33 23 33 20c0 3 2 5 4.5 5S42 23 42 20" />
-                </svg>
-              </div>
-              <Tag
-                variant="coming-soon"
-                className="absolute left-4 top-4 md:left-5 md:top-5"
-              >
-                Coming soon
-              </Tag>
+                aria-label="Trybe Christmas Fair"
+                className="absolute inset-0"
+              />
+              <Tag variant="featured" className="absolute left-4 top-4 md:left-5 md:top-5">Free family entry</Tag>
             </div>
 
             <div className="flex flex-1 flex-col gap-3 p-[22px] md:gap-[14px] md:p-8">
@@ -394,24 +361,18 @@ export default function HomePage() {
                 Christmas Fair
               </h3>
               <p className="text-[17px] leading-normal text-ink-muted md:text-lg md:leading-[1.55]">
-                A festive Trybe day out for the whole family. Full details are
-                on their way.
+                A festive day out for the whole family, with local makers, treats and activities for little ones.
               </p>
               <ul className="m-0 flex list-none flex-col gap-2 p-0 text-base">
-                <li>
-                  Date: <Tag variant="tbc">[Date TBC]</Tag>
-                </li>
+                <li>Date: Sat 19 December 2026</li>
+                <li>Tickets: Free · limited to 50 families</li>
                 <li>
                   Location: <Tag variant="tbc">[Venue TBC]</Tag>
                 </li>
-                <li>
-                  Price: <Tag variant="tbc">[Price TBC]</Tag>
-                </li>
               </ul>
-              {/* [REPLACE: link to the Christmas Fair page once its details are confirmed] */}
               <Button
                 as="a"
-                href="#events"
+                href="/christmas-fair"
                 variant="outline"
                 className="mt-auto w-full md:w-auto md:self-start"
               >
@@ -445,8 +406,8 @@ export default function HomePage() {
               {/* Bio copy is verbatim from the design brief — do not paraphrase. */}
               <p className="max-w-[680px] text-[17px] leading-[1.55] md:text-xl md:leading-[1.6]">
                 Singer, songwriter and the voice behind Frontline, Big Boys and
-                Hooligans, these days she&apos;s also the founder of Trybe,
-                throwing events for millennials that fuse funky house with a
+                Hooligans, Nyah is the founder of Trybe, throwing events for
+                millennials that fuse funky house with a
                 reminder every mum needs to hear: you can want the best for your
                 kids and still be dope doing it. Mums have a life, and
                 Nyah&apos;s making sure they get to live it.
@@ -454,15 +415,22 @@ export default function HomePage() {
             </div>
 
             <p className="eyebrow ml-2 mt-2">Join Nyah at</p>
-            {/* [REPLACE: real Funky Fit and Pilates & Party links] */}
-            <Bento columns={2} gap="md">
-              <LinkCard title="Funky Fit" href="#nyah" bgVariant="purple" />
-              <LinkCard
-                title="Pilates & Party"
-                href="#nyah"
-                bgVariant="periwinkle"
-              />
-            </Bento>
+            <div className="grid gap-3 md:grid-cols-2 md:gap-4">
+              <Link href="#nyah" className="flex min-h-[120px] items-center justify-between gap-4 rounded-[28px] bg-trybe-purple p-6 text-white no-underline transition-transform hover:-translate-y-1 md:p-8">
+                <span className="flex flex-col gap-1">
+                  <span className="display text-[34px]" style={TIGHT}>Funky Fit</span>
+                  <span className="text-[15px] text-blush">Bring the kids and get ready to move!</span>
+                </span>
+                <span aria-hidden="true" className="flex size-12 shrink-0 items-center justify-center rounded-full bg-white text-trybe-purple">↗</span>
+              </Link>
+              <Link href="#nyah" className="flex min-h-[120px] items-center justify-between gap-4 rounded-[28px] bg-periwinkle p-6 text-white no-underline transition-transform hover:-translate-y-1 md:p-8">
+                <span className="flex flex-col gap-1">
+                  <span className="display text-[34px]" style={TIGHT}>Pilates &amp; Party</span>
+                  <span className="text-[15px] text-blush">Come for the movement. Stay for the community.</span>
+                </span>
+                <span aria-hidden="true" className="flex size-12 shrink-0 items-center justify-center rounded-full bg-white text-periwinkle">↗</span>
+              </Link>
+            </div>
           </div>
         </div>
       </Section>
@@ -478,7 +446,7 @@ export default function HomePage() {
               style={TIGHT}
             >
               Every family needs its{" "}
-              <span className="text-lavender">tribe</span>
+              <span className="text-lavender">trYbe</span>
             </h2>
             <p className="max-w-[620px] text-[17px] leading-[1.55] md:text-xl md:leading-[1.6]">
               Trybe brings families together through fun events, experiences
@@ -526,7 +494,9 @@ export default function HomePage() {
       {/* ───────────── 5. Final CTA ───────────── */}
       <Section aria-labelledby="cta-title" className={BAND}>
         <div className="relative flex flex-col items-center gap-[18px] overflow-hidden rounded-card bg-trybe-purple px-6 py-10 text-center text-white md:gap-[26px] md:rounded-[36px] md:px-16 md:py-24">
-          <Star className="pointer-events-none absolute -bottom-[70px] -right-[60px] hidden size-[380px] text-white opacity-[0.12] md:block" />
+          {/* Faded Trybe wordmark sits partly outside the lower corner, as in the reference. */}
+          {/* eslint-disable-next-line @next/next/no-img-element -- decorative local logo */}
+          <img src="/images/logo.png" alt="" aria-hidden="true" className="pointer-events-none absolute -bottom-16 -right-14 hidden size-[380px] opacity-[0.12] brightness-0 invert md:block" />
           <Star className="relative size-9 text-orchid md:size-11" />
           <h2
             id="cta-title"

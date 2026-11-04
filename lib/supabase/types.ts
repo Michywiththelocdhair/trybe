@@ -55,6 +55,8 @@ export interface Database {
           first_ticket_price_pence: number;
           sibling_ticket_price_pence: number;
           max_children: number;
+          max_family_tickets: number | null;
+          max_vendor_pitches: number | null;
           status: EventStatus;
           publish_at: string | null;
           close_bookings_at: string | null;
@@ -63,9 +65,9 @@ export interface Database {
         };
         Insert: Omit<
           Database["public"]["Tables"]["events"]["Row"],
-          "id" | "created_at" | "updated_at"
+          "id" | "created_at" | "updated_at" | "max_family_tickets" | "max_vendor_pitches"
         > &
-          Partial<Pick<Database["public"]["Tables"]["events"]["Row"], "id">>;
+          Partial<Pick<Database["public"]["Tables"]["events"]["Row"], "id" | "max_family_tickets" | "max_vendor_pitches">>;
         Update: Partial<Database["public"]["Tables"]["events"]["Insert"]>;
         Relationships: [];
       };
@@ -77,6 +79,7 @@ export interface Database {
           parent_email: string;
           parent_phone: string;
           time_window: TimeWindow;
+          session_start_time: string | null;
           attendance: Attendance;
           child_count: number;
           subtotal_pence: number;
@@ -121,6 +124,33 @@ export interface Database {
         > &
           Partial<Pick<Database["public"]["Tables"]["children"]["Row"], "id">>;
         Update: Partial<Database["public"]["Tables"]["children"]["Insert"]>;
+        Relationships: [];
+      };
+      christmas_fair_tickets: {
+        Row: {
+          id: string; event_id: string; ticket_code: string; family_name: string;
+          email: string; phone: string | null; adult_count: number; child_count: number;
+          status: "confirmed" | "cancelled"; terms_version: string;
+          agreed_to_terms_at: string; confirmation_sent_at: string | null;
+          reminder_sent_at: string | null; admin_notified_at: string | null;
+          created_at: string; checked_in_at: string | null;
+        };
+        Insert: Omit<Database["public"]["Tables"]["christmas_fair_tickets"]["Row"], "id" | "ticket_code" | "created_at" | "agreed_to_terms_at" | "confirmation_sent_at" | "reminder_sent_at" | "admin_notified_at" | "checked_in_at"> & Partial<Pick<Database["public"]["Tables"]["christmas_fair_tickets"]["Row"], "id" | "ticket_code" | "created_at" | "agreed_to_terms_at" | "confirmation_sent_at" | "reminder_sent_at" | "admin_notified_at" | "checked_in_at">>;
+        Update: Partial<Database["public"]["Tables"]["christmas_fair_tickets"]["Insert"]>;
+        Relationships: [];
+      };
+      christmas_fair_vendors: {
+        Row: {
+          id: string; event_id: string; business_name: string; contact_name: string;
+          email: string; phone: string; category: "kids" | "food" | "crafts" | "other";
+          description: string; website: string | null; needs_power: boolean;
+          has_public_liability_insurance: boolean; food_hygiene_rating: string | null;
+          status: "pending" | "accepted" | "declined"; terms_version: string;
+          agreed_to_terms_at: string; applicant_confirmation_sent_at: string | null; admin_notified_at: string | null;
+          created_at: string; updated_at: string;
+        };
+        Insert: Omit<Database["public"]["Tables"]["christmas_fair_vendors"]["Row"], "id" | "created_at" | "updated_at" | "agreed_to_terms_at" | "applicant_confirmation_sent_at" | "admin_notified_at" | "status"> & Partial<Pick<Database["public"]["Tables"]["christmas_fair_vendors"]["Row"], "id" | "created_at" | "updated_at" | "agreed_to_terms_at" | "applicant_confirmation_sent_at" | "admin_notified_at" | "status">>;
+        Update: Partial<Database["public"]["Tables"]["christmas_fair_vendors"]["Insert"]>;
         Relationships: [];
       };
       waitlist_entries: {
@@ -212,6 +242,18 @@ export interface Database {
     };
     Views: Record<string, never>;
     Functions: {
+      create_christmas_fair_ticket: {
+        Args: { p_family_name: string; p_email: string; p_phone: string | null; p_adult_count: number; p_child_count: number; p_terms_version: string };
+        Returns: Database["public"]["Tables"]["christmas_fair_tickets"]["Row"];
+      };
+      update_christmas_fair_capacities: {
+        Args: { p_max_families: number; p_max_vendors: number };
+        Returns: undefined;
+      };
+      set_christmas_fair_vendor_status: {
+        Args: { p_vendor_id: string; p_status: "accepted" | "declined" };
+        Returns: undefined;
+      };
       create_booking_with_children: {
         Args: {
           p_event_id: string;
@@ -219,6 +261,7 @@ export interface Database {
           p_parent_email: string;
           p_parent_phone: string;
           p_time_window: TimeWindow;
+          p_session_start_time: string;
           p_attendance: Attendance;
           p_terms_version: string;
           p_children: Array<{ first_name: string; age: number }>;

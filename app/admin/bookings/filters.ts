@@ -7,7 +7,8 @@
  * Not a "use server" file on purpose: it exports a constant and sync helpers.
  */
 import { z } from "zod";
-import type { BookingStatus, TimeWindow } from "@/lib/supabase/types";
+import type { BookingStatus } from "@/lib/supabase/types";
+import { SESSION_START_TIMES, type SessionStartTime } from "@/lib/booking/session-times";
 
 export const BOOKING_STATUSES = [
   "pending_payment",
@@ -17,12 +18,7 @@ export const BOOKING_STATUSES = [
   "expired",
 ] as const satisfies readonly BookingStatus[];
 
-export const TIME_WINDOWS = [
-  "morning",
-  "midday",
-  "afternoon",
-  "any",
-] as const satisfies readonly TimeWindow[];
+export const SESSION_TIMES = SESSION_START_TIMES;
 
 export const PAGE_SIZE = 20;
 
@@ -30,7 +26,7 @@ export const PAGE_SIZE = 20;
 export type BookingFilters = {
   status?: BookingStatus;
   event?: string;
-  time_window?: TimeWindow;
+  session_start_time?: SessionStartTime;
   /** YYYY-MM-DD, inclusive, London time. Filters on booking date (created_at). */
   from?: string;
   /** YYYY-MM-DD, inclusive, London time. */
@@ -65,9 +61,9 @@ export function parseBookingFilters(raw: unknown): BookingFilters {
   const event = firstString(input.event);
   if (event && isUuid(event)) filters.event = event;
 
-  const windowValue = firstString(input.time_window);
-  if (windowValue && (TIME_WINDOWS as readonly string[]).includes(windowValue)) {
-    filters.time_window = windowValue as TimeWindow;
+  const sessionTime = firstString(input.session_start_time);
+  if (sessionTime && (SESSION_TIMES as readonly string[]).includes(sessionTime)) {
+    filters.session_start_time = sessionTime as SessionStartTime;
   }
 
   const from = firstString(input.from);

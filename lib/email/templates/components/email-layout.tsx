@@ -4,9 +4,9 @@ import {
   Container,
   Head,
   Html,
+  Img,
   Preview,
   Section,
-  Text,
 } from "@react-email/components";
 import { EmailFooter } from "./email-footer";
 import { emailColors, emailFonts } from "./email-theme";
@@ -32,7 +32,7 @@ export function EmailLayout({
         style={{
           margin: 0,
           padding: 0,
-          backgroundColor: emailColors.night,
+          backgroundColor: emailColors.cream,
           fontFamily: emailFonts.body,
         }}
       >
@@ -41,31 +41,33 @@ export function EmailLayout({
             width: "100%",
             maxWidth: "600px",
             margin: "0 auto",
-            backgroundColor: emailColors.cream,
+            backgroundColor: emailColors.white,
+            border: `1px solid ${emailColors.blush}`,
           }}
         >
           <Section
             style={{
-              backgroundColor: emailColors.night,
-              padding: "28px 24px",
+              backgroundColor: emailColors.white,
+              borderBottom: `3px solid ${emailColors.blush}`,
+              padding: "12px 24px",
               textAlign: "center",
             }}
           >
-            <Text
+            <Img
+              src={`${(process.env.NEXT_PUBLIC_SITE_URL ?? "https://trybe.uk").replace(/\/+$/, "")}/images/logo.png`}
+              alt="Trybe"
+              width="100"
+              height="100"
               style={{
-                margin: 0,
-                fontFamily: emailFonts.display,
-                fontSize: "32px",
-                lineHeight: "36px",
-                fontWeight: 800,
-                letterSpacing: "-0.5px",
-                color: emailColors.sunshine,
+                display: "block",
+                width: "100px",
+                height: "100px",
+                margin: "0 auto",
+                objectFit: "contain",
               }}
-            >
-              Trybe
-            </Text>
+            />
           </Section>
-          <Section className="trybe-body" style={{ padding: "32px 32px 16px" }}>
+          <Section className="trybe-body" style={{ padding: "28px 32px 16px" }}>
             {children}
           </Section>
           <EmailFooter unsubscribeHref={unsubscribeHref} />

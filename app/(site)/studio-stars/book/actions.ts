@@ -8,6 +8,10 @@ import { stripe } from "@/lib/stripe";
 import { supabaseService } from "@/lib/supabase/service";
 import { calculateTotal } from "@/lib/booking/pricing";
 import { BookingSchema, type BookingInput, type BookingResult } from "@/lib/booking/schema";
+import {
+  SESSION_START_TIMES,
+  type SessionStartTime,
+} from "@/lib/booking/session-times";
 
 /**
  * Booking Server Action (Phase 3).
@@ -47,6 +51,8 @@ const RPC_ERROR_MESSAGES: Record<string, string> = {
   P0002: "We can't find this event any more. Please refresh and try again.",
   P0003: "Bookings for this event aren't open right now.",
   P0004: "This event is now fully booked. Join the waitlist to be notified of a spot.",
+  P0005: "That session time has just been taken. Please choose another available time.",
+  P0006: "Choose a 20-minute start time between 10:00 am and 2:00 pm that fits all children in your booking.",
 };
 
 /** The RPC's `raise exception` messages, as a fallback if `code` is ever absent. */
@@ -55,6 +61,8 @@ const RPC_ERROR_CODE_BY_MESSAGE: Record<string, string> = {
   event_not_found: "P0002",
   event_not_bookable: "P0003",
   capacity_exceeded: "P0004",
+  session_time_unavailable: "P0005",
+  invalid_session_start_time: "P0006",
 };
 
 /** First message per field path, e.g. "children.0.age" or "parentEmail". */
@@ -71,6 +79,81 @@ function toFieldErrors(error: z.ZodError): Record<string, string> {
 
 function formError(message: string): BookingResult {
   return { ok: false, errors: { form: message } };
+}
+
+const londonTime = new Intl.DateTimeFormat("en-GB", {
+  timeZone: "Europe/London",
+  hour: "2-digit",
+  minute: "2-digit",
+  hourCycle: "h23",
+});
+
+/** Return start times that fit the requested group into consecutive free slots. */
+export async function getAvailableSessionStarts(
+  childCount: number,
+): Promise<{ ok: true; starts: SessionStartTime[] } | { ok: false; error: string }> {
+  const parsedCount = z.number().int().min(1).max(10).safeParse(childCount);
+  if (!parsedCount.success) return { ok: false, error: "Choose a valid number of children." };
+
+  try {
+    const db = supabaseService();
+    const { data: event, error: eventError } = await db
+      .from("events")
+      .select("id, max_children, status")
+      .eq("slug", STUDIO_STARS_SLUG)
+      .maybeSingle();
+    if (eventError || !event) {
+      console.error("[booking] availability event lookup failed", eventError);
+      return { ok: false, error: "We couldn’t load session availability. Please try again." };
+    }
+    if (event.status !== "published") return { ok: true, starts: [] };
+
+    const now = new Date().toISOString();
+    const [confirmed, pending] = await Promise.all([
+      db.from("bookings").select("id, child_count").eq("event_id", event.id).eq("status", "confirmed"),
+      db.from("bookings").select("id, child_count").eq("event_id", event.id).eq("status", "pending_payment").gt("expires_at", now),
+    ]);
+    if (confirmed.error || pending.error) {
+      console.error("[booking] availability booking lookup failed", confirmed.error ?? pending.error);
+      return { ok: false, error: "We couldn’t load session availability. Please try again." };
+    }
+
+    const bookings = [...(confirmed.data ?? []), ...(pending.data ?? [])];
+    const committedChildren = bookings.reduce((sum, booking) => sum + booking.child_count, 0);
+    if (committedChildren + parsedCount.data > event.max_children) {
+      return { ok: true, starts: [] };
+    }
+
+    const occupied = new Set<string>();
+    if (bookings.length > 0) {
+      const { data: children, error: childrenError } = await db
+        .from("children")
+        .select("scheduled_at")
+        .in("booking_id", bookings.map((booking) => booking.id))
+        .not("scheduled_at", "is", null);
+      if (childrenError) {
+        console.error("[booking] availability child lookup failed", childrenError);
+        return { ok: false, error: "We couldn’t load session availability. Please try again." };
+      }
+      for (const child of children ?? []) {
+        if (child.scheduled_at) occupied.add(londonTime.format(new Date(child.scheduled_at)));
+      }
+    }
+
+    const starts = SESSION_START_TIMES.filter((_, index) => {
+      const consecutive = SESSION_START_TIMES.slice(index, index + parsedCount.data);
+      return (
+        consecutive.length === parsedCount.data &&
+        consecutive.every((time) => !occupied.has(time))
+      );
+    });
+    return { ok: true, starts };
+  } catch (err) {
+    console.error("[booking] availability lookup failed", {
+      message: err instanceof Error ? err.message : String(err),
+    });
+    return { ok: false, error: "We couldn’t load session availability. Please try again." };
+  }
 }
 
 /**
@@ -145,7 +228,8 @@ async function startCheckout(data: BookingInput): Promise<BookingResult> {
       p_parent_name: data.parentName,
       p_parent_email: data.parentEmail,
       p_parent_phone: data.parentPhone,
-      p_time_window: data.timeSlot,
+      p_time_window: "any",
+      p_session_start_time: data.sessionStartTime,
       p_attendance: data.attendance,
       p_terms_version: env.TERMS_VERSION,
       p_children: data.children.map((c) => ({

@@ -14,6 +14,7 @@ export interface MobileMenuLink {
 export interface MobileMenuProps {
   links: ReadonlyArray<MobileMenuLink>;
   cta: MobileMenuLink;
+  triggerClassName?: string;
 }
 
 const FOCUSABLE = "a[href], button:not([disabled])";
@@ -31,7 +32,7 @@ const FOCUSABLE = "a[href], button:not([disabled])";
  * Links are passed in as props (rather than imported) because this is a client
  * module: its non-component exports are opaque references on the server.
  */
-export function MobileMenu({ links, cta }: MobileMenuProps) {
+export function MobileMenu({ links, cta, triggerClassName }: MobileMenuProps) {
   const [open, setOpen] = useState(false);
   const panelId = useId();
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -95,7 +96,7 @@ export function MobileMenu({ links, cta }: MobileMenuProps) {
         aria-expanded={open}
         aria-controls={open ? panelId : undefined}
         onClick={() => setOpen(true)}
-        className="flex size-12 cursor-pointer items-center justify-center rounded-full border-[1.5px] border-blush bg-white text-indigo"
+        className={`flex size-12 cursor-pointer items-center justify-center rounded-full border-[1.5px] border-blush bg-white text-indigo ${triggerClassName ?? ""}`}
       >
         <svg
           aria-hidden="true"
@@ -129,11 +130,11 @@ export function MobileMenu({ links, cta }: MobileMenuProps) {
                   className="relative block focus-visible:outline-white"
                 >
                   <Image
-                    src="/images/logo-light.jpg"
+                    src="/images/logo.png"
                     alt="Trybe"
-                    width={120}
-                    height={40}
-                    className="h-8 w-auto"
+                    width={1244}
+                    height={1244}
+                    className="h-14 w-auto brightness-0 invert"
                   />
                 </Link>
                 <button

@@ -3,109 +3,57 @@ import Link from "next/link";
 import { Container } from "@/components/layout/container";
 import { NewsletterSignup } from "@/components/newsletter-signup";
 
-const EXPLORE_LINKS = [
-  { label: "Home", href: "/" },
-  { label: "Upcoming Events", href: "/#events" },
-  { label: "Meet Nyah", href: "/#nyah" },
-  { label: "About Trybe", href: "/#about" },
-  { label: "Studio Stars", href: "/studio-stars" },
-] as const;
-
-// The three legal pages don't exist yet, so these routes 404 until they're written.
-const LEGAL_LINKS = [
-  { label: "Privacy [TBC]", href: "/privacy" },
-  { label: "Terms [TBC]", href: "/terms" },
-  { label: "Safeguarding [TBC]", href: "/safeguarding" },
-] as const;
-
 const MUTED = "text-[color:var(--border-lilac)]";
-const HEADING =
-  "mb-2 text-sm font-extrabold uppercase tracking-[0.1em] text-white";
-const LINK =
-  "inline-flex min-h-11 items-center text-[17px] text-white no-underline underline-offset-4 hover:underline";
+const FOOTER_LINK =
+  "inline-flex min-h-11 items-center text-[16px] text-white underline-offset-4 hover:underline";
 
-/**
- * SiteFooter — indigo block: wordmark, sitemap, contact, legal and a bottom bar.
- * "use cache" is required: the component reads the current year, which Cache
- * Components won't allow in a plain server component.
- */
 export async function SiteFooter() {
   "use cache";
   const year = new Date().getFullYear();
 
   return (
-    <footer className="mt-12 bg-indigo py-16 text-white md:mt-16 md:py-20">
+    <footer className="site-footer mt-12 bg-indigo py-12 text-white md:mt-16 md:py-16">
       <Container>
-        <div className="grid grid-cols-2 gap-x-4 gap-y-10 md:grid-cols-[1.4fr_1fr_1fr_1fr] md:gap-x-8">
-          <div className="col-span-2 flex flex-col gap-4 md:col-span-1">
-            <Link
-              href="/"
-              aria-label="Trybe home"
-              className="relative block self-start"
-            >
+        <div className="grid gap-10 md:grid-cols-[1.5fr_1fr] md:items-start md:gap-16">
+          <div className="flex flex-col gap-4">
+            <Link href="/" aria-label="Trybe home" className="relative block self-start">
               <Image
-                src="/images/logo-light.jpg"
+                src="/images/logo.png"
                 alt="Trybe"
-                width={160}
-                height={54}
-                className="h-12 w-auto md:h-14"
+                width={1244}
+                height={1244}
+                className="h-20 w-auto brightness-0 invert md:h-24"
               />
             </Link>
-            <p className={`hidden max-w-xs text-[17px] leading-[1.55] md:block ${MUTED}`}>
-              Fun events, experiences and activities that bring children and
-              families together.
+            <p className={`max-w-sm text-[16px] leading-relaxed ${MUTED}`}>
+              Fun events, experiences and activities that bring children and families together.
             </p>
             <NewsletterSignup />
           </div>
 
-          <nav aria-label="Footer">
-            <p className={HEADING}>Explore</p>
-            <ul className="m-0 flex list-none flex-col p-0">
-              {EXPLORE_LINKS.map((link) => (
-                <li key={link.href}>
-                  <Link href={link.href} className={LINK}>
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </nav>
-
-          <div>
-            <p className={HEADING}>Contact</p>
-            <ul className="m-0 flex list-none flex-col p-0">
-              <li>
-                <a href="mailto:hello@trybe.uk" className={LINK}>
-                  hello@trybe.uk
-                </a>
-              </li>
-              <li>
-                {/* [REPLACE: phone number] */}
-                <span className={`inline-flex min-h-11 items-center text-[17px] ${MUTED}`}>
-                  [REPLACE: phone]
-                </span>
-              </li>
-            </ul>
+          <div className="flex flex-col gap-2 md:items-end">
+            <p className="text-sm font-extrabold uppercase tracking-[0.1em]">Contact</p>
+            <a className={FOOTER_LINK} href="mailto:trybeappuk@gmail.com">
+              trybeappuk@gmail.com
+            </a>
+            <a
+              className={FOOTER_LINK}
+              href="https://www.instagram.com/trybeuk/"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Instagram
+            </a>
           </div>
 
-          <nav aria-label="Legal" className="col-span-2 md:col-span-1">
-            <p className={HEADING}>Legal</p>
-            <ul className="m-0 flex list-none flex-col p-0">
-              {LEGAL_LINKS.map((link) => (
-                <li key={link.href}>
-                  <Link href={link.href} className={LINK}>
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </nav>
         </div>
 
-        <div className="mt-12 flex flex-wrap items-center justify-between gap-x-6 gap-y-3 border-t border-white/20 pt-6 text-[15px]">
-          <p>© {year} Trybe</p>
-          {/* [REPLACE: Instagram and Facebook links] */}
-          <p className={MUTED}>[REPLACE: Instagram] · [REPLACE: Facebook]</p>
+        <div className="mt-10 flex flex-wrap items-center justify-between gap-3 border-t border-white/20 pt-5 text-sm">
+          <p className={MUTED}>© {year} Tired Ass Mum LTD. All rights reserved.</p>
+          <div className="flex flex-wrap gap-x-5 gap-y-1">
+            <Link href="/privacy" className={`${MUTED} underline-offset-4 hover:underline`}>Privacy policy</Link>
+            <Link href="/terms" className={`${MUTED} underline-offset-4 hover:underline`}>Terms &amp; conditions</Link>
+          </div>
         </div>
       </Container>
     </footer>

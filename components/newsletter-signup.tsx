@@ -32,12 +32,12 @@ export function NewsletterSignup() {
           autoComplete="email"
           placeholder="Your email"
           disabled={pending}
-          className="min-h-11 min-w-0 flex-1 rounded-full bg-white/10 px-4 text-[17px] text-white placeholder:text-white/60 focus:outline-2 focus:outline-sunshine disabled:opacity-60"
+          className="min-h-11 min-w-0 flex-1 rounded-full border border-white/20 bg-white/10 px-4 text-[17px] text-white placeholder:text-white/60 focus:outline-2 focus:outline-orchid disabled:opacity-60"
         />
         <button
           type="submit"
           disabled={pending}
-          className="min-h-11 shrink-0 cursor-pointer rounded-full bg-sunshine px-5 text-[15px] font-extrabold tracking-wider text-night disabled:cursor-wait disabled:opacity-70"
+          className="min-h-11 shrink-0 cursor-pointer rounded-full border border-white/30 bg-white/10 px-5 text-[15px] font-extrabold tracking-wider text-white transition-colors hover:bg-white/20 disabled:cursor-wait disabled:opacity-70"
         >
           {pending ? "Joining…" : "Join the Trybe"}
         </button>

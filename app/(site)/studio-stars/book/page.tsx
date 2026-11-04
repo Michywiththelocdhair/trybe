@@ -55,10 +55,6 @@ export default function BookPage() {
                 Book your child’s session
               </h1>
             </div>
-            {/* Phase 3: remove once bookings and payments are live. */}
-            <span className="inline-flex items-center rounded-pill border border-dashed border-lavender bg-white px-[14px] py-[6px] text-[15px] font-bold text-indigo">
-              Prototype — no booking or payment is made
-            </span>
           </div>
 
           <BookingForm event={EVENT} />

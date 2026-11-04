@@ -26,6 +26,7 @@ import {
   tableLinkClass,
 } from "@/components/admin/ui";
 import { formatGbp } from "@/lib/booking/pricing";
+import { formatClockTime } from "@/lib/dates";
 import { isUuid } from "../filters";
 
 export const metadata: Metadata = { title: "Booking" };
@@ -139,11 +140,15 @@ export default async function AdminBookingDetailPage({
                 </Detail>
                 <Detail label="Subtotal">{formatGbp(booking.subtotal_pence)}</Detail>
                 <Detail label="Children">{booking.child_count}</Detail>
-                <Detail label="Preferred time window">
-                  {TIME_WINDOW_LABEL[booking.time_window]}
-                  <span className="block text-[14px] font-normal text-periwinkle">
-                    {TIME_WINDOW_RANGE[booking.time_window]}
-                  </span>
+                <Detail label={booking.session_start_time ? "First session start" : "Legacy preferred time window"}>
+                  {booking.session_start_time
+                    ? formatClockTime(booking.session_start_time)
+                    : TIME_WINDOW_LABEL[booking.time_window]}
+                  {!booking.session_start_time ? (
+                    <span className="block text-[14px] font-normal text-periwinkle">
+                      {TIME_WINDOW_RANGE[booking.time_window]}
+                    </span>
+                  ) : null}
                 </Detail>
                 <Detail label="Attendance">{ATTENDANCE_LABEL[booking.attendance]}</Detail>
                 <Detail label="Booked">{formatDateTime(booking.created_at)}</Detail>

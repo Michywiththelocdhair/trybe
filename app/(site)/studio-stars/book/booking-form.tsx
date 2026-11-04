@@ -9,14 +9,20 @@ import {
   type ReactNode,
   type RefObject,
 } from "react";
+import Link from "next/link";
 import { Button } from "@/components/button";
 import { Checkbox } from "@/components/form/checkbox";
 import { Field } from "@/components/form/field";
 import { RadioTile } from "@/components/form/radio-tile";
 import { RadioTileGroup } from "@/components/form/radio-tile-group";
 import { TextInput } from "@/components/form/text-input";
-import { createBookingSession } from "./actions";
+import { createBookingSession, getAvailableSessionStarts } from "./actions";
 import type { BookingInput, BookingResult } from "@/lib/booking/schema";
+import {
+  formatSessionStart,
+  SESSION_START_TIMES,
+  type SessionStartTime,
+} from "@/lib/booking/session-times";
 import {
   MAX_CHILD_AGE,
   MIN_CHILD_AGE,
@@ -28,7 +34,7 @@ import {
 
 /*
  * Four-step wizard, matching Booking.dc.html:
- *   1 children -> 2 preferred time -> 3 your details -> 4 review & pay -> 5 confirmation
+ *   1 children -> 2 exact session time -> 3 your details -> 4 review & pay
  *
  * One real <form>. Steps 1-3 "submit" to advance (so native `required` / email
  * validation and the Enter key work per step); step 4 submit calls the Server
@@ -42,7 +48,7 @@ export type BookingEvent = {
   parking: string;
 };
 
-type TimeSlot = BookingInput["timeSlot"];
+type SelectedSessionTime = BookingInput["sessionStartTime"];
 type Attendance = BookingInput["attendance"];
 type Step = 1 | 2 | 3 | 4 | 5;
 type KidDraft = { firstName: string; age: string };
@@ -51,14 +57,7 @@ type FieldErrors = Record<string, string>;
 /** The design offers 1-4 children; the server accepts up to MAX_CHILDREN_PER_BOOKING. */
 const COUNT_OPTIONS = [1, 2, 3, 4] as const;
 
-const STEP_LABELS = ["Your children", "Preferred time", "Your details", "Review & pay"] as const;
-
-const TIME_WINDOWS = [
-  { id: "morning", label: "Morning", range: "9:00 am – 12:00 pm" },
-  { id: "midday", label: "Midday", range: "12:00 pm – 2:30 pm" },
-  { id: "afternoon", label: "Afternoon", range: "2:30 pm – 5:00 pm" },
-  { id: "any", label: "No preference", range: "Any time, 9:00 am – 5:00 pm" },
-] as const satisfies ReadonlyArray<{ id: TimeSlot; label: string; range: string }>;
+const STEP_LABELS = ["Your children", "Session time", "Your details", "Review & pay"] as const;
 
 const emptyKids = (): KidDraft[] =>
   COUNT_OPTIONS.map(() => ({ firstName: "", age: "" }));
@@ -67,7 +66,7 @@ const emptyKids = (): KidDraft[] =>
 function stepForErrors(errors: FieldErrors): Step {
   const keys = Object.keys(errors);
   if (keys.some((k) => k.startsWith("children"))) return 1;
-  if (keys.includes("timeSlot")) return 2;
+  if (keys.includes("sessionStartTime")) return 2;
   const detailKeys = ["parentName", "parentEmail", "parentPhone", "attendance", "agreeToTerms"];
   if (keys.some((k) => detailKeys.includes(k))) return 3;
   return 4;
@@ -83,7 +82,10 @@ export function BookingForm({ event }: { event: BookingEvent }) {
   const [step, setStep] = useState<Step>(1);
   const [count, setCount] = useState<number>(1);
   const [kids, setKids] = useState<KidDraft[]>(emptyKids);
-  const [timeSlot, setTimeSlot] = useState<TimeSlot>("any");
+  const [sessionStartTime, setSessionStartTime] = useState<SelectedSessionTime | null>(null);
+  const [availableStartTimes, setAvailableStartTimes] = useState<SessionStartTime[]>([]);
+  const [loadingStartTimes, setLoadingStartTimes] = useState(false);
+  const [availabilityError, setAvailabilityError] = useState("");
   const [parentName, setParentName] = useState("");
   const [parentEmail, setParentEmail] = useState("");
   const [parentPhone, setParentPhone] = useState("");
@@ -104,11 +106,33 @@ export function BookingForm({ event }: { event: BookingEvent }) {
 
   const { subtotalPence, lines } = calculateTotal(count);
   const activeKids = kids.slice(0, count);
-  const timeLabel = TIME_WINDOWS.find((w) => w.id === timeSlot)?.label ?? "No preference";
+  const timeLabel = sessionStartTime ? formatSessionStart(sessionStartTime) : "Not selected";
+  const sessionStartIndex = sessionStartTime
+    ? SESSION_START_TIMES.indexOf(sessionStartTime)
+    : -1;
 
   function goTo(next: Step) {
     focusHeading.current = true;
     setStep(next);
+  }
+
+  function refreshAvailableTimes(advanceToTimeStep: boolean) {
+    setLoadingStartTimes(true);
+    setAvailabilityError("");
+    setAvailableStartTimes([]);
+    setSessionStartTime(null);
+    startTransition(async () => {
+      try {
+        const result = await getAvailableSessionStarts(count);
+        if (result.ok) setAvailableStartTimes(result.starts);
+        else setAvailabilityError(result.error);
+      } catch {
+        setAvailabilityError("We couldn’t load session availability. Please try again.");
+      } finally {
+        setLoadingStartTimes(false);
+        if (advanceToTimeStep) goTo(2);
+      }
+    });
   }
 
   function clearError(key: string) {
@@ -142,7 +166,7 @@ export function BookingForm({ event }: { event: BookingEvent }) {
     setErrors({});
     const payload = {
       children: activeKids.map((k) => ({ firstName: k.firstName.trim(), age: k.age })),
-      timeSlot,
+      sessionStartTime,
       parentName,
       parentEmail,
       parentPhone,
@@ -164,7 +188,7 @@ export function BookingForm({ event }: { event: BookingEvent }) {
           window.location.assign(result.checkoutUrl);
           return;
         }
-        // Phase 2 stub: relative URL, show the confirmation in place.
+        // Keep the in-place confirmation fallback for non-Stripe checkout providers.
         goTo(5);
         return;
       }
@@ -182,6 +206,15 @@ export function BookingForm({ event }: { event: BookingEvent }) {
         setErrors(found);
         return;
       }
+      refreshAvailableTimes(true);
+      return;
+    }
+    if (step === 2) {
+      if (!sessionStartTime) {
+        setErrors({ sessionStartTime: "Choose an available session start time." });
+        return;
+      }
+      if (loadingStartTimes || availabilityError) return;
     }
     if (step < 4) {
       goTo((step + 1) as Step);
@@ -193,7 +226,7 @@ export function BookingForm({ event }: { event: BookingEvent }) {
   function startNewBooking() {
     setCount(1);
     setKids(emptyKids());
-    setTimeSlot("any");
+    setSessionStartTime(null);
     setParentName("");
     setParentEmail("");
     setParentPhone("");
@@ -316,36 +349,58 @@ export function BookingForm({ event }: { event: BookingEvent }) {
                 </div>
               ) : null}
 
-              {/* STEP 2: preferred time (no public availability) */}
+              {/* STEP 2: live exact session availability */}
               {step === 2 ? (
                 <div className="flex flex-col gap-6">
                   <StepHeading
                     headingRef={headingRef}
-                    title="When suits you best?"
-                    subtitle="Choose a preferred time of day. We’ll confirm the exact session time by email."
+                    title="Choose a session time"
+                    subtitle="Choose an available 20-minute start time. If you’re booking siblings, their sessions will follow consecutively."
                   />
-                  <RadioTileGroup legend="Preferred time of day" name="timeSlot" columns={2}>
-                    {TIME_WINDOWS.map((w) => (
-                      <RadioTile
-                        key={w.id}
-                        name="timeSlot"
-                        value={w.id}
-                        label={w.label}
-                        hint={w.range}
-                        checked={timeSlot === w.id}
-                        onChange={() => {
-                          setTimeSlot(w.id);
-                          clearError("timeSlot");
-                        }}
-                      />
-                    ))}
-                  </RadioTileGroup>
-                  {errors.timeSlot ? <ErrorText>{errors.timeSlot}</ErrorText> : null}
+                  {loadingStartTimes ? (
+                    <p role="status" className="text-[16px] text-[color:var(--muted-plum)]">Checking available session times…</p>
+                  ) : null}
+                  {availabilityError ? (
+                    <div className="flex flex-wrap items-center gap-3">
+                      <ErrorText>{availabilityError}</ErrorText>
+                      <Button type="button" size="sm" variant="outline" disabled={isPending} onClick={() => refreshAvailableTimes(false)}>
+                        Check again
+                      </Button>
+                    </div>
+                  ) : null}
+                  {!loadingStartTimes && !availabilityError && availableStartTimes.length === 0 ? (
+                    <p role="status" className="rounded-[16px] bg-cream px-4 py-3 text-[16px] text-night">
+                      No session times are available for {count} {count === 1 ? "child" : "children"}. Please go back and change the number of children, or contact Trybe for help.
+                    </p>
+                  ) : null}
+                  {availableStartTimes.length > 0 ? (
+                    <RadioTileGroup legend="Available start times" name="sessionStartTime" columns={2}>
+                      {SESSION_START_TIMES.map((time) => {
+                        const available = availableStartTimes.includes(time);
+                        return (
+                          <RadioTile
+                            key={time}
+                            name="sessionStartTime"
+                            value={time}
+                            label={formatSessionStart(time)}
+                            hint={available ? (count > 1 ? `${count} consecutive sessions` : "20 minutes") : "Unavailable"}
+                            disabled={!available || loadingStartTimes}
+                            checked={sessionStartTime === time}
+                            onChange={() => {
+                              setSessionStartTime(time);
+                              clearError("sessionStartTime");
+                            }}
+                          />
+                        );
+                      })}
+                    </RadioTileGroup>
+                  ) : null}
+                  {errors.sessionStartTime ? <ErrorText>{errors.sessionStartTime}</ErrorText> : null}
                   <div className="flex flex-wrap gap-[10px]">
                     {[
-                      "Recording starts from 9:00 am",
+                      "10:00 am–2:00 pm",
                       "20-minute sessions",
-                      "10-minute buffers between sessions",
+                      "No gaps between sessions",
                     ].map((chip) => (
                       <span
                         key={chip}
@@ -449,10 +504,15 @@ export function BookingForm({ event }: { event: BookingEvent }) {
                       {...invalidProps("agree-terms", errors.agreeToTerms)}
                       label={
                         <>
-                          I agree to Trybe’s <Tbc>[booking terms &amp; privacy policy — links TBC]</Tbc>
+                          I agree to Trybe’s Terms &amp; Conditions.
                         </>
                       }
                     />
+                    <p className="pl-[34px] text-sm text-[color:var(--muted-plum)]">
+                      <Link href="/terms" className="font-bold underline underline-offset-2">Read the Terms &amp; Conditions</Link>
+                      {" · "}
+                      <Link href="/privacy" className="font-bold underline underline-offset-2">Privacy Policy</Link>
+                    </p>
                     {errors.agreeToTerms ? (
                       <ErrorText id="agree-terms-error">{errors.agreeToTerms}</ErrorText>
                     ) : null}
@@ -479,8 +539,10 @@ export function BookingForm({ event }: { event: BookingEvent }) {
                           <span className="flex flex-col">
                             <strong className="text-[19px]">{kid.firstName.trim() || `Child ${i + 1}`}</strong>
                             <span className="text-[16px] text-[color:var(--muted-plum)]">
-                              {kid.age.trim() ? `Age ${kid.age.trim()}` : "Age not entered"} · Song chosen
-                              after booking
+                              {kid.age.trim() ? `Age ${kid.age.trim()}` : "Age not entered"}
+                              {sessionStartIndex >= 0 && SESSION_START_TIMES[sessionStartIndex + i]
+                                ? ` · Session ${formatSessionStart(SESSION_START_TIMES[sessionStartIndex + i])} · song picked later`
+                                : ""}
                             </span>
                           </span>
                           <span className="flex flex-col items-end">
@@ -497,8 +559,8 @@ export function BookingForm({ event }: { event: BookingEvent }) {
                   </ul>
                   <div className="flex flex-col gap-1 text-[17px] text-[color:var(--muted-plum)]">
                     <span>
-                      <strong className="text-night">Preferred time:</strong> {timeLabel} — exact time
-                      confirmed by email
+                      <strong className="text-night">First session:</strong> {timeLabel}
+                      {count > 1 ? ` · ${count} consecutive 20-minute sessions` : " · 20 minutes"}
                     </span>
                     <span>
                       <strong className="text-night">Contact:</strong>{" "}
@@ -560,7 +622,7 @@ export function BookingForm({ event }: { event: BookingEvent }) {
                 {event.dateLabel} · {event.venue} · {event.parking}
               </span>
               <span className="text-[16px] text-[color:var(--border-lilac)]">
-                Preferred time: {timeLabel}
+                Session time: {timeLabel}
               </span>
             </div>
             <ul className="m-0 flex list-none flex-col gap-2 p-0 text-[16px]">
@@ -593,7 +655,7 @@ export function BookingForm({ event }: { event: BookingEvent }) {
             <span>Songs are chosen after booking, from a list we email you.</span>
             <span>You can stay with your child or drop them off.</span>
             <span>
-              <Tbc>[Cancellation &amp; refund policy — TBC]</Tbc>
+              Cancel by emailing <a className="font-semibold underline" href="mailto:trybeappuk@gmail.com">trybeappuk@gmail.com</a> at least 7 days before the event for a refund. See our <Link href="/terms" className="font-semibold underline">Terms &amp; Conditions</Link>.
             </span>
           </div>
         </aside>
@@ -704,10 +766,6 @@ function Confirmation({
         Thank you{firstName ? `, ${firstName}` : ""}. We’ve sent your confirmation to{" "}
         <strong className="text-night">{email || "your email address"}</strong>.
       </p>
-      {/* STUB notice. Remove in Phase 3 once Stripe + Supabase + email are wired. */}
-      <p className="m-0 rounded-input border border-dashed border-lavender bg-white px-[14px] py-2 text-[15px] font-bold text-indigo">
-        Prototype only: nothing was saved, charged or emailed.
-      </p>
       <div className="flex w-full flex-col gap-3 rounded-[24px] bg-blush p-6">
         <strong className="text-[19px]">What happens next</strong>
         <ol className="m-0 flex list-decimal flex-col gap-2 pl-[22px] text-[17px] leading-[1.5] text-[color:var(--muted-plum)]">
@@ -738,15 +796,6 @@ function ErrorText({ id, children }: { id?: string; children: ReactNode }) {
     >
       {children}
     </p>
-  );
-}
-
-/** Dashed "to be confirmed" placeholder, as in the design. */
-function Tbc({ children }: { children: ReactNode }) {
-  return (
-    <span className="rounded-[6px] border border-dashed border-lavender bg-blush px-[6px] text-indigo">
-      {children}
-    </span>
   );
 }
 
