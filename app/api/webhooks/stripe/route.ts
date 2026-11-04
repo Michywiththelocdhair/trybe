@@ -8,6 +8,10 @@ import {
   bookingConfirmedSubject,
 } from "@/lib/email/templates/booking-confirmed";
 import { ReceiptEmail, receiptSubject } from "@/lib/email/templates/receipt";
+import {
+  StudioStarsAdminBookingEmail,
+  studioStarsAdminBookingSubject,
+} from "@/lib/email/templates/studio-stars-admin-booking";
 import { requireEnv } from "@/lib/env";
 import { stripe } from "@/lib/stripe";
 import { supabaseService } from "@/lib/supabase/service";
@@ -289,6 +293,20 @@ async function sendConfirmationEmails(db: Db, bookingId: string): Promise<void> 
         });
       }
     });
+
+    const adminNotification = await sendBookingEmail({
+      bookingId,
+      recipientEmail: "trybeappuk@gmail.com",
+      template: "admin_booking",
+      subject: studioStarsAdminBookingSubject(data.confirmation),
+      component: StudioStarsAdminBookingEmail(data.confirmation),
+    });
+    if (adminNotification.error) {
+      console.error("[stripe-webhook] Studio Stars admin notification failed", {
+        bookingId,
+        message: adminNotification.error,
+      });
+    }
   } catch (err) {
     console.error("[stripe-webhook] could not send confirmation emails", {
       bookingId,

@@ -1,55 +1,77 @@
 "use server";
 
 import { z } from "zod";
-import { Resend } from "resend";
-import { requireEnv } from "@/lib/env";
-import { sendEmail } from "@/lib/email/send";
-import { WelcomeEmail, welcomeSubject } from "@/lib/email/templates/welcome";
+import { env } from "@/lib/env";
 import type { NewsletterState } from "@/lib/newsletter/types";
+
+const EMAIL_SUBSCRIPTION_ENDPOINT =
+  "https://a.klaviyo.com/api/profile-subscription-bulk-create-jobs";
+const KLAVIYO_REVISION = "2026-10-15";
 
 export async function subscribeToNewsletter(
   _prev: NewsletterState,
   formData: FormData,
 ): Promise<NewsletterState> {
-  const parsed = z
-    .string()
-    .trim()
-    .toLowerCase()
-    .email()
-    .safeParse(formData.get("email"));
+  const parsed = z.string().trim().toLowerCase().email().safeParse(formData.get("email"));
   if (!parsed.success) {
     return { success: false, error: "Please enter a valid email address." };
   }
-  const email = parsed.data;
-
-  let isNew = true;
-  try {
-    const resend = new Resend(requireEnv("RESEND_API_KEY"));
-    const { error } = await resend.contacts.create({
-      email,
-      audienceId: requireEnv("RESEND_AUDIENCE_ID"),
-    });
-    if (error) {
-      if (/already exists|duplicate/i.test(error.message ?? "")) {
-        isNew = false;
-      } else {
-        console.error("[newsletter] contacts.create failed", error);
-        return { success: false, error: "Something went wrong. Please try again." };
-      }
-    }
-  } catch (e) {
-    console.error("[newsletter] subscribe failed", e);
-    return { success: false, error: "Something went wrong. Please try again." };
+  if (formData.get("marketingConsent") !== "yes") {
+    return { success: false, error: "Please confirm that you want to receive Trybe email updates." };
   }
 
-  // Existing subscribers still see success, but don't get a second welcome email.
-  if (isNew) {
-    const result = await sendEmail({
-      recipientEmail: email,
-      subject: welcomeSubject(),
-      component: WelcomeEmail({ email }),
+  if (!env.KLAVIYO_PRIVATE_API_KEY || !env.KLAVIYO_NEWSLETTER_LIST_ID) {
+    console.error("[newsletter] Klaviyo is not configured");
+    return { success: false, error: "Signup is temporarily unavailable. Please try again later." };
+  }
+
+  try {
+    const response = await fetch(EMAIL_SUBSCRIPTION_ENDPOINT, {
+      method: "POST",
+      cache: "no-store",
+      headers: {
+        Authorization: `Klaviyo-API-Key ${env.KLAVIYO_PRIVATE_API_KEY}`,
+        Accept: "application/vnd.api+json",
+        "Content-Type": "application/vnd.api+json",
+        revision: KLAVIYO_REVISION,
+      },
+      body: JSON.stringify({
+        data: {
+          type: "profile-subscription-bulk-create-job",
+          attributes: {
+            profiles: {
+              data: [{
+                type: "profile",
+                attributes: {
+                  email: parsed.data,
+                  subscriptions: {
+                    email: { marketing: { consent: "SUBSCRIBED" } },
+                  },
+                },
+              }],
+            },
+          },
+          relationships: {
+            list: {
+              data: { type: "list", id: env.KLAVIYO_NEWSLETTER_LIST_ID },
+            },
+          },
+        },
+      }),
     });
-    if (result.error) console.error("[newsletter] welcome email failed", result.error);
+
+    if (!response.ok) {
+      console.error("[newsletter] Klaviyo subscription request failed", {
+        status: response.status,
+      });
+      return { success: false, error: "Something went wrong. Please try again." };
+    }
+  } catch (error) {
+    console.error(
+      "[newsletter] Klaviyo request failed",
+      error instanceof Error ? error.message : String(error),
+    );
+    return { success: false, error: "Something went wrong. Please try again." };
   }
 
   return { success: true };

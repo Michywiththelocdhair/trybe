@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import Link from "next/link";
 import { subscribeToNewsletter } from "@/lib/newsletter/actions";
 import type { NewsletterState } from "@/lib/newsletter/types";
 
@@ -13,7 +14,7 @@ export function NewsletterSignup() {
   if (state?.success) {
     return (
       <p role="status" className="text-[17px] font-extrabold text-white">
-        You&apos;re in! 🎉 Check your inbox.
+        Thanks for signing up for Trybe updates.
       </p>
     );
   }
@@ -42,6 +43,24 @@ export function NewsletterSignup() {
           {pending ? "Joining…" : "Join the Trybe"}
         </button>
       </div>
+      <label htmlFor="newsletter-consent" className="flex items-start gap-2 text-[13px] leading-snug text-white/80">
+        <input
+          id="newsletter-consent"
+          name="marketingConsent"
+          type="checkbox"
+          value="yes"
+          required
+          disabled={pending}
+          className="mt-0.5 size-4 shrink-0 accent-blush"
+        />
+        <span>
+          I agree to receive Trybe email updates. I can unsubscribe at any time. Read the{" "}
+          <Link href="/privacy" className="font-semibold text-white underline underline-offset-2">
+            Privacy Policy
+          </Link>
+          .
+        </span>
+      </label>
       {state && !state.success && (
         <p role="alert" className="text-sm text-blush">
           {state.error}

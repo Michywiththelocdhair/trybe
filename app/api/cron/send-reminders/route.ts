@@ -24,6 +24,10 @@ import {
   christmasFairVendorReceivedSubject,
 } from "@/lib/email/templates/christmas-fair";
 import { sendEmail } from "@/lib/email/send";
+import {
+  StudioStarsAdminBookingEmail,
+  studioStarsAdminBookingSubject,
+} from "@/lib/email/templates/studio-stars-admin-booking";
 
 /**
  * Vercel Cron (daily 07:00 UTC, see vercel.json). Sends the scheduled emails:
@@ -140,6 +144,35 @@ async function runJob(db: Db, job: Job, errors: string[]): Promise<number> {
       errors.push(
         `${job.template} ${bookingId}: ${err instanceof Error ? err.message : String(err)}`,
       );
+    }
+  }
+  return sent;
+}
+
+async function runStudioStarsAdminBookingNotices(db: Db, errors: string[]) {
+  const eventResult = await db.from("events").select("id").eq("slug", "studio-stars-2026-12").maybeSingle();
+  if (eventResult.error) throw new Error(`Studio Stars event lookup failed: ${eventResult.error.message}`);
+  if (!eventResult.data) return 0;
+
+  const bookings = await db.from("bookings").select("id").eq("event_id", eventResult.data.id).eq("status", "confirmed");
+  if (bookings.error) throw new Error(`Studio Stars bookings lookup failed: ${bookings.error.message}`);
+
+  let sent = 0;
+  for (const booking of bookings.data ?? []) {
+    try {
+      const data = await loadBookingEmailData(db, booking.id);
+      if (!data) continue;
+      const result = await sendBookingEmail({
+        bookingId: booking.id,
+        recipientEmail: "trybeappuk@gmail.com",
+        template: "admin_booking",
+        subject: studioStarsAdminBookingSubject(data.confirmation),
+        component: StudioStarsAdminBookingEmail(data.confirmation),
+      });
+      if (result.error) errors.push(`admin_booking ${booking.id}: ${result.error}`);
+      else if (result.sent) sent += 1;
+    } catch (err) {
+      errors.push(`admin_booking ${booking.id}: ${err instanceof Error ? err.message : String(err)}`);
     }
   }
   return sent;
@@ -273,7 +306,7 @@ export async function GET(req: NextRequest) {
   }
 
   const errors: string[] = [];
-  const summary = { reminders48h: 0, dayOf: 0, thankYou: 0, fairConfirmations: 0, fairReminders: 0, fairAdminNotices: 0 };
+  const summary = { reminders48h: 0, dayOf: 0, thankYou: 0, studioStarsAdminNotices: 0, fairConfirmations: 0, fairReminders: 0, fairAdminNotices: 0 };
 
   // The three jobs are independent; one failing must not block the others.
   const results = await Promise.allSettled(
@@ -290,6 +323,14 @@ export async function GET(req: NextRequest) {
       errors.push(`${job.template}: ${message}`);
     }
   });
+
+  try {
+    summary.studioStarsAdminNotices = await runStudioStarsAdminBookingNotices(db, errors);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error("[cron:send-reminders] Studio Stars admin email job failed", { message });
+    errors.push(`studio_stars_admin: ${message}`);
+  }
 
   try {
     const fair = await runChristmasFairEmails(db, errors);

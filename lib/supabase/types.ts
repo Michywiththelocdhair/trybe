@@ -36,7 +36,8 @@ export type EmailTemplate =
   | "day_of"
   | "thank_you"
   | "waitlist_opened"
-  | "receipt";
+  | "receipt"
+  | "admin_booking";
 
 export interface Database {
   public: {

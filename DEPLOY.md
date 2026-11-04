@@ -22,7 +22,10 @@ Execute the three migration files **in order** in the SQL Editor (or via the Sup
 supabase/migrations/20261029000001_initial_schema.sql
 supabase/migrations/20261029000002_capacity_function.sql
 supabase/migrations/20261029000003_rls_policies.sql
+supabase/migrations/20261104000006_admin_booking_email.sql
 ```
+
+The final migration adds the `admin_booking` email-log type used to safely retry Studio Stars admin notifications.
 
 These create:
 
@@ -105,12 +108,18 @@ From **Developers > API keys**:
 1. Create an account at [resend.com](https://resend.com).
 2. **Verify the domain** `trybe.uk` (add the DNS records Resend provides).
 3. Copy `RESEND_API_KEY` from the API Keys page.
-4. Create an **Audience** (e.g. "Trybe Newsletter"). Copy its ID as `RESEND_AUDIENCE_ID`.
-5. The default from address is `Trybe <hello@trybe.uk>` (set via `RESEND_FROM_EMAIL`).
+4. The default from address is `Trybe <hello@trybe.uk>` (set via `RESEND_FROM_EMAIL`).
+
+## 4. Klaviyo newsletter
+
+1. Create a Trybe newsletter list in Klaviyo and choose single or double opt-in for that list.
+2. Create a private API key with `lists:write`, `profiles:write`, and `subscriptions:write` scopes.
+3. Set `KLAVIYO_PRIVATE_API_KEY` and `KLAVIYO_NEWSLETTER_LIST_ID` in the server environment. Keep the private key server-side.
+4. The footer form requires explicit marketing consent before it submits the address to this list.
 
 ---
 
-## 4. Vercel
+## 5. Vercel
 
 ### Connect the repo
 
@@ -133,7 +142,8 @@ Set all of these in **Settings > Environment Variables** for Production (and Pre
 | `STRIPE_WEBHOOK_SECRET` | Yes | Stripe webhook signing secret |
 | `RESEND_API_KEY` | Yes | Resend API key |
 | `RESEND_FROM_EMAIL` | No | Default: `Trybe <hello@trybe.uk>` |
-| `RESEND_AUDIENCE_ID` | Yes | Resend audience ID for newsletter |
+| `KLAVIYO_PRIVATE_API_KEY` | Yes | Klaviyo private API key with list/profile/subscription write scopes |
+| `KLAVIYO_NEWSLETTER_LIST_ID` | Yes | Klaviyo list ID for footer signups |
 | `NEXT_PUBLIC_SITE_URL` | Yes | `https://trybe.uk` |
 | `BOOKING_HOLD_MINUTES` | No | Default: `15` — how long a pending booking holds capacity |
 | `TERMS_VERSION` | No | Default: `v1-2026-10` — bump when T&Cs change |
@@ -157,7 +167,7 @@ Both crons authenticate via `Authorization: Bearer ${CRON_SECRET}`. Vercel injec
 
 ---
 
-## 5. DNS
+## 6. DNS
 
 At your domain registrar for `trybe.uk`:
 
@@ -167,7 +177,7 @@ At your domain registrar for `trybe.uk`:
 
 ---
 
-## 6. Post-deploy Verification
+## 7. Post-deploy Verification
 
 Run through each item after the first production deploy:
 
@@ -178,6 +188,7 @@ Run through each item after the first production deploy:
 - [ ] Complete payment with a test card (if still on test keys) or a real card
 - [ ] Booking confirmation page shows
 - [ ] Confirmation email + receipt email arrive
+- [ ] Admin notification arrives at `trybeappuk@gmail.com`
 - [ ] Check Supabase: booking row is `confirmed`, children rows exist
 
 ### Webhook
@@ -196,8 +207,7 @@ Run through each item after the first production deploy:
 
 ### Newsletter
 - [ ] Submit the newsletter form in the footer with a test email
-- [ ] Welcome email arrives
-- [ ] Check Resend audience — contact appears
+- [ ] Check the Klaviyo newsletter list — contact appears (and completes confirmation if double opt-in is enabled)
 
 ### SEO & social
 - [ ] Visit `https://trybe.uk/sitemap.xml` — 3 URLs listed

@@ -365,7 +365,7 @@ export default function HomePage() {
               </p>
               <ul className="m-0 flex list-none flex-col gap-2 p-0 text-base">
                 <li>Date: Sat 19 December 2026</li>
-                <li>Tickets: Free · limited to 50 families</li>
+                <li>Tickets: Free</li>
                 <li>
                   Location: <Tag variant="tbc">[Venue TBC]</Tag>
                 </li>
