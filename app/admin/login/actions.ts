@@ -5,12 +5,16 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { env } from "@/lib/env";
 import { supabaseServer } from "@/lib/supabase/server";
+import { supabaseService } from "@/lib/supabase/service";
 
 export type SendMagicLinkResult =
   | { ok: true }
   | { ok: false; error: string };
 
 const emailSchema = z.email().max(254);
+
+const NOT_ADMIN_ERROR =
+  "That email isn't on the admin list. Please contact the administrator.";
 
 /**
  * Where the magic link should land. The request's own origin wins, so local
@@ -36,10 +40,12 @@ async function siteOrigin(): Promise<string> {
  * on this response; proxy.ts exchanges the code when the link is opened in the
  * same browser.
  *
+ * Addresses not on the admin list get an error asking them to contact the
+ * administrator, and no email is sent. (Requested by the site owner, who
+ * prefers a clear message over hiding who is an admin.)
+ *
  * `shouldCreateUser: false`: this can never create accounts, only sign in ones
- * that already exist in Supabase Auth. For an unknown address Supabase answers
- * `otp_disabled`; that is reported as success so the form can't be used to find
- * out who has an account.
+ * that already exist in Supabase Auth.
  *
  * Deliberately NOT behind requireAdmin(): the caller is signed out by
  * definition. Being on the admin list is checked by requireAdmin() after they
@@ -50,6 +56,17 @@ export async function sendMagicLink(email: string): Promise<SendMagicLinkResult>
   if (!parsed.success) return { ok: false, error: "Enter a valid email address." };
 
   try {
+    // Exact, case-insensitive match; escape LIKE wildcards in the address.
+    const pattern = parsed.data.replace(/[\\%_]/g, (c) => `\\${c}`);
+    const { data: adminRow, error: lookupError } = await supabaseService()
+      .from("admin_users")
+      .select("id")
+      .ilike("email", pattern)
+      .limit(1)
+      .maybeSingle();
+    if (lookupError) throw lookupError;
+    if (!adminRow) return { ok: false, error: NOT_ADMIN_ERROR };
+
     const supabase = await supabaseServer();
     const { error } = await supabase.auth.signInWithOtp({
       email: parsed.data,
@@ -59,7 +76,8 @@ export async function sendMagicLink(email: string): Promise<SendMagicLinkResult>
       },
     });
 
-    if (error && error.code !== "otp_disabled") {
+    if (error?.code === "otp_disabled") return { ok: false, error: NOT_ADMIN_ERROR };
+    if (error) {
       if (
         error.code === "over_email_send_rate_limit" ||
         error.code === "over_request_rate_limit"

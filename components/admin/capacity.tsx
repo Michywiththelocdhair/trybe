@@ -9,16 +9,16 @@ export type HoldRow = {
 };
 
 export type EventUsage = {
-  /** Children counted against capacity (confirmed + live pending holds). */
+  /** Children counted against capacity (paid / confirmed bookings only). */
   used: number;
   confirmedBookings: number;
   pendingBookings: number;
 };
 
 /**
- * Mirrors the capacity rule in `create_booking_with_children`: confirmed
- * bookings count, and so do pending_payment holds that have not yet expired.
- * Expired / cancelled / refunded bookings free their places.
+ * Mirrors the capacity rule in `create_booking_with_children`: only confirmed
+ * (paid) bookings take places. Live pending_payment checkouts are counted
+ * separately for information but do not use up capacity.
  */
 export function usageByEvent(
   rows: readonly HoldRow[],
@@ -36,7 +36,7 @@ export function usageByEvent(
       confirmedBookings: 0,
       pendingBookings: 0,
     };
-    entry.used += row.child_count;
+    if (isConfirmed) entry.used += row.child_count;
     if (isConfirmed) entry.confirmedBookings += 1;
     else entry.pendingBookings += 1;
     usage.set(row.event_id, entry);

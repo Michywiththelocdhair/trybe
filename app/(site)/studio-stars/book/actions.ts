@@ -108,17 +108,18 @@ export async function getAvailableSessionStarts(
     }
     if (event.status !== "published") return { ok: true, starts: [] };
 
-    const now = new Date().toISOString();
-    const [confirmed, pending] = await Promise.all([
-      db.from("bookings").select("id, child_count").eq("event_id", event.id).eq("status", "confirmed"),
-      db.from("bookings").select("id, child_count").eq("event_id", event.id).eq("status", "pending_payment").gt("expires_at", now),
-    ]);
-    if (confirmed.error || pending.error) {
-      console.error("[booking] availability booking lookup failed", confirmed.error ?? pending.error);
+    // Only paid (confirmed) bookings take a slot; an unpaid checkout doesn't.
+    const confirmed = await db
+      .from("bookings")
+      .select("id, child_count")
+      .eq("event_id", event.id)
+      .eq("status", "confirmed");
+    if (confirmed.error) {
+      console.error("[booking] availability booking lookup failed", confirmed.error);
       return { ok: false, error: "We couldn’t load session availability. Please try again." };
     }
 
-    const bookings = [...(confirmed.data ?? []), ...(pending.data ?? [])];
+    const bookings = confirmed.data ?? [];
     const committedChildren = bookings.reduce((sum, booking) => sum + booking.child_count, 0);
     if (committedChildren + parsedCount.data > event.max_children) {
       return { ok: true, starts: [] };

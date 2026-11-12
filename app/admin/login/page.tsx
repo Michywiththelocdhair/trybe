@@ -15,7 +15,7 @@ export const instant = false;
 
 const MESSAGES: Record<string, string> = {
   "not-authorized":
-    "That email isn't on the admin list. Contact Nyah to request access.",
+    "That email isn't on the admin list. Please contact the administrator.",
   "link-expired":
     "That sign-in link has expired or was already used. Request a new one below.",
 };

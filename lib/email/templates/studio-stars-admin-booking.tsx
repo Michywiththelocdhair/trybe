@@ -11,7 +11,9 @@ export function studioStarsAdminBookingSubject(props: Pick<BookingConfirmedEmail
   return `New Studio Stars booking — ${props.parentName}`;
 }
 
-export function StudioStarsAdminBookingEmail(props: BookingConfirmedEmailProps) {
+export function StudioStarsAdminBookingEmail(
+  props: BookingConfirmedEmailProps & { adminWarning?: string | null },
+) {
   const children = props.children
     .map((child) => `${child.firstName}, age ${child.age} — ${child.sessionTime}`)
     .join("; ");
@@ -20,6 +22,9 @@ export function StudioStarsAdminBookingEmail(props: BookingConfirmedEmailProps) 
   return (
     <EmailLayout previewText={`A new paid booking for ${props.eventName}.`}>
       <Text style={{ ...p, color: "#452c86", fontWeight: 700 }}>A Studio Stars booking has been paid and confirmed.</Text>
+      {props.adminWarning ? (
+        <Text style={{ ...p, color: "#b42318", fontWeight: 700 }}>{props.adminWarning}</Text>
+      ) : null}
       <Card>
         <DetailRow label="Parent" value={props.parentName} />
         <DetailRow label="Email" value={props.parentEmail} />

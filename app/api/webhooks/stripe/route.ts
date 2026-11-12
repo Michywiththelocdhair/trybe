@@ -12,6 +12,7 @@ import {
   StudioStarsAdminBookingEmail,
   studioStarsAdminBookingSubject,
 } from "@/lib/email/templates/studio-stars-admin-booking";
+import { formatLondonTime } from "@/lib/dates";
 import { requireEnv } from "@/lib/env";
 import { stripe } from "@/lib/stripe";
 import { supabaseService } from "@/lib/supabase/service";
@@ -148,7 +149,7 @@ async function confirmBooking(
     return;
   }
 
-  const columns = "id, status, child_count, subtotal_pence";
+  const columns = "id, event_id, status, child_count, subtotal_pence, internal_notes";
 
   // Primary link: the session id saved by createBookingSession.
   const bySession = await db
@@ -214,6 +215,16 @@ async function confirmBooking(
   }
   const promoCode = discountPence > 0 ? await promotionCodeFor(session) : null;
 
+  // Unpaid checkouts don't hold slots, so another parent may have paid for
+  // the same slot first. Money has been taken, so confirm, but flag it.
+  const clashNote = await slotClashNote(db, booking.id, booking.event_id);
+  if (clashNote) {
+    console.error("[stripe-webhook] paid booking clashes with another paid booking", {
+      bookingId: booking.id,
+      sessionId: session.id,
+    });
+  }
+
   if (booking.status === "expired") {
     // The hold lapsed before payment landed; capacity may have been re-sold.
     console.warn("[stripe-webhook] payment landed after hold expired, confirming anyway", {
@@ -236,6 +247,13 @@ async function confirmBooking(
       // Clamped so a surprising Stripe payload can't break the DB check.
       discount_pence: Math.min(discountPence, booking.subtotal_pence),
       promo_code: promoCode,
+      ...(clashNote
+        ? {
+            internal_notes: booking.internal_notes
+              ? `${clashNote}\n\n${booking.internal_notes}`
+              : clashNote,
+          }
+        : {}),
     })
     .eq("id", booking.id)
     .in("status", ["pending_payment", "expired"])
@@ -254,7 +272,49 @@ async function confirmBooking(
   // The booking is confirmed and paid; emails are best effort from here. Never
   // throw: a failure would release the event claim and Stripe would retry a
   // webhook whose work is already done.
-  await sendConfirmationEmails(db, booking.id);
+  await sendConfirmationEmails(db, booking.id, clashNote);
+}
+
+/**
+ * If any of this booking's child sessions is already taken by another PAID
+ * booking for the same event, returns an admin-facing note describing it.
+ */
+async function slotClashNote(
+  db: Db,
+  bookingId: string,
+  eventId: string,
+): Promise<string | null> {
+  const mine = await db
+    .from("children")
+    .select("scheduled_at")
+    .eq("booking_id", bookingId)
+    .not("scheduled_at", "is", null);
+  if (mine.error) throw dbError(mine.error);
+  const times = (mine.data ?? []).flatMap((c) => (c.scheduled_at ? [c.scheduled_at] : []));
+  if (times.length === 0) return null;
+
+  const paid = await db
+    .from("bookings")
+    .select("id")
+    .eq("event_id", eventId)
+    .eq("status", "confirmed")
+    .neq("id", bookingId);
+  if (paid.error) throw dbError(paid.error);
+  const paidIds = (paid.data ?? []).map((b) => b.id);
+  if (paidIds.length === 0) return null;
+
+  const others = await db
+    .from("children")
+    .select("scheduled_at, booking_id")
+    .in("booking_id", paidIds)
+    .in("scheduled_at", times);
+  if (others.error) throw dbError(others.error);
+  const clashes = others.data ?? [];
+  if (clashes.length === 0) return null;
+
+  const when = [...new Set(clashes.map((c) => formatLondonTime(c.scheduled_at)))].join(", ");
+  const refs = [...new Set(clashes.map((c) => c.booking_id.slice(0, 8).toUpperCase()))].join(", ");
+  return `⚠️ SLOT CLASH: paid for ${when}, which another paid booking (${refs}) already has. Please contact this parent to move their session time.`;
 }
 
 /**
@@ -280,7 +340,11 @@ async function promotionCodeFor(
   }
 }
 
-async function sendConfirmationEmails(db: Db, bookingId: string): Promise<void> {
+async function sendConfirmationEmails(
+  db: Db,
+  bookingId: string,
+  adminWarning: string | null,
+): Promise<void> {
   try {
     const data = await loadBookingEmailData(db, bookingId);
     if (!data) {
@@ -330,8 +394,8 @@ async function sendConfirmationEmails(db: Db, bookingId: string): Promise<void> 
       bookingId,
       recipientEmail: "trybeappuk@gmail.com",
       template: "admin_booking",
-      subject: studioStarsAdminBookingSubject(data.confirmation),
-      component: StudioStarsAdminBookingEmail(data.confirmation),
+      subject: `${adminWarning ? "⚠️ Slot clash — " : ""}${studioStarsAdminBookingSubject(data.confirmation)}`,
+      component: StudioStarsAdminBookingEmail({ ...data.confirmation, adminWarning }),
     });
     if (adminNotification.error) {
       console.error("[stripe-webhook] Studio Stars admin notification failed", {

@@ -21,7 +21,8 @@ type Status =
  * Supabase client: lib/env.ts parses the whole process.env object, which Next
  * does not inline into client bundles, so supabaseBrowser() throws in the
  * browser today. The server route also stores the PKCE verifier cookie just
- * the same, and never reveals whether an address has an account.
+ * the same, and tells addresses that aren't on the admin list to contact the
+ * administrator instead of sending a link.
  */
 export function LoginForm() {
   const [email, setEmail] = useState("");
