@@ -84,6 +84,8 @@ export interface Database {
           attendance: Attendance;
           child_count: number;
           subtotal_pence: number;
+          discount_pence: number;
+          promo_code: string | null;
           currency: string;
           status: BookingStatus;
           stripe_checkout_session_id: string | null;
@@ -100,9 +102,9 @@ export interface Database {
         };
         Insert: Omit<
           Database["public"]["Tables"]["bookings"]["Row"],
-          "id" | "created_at" | "updated_at"
+          "id" | "created_at" | "updated_at" | "discount_pence" | "promo_code"
         > &
-          Partial<Pick<Database["public"]["Tables"]["bookings"]["Row"], "id">>;
+          Partial<Pick<Database["public"]["Tables"]["bookings"]["Row"], "id" | "discount_pence" | "promo_code">>;
         Update: Partial<Database["public"]["Tables"]["bookings"]["Insert"]>;
         Relationships: [];
       };

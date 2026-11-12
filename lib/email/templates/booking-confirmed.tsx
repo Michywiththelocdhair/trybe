@@ -16,7 +16,10 @@ export type BookingConfirmedEmailProps = {
   eventDate: string;
   venue: string;
   venueAddress: string;
+  /** Amount actually paid, after any promotion code. */
   totalPence: number;
+  discountPence?: number;
+  promoCode?: string | null;
   bookingRef: string;
   siteUrl?: string;
 };

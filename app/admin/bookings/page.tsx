@@ -23,7 +23,7 @@ import {
   controlClass,
   tableLinkClass,
 } from "@/components/admin/ui";
-import { formatGbp } from "@/lib/booking/pricing";
+import { amountPaidPence, formatGbp } from "@/lib/booking/pricing";
 import {
   BOOKING_STATUSES,
   PAGE_SIZE,
@@ -214,7 +214,7 @@ export default async function AdminBookingsPage({
                     <Td>
                       <BookingStatusBadge status={b.status} />
                     </Td>
-                    <Td className="text-right tabular-nums">{formatGbp(b.subtotal_pence)}</Td>
+                    <Td className="text-right tabular-nums">{formatGbp(amountPaidPence(b))}</Td>
                     <Td className="text-right">
                       <Link
                         href={`/admin/bookings/${b.id}`}

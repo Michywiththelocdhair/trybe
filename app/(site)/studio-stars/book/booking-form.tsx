@@ -578,7 +578,7 @@ export function BookingForm({ event }: { event: BookingEvent }) {
                       <span className="flex flex-col">
                         <strong className="text-[18px]">Secure payment with Stripe</strong>
                         <span className="text-[15px] text-[color:var(--border-lilac)]">
-                          You’ll pay the full amount at Stripe’s secure checkout.
+                          You’ll pay the full amount at Stripe’s secure checkout. Have a discount code? Enter it there.
                         </span>
                       </span>
                     </span>
@@ -646,7 +646,9 @@ export function BookingForm({ event }: { event: BookingEvent }) {
                 {formatGbp(subtotalPence)}
               </span>
             </div>
-            <span className="text-[14px] text-[color:var(--border-lilac)]">Paid in full via Stripe</span>
+            <span className="text-[14px] text-[color:var(--border-lilac)]">
+              Paid in full via Stripe · discount codes can be added at checkout
+            </span>
           </div>
 
           <div className="flex flex-col gap-[6px] rounded-[24px] border-[1.5px] border-blush bg-white px-6 py-5 text-[16px] leading-[1.45] text-[color:var(--muted-plum)]">

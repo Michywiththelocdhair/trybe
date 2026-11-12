@@ -3,6 +3,7 @@ import type { DayOfEmailProps } from "@/lib/email/templates/day-of";
 import type { Reminder48hEmailProps } from "@/lib/email/templates/reminder-48h";
 import type { ReceiptEmailProps } from "@/lib/email/templates/receipt";
 import type { ThankYouEmailProps } from "@/lib/email/templates/thank-you";
+import { amountPaidPence } from "@/lib/booking/pricing";
 import { formatLondonTime } from "@/lib/dates";
 import { supabaseService } from "@/lib/supabase/service";
 
@@ -53,6 +54,7 @@ export async function loadBookingEmailData(
   if (!event) return null;
 
   const kids = childrenRes.data ?? [];
+  const paidPence = amountPaidPence(booking);
   const venue = event.venue ?? "";
   const venueAddress = event.venue_address ?? "";
   const childNames = kids.map((c) => c.first_name);
@@ -76,7 +78,9 @@ export async function loadBookingEmailData(
       eventDate: event.event_date,
       venue,
       venueAddress,
-      totalPence: booking.subtotal_pence,
+      totalPence: paidPence,
+      discountPence: booking.discount_pence,
+      promoCode: booking.promo_code,
       bookingRef: booking.id,
     },
     receipt: {
@@ -88,7 +92,9 @@ export async function loadBookingEmailData(
       children: kids.map((c) => ({ firstName: c.first_name, position: c.position })),
       firstTicketPence: event.first_ticket_price_pence,
       siblingTicketPence: event.sibling_ticket_price_pence,
-      totalPence: booking.subtotal_pence,
+      discountPence: booking.discount_pence,
+      promoCode: booking.promo_code,
+      totalPence: paidPence,
       bookingRef: booking.id,
       confirmedAt: booking.confirmed_at ?? new Date().toISOString(),
     },

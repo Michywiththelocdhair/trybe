@@ -58,6 +58,17 @@ export function calculateTotal(childCount: number): PriceBreakdown {
   return { subtotalPence, lines };
 }
 
+/**
+ * What the parent actually paid: the list subtotal minus any Stripe
+ * promotion-code discount recorded by the webhook.
+ */
+export function amountPaidPence(booking: {
+  subtotal_pence: number;
+  discount_pence: number;
+}): number {
+  return Math.max(booking.subtotal_pence - booking.discount_pence, 0);
+}
+
 /** £180 for whole pounds (matches the design), £180.50 otherwise. */
 export function formatGbp(pence: number): string {
   const whole = pence % 100 === 0;

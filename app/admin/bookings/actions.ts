@@ -262,6 +262,9 @@ const CSV_HEADERS = [
   "legacy_time_window",
   "attendance",
   "subtotal_pence",
+  "discount_pence",
+  "paid_pence",
+  "promo_code",
   "children_names",
 ] as const;
 
@@ -339,6 +342,9 @@ export async function exportBookingsCsv(
         row.time_window,
         row.attendance,
         row.subtotal_pence,
+        row.discount_pence,
+        row.subtotal_pence - row.discount_pence,
+        row.promo_code,
         kids,
       ]
         .map(csvCell)

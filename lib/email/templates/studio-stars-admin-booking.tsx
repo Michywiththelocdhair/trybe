@@ -27,6 +27,12 @@ export function StudioStarsAdminBookingEmail(props: BookingConfirmedEmailProps) 
         <DetailRow label="Event" value={`${props.eventName} · ${formatEventDate(props.eventDate)}`} />
         <DetailRow label="Venue" value={props.venueAddress ? `${props.venue}, ${props.venueAddress}` : props.venue} />
         <DetailRow label="Paid" value={formatGbp(props.totalPence)} />
+        {props.discountPence ? (
+          <DetailRow
+            label="Discount"
+            value={`−${formatGbp(props.discountPence)}${props.promoCode ? ` (code ${props.promoCode})` : ""}`}
+          />
+        ) : null}
         <DetailRow label="Booking reference" value={props.bookingRef.slice(0, 8).toUpperCase()} />
       </Card>
       <EmailButton href={adminUrl}>View booking</EmailButton>

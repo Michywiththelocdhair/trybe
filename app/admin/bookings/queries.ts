@@ -12,7 +12,7 @@ import type { AdminClient, BookingRow } from "@/components/admin/db";
 import type { BookingFilters } from "./filters";
 
 export const LIST_COLUMNS =
-  "id, created_at, parent_name, parent_email, event_id, child_count, session_start_time, time_window, status, subtotal_pence" as const;
+  "id, created_at, parent_name, parent_email, event_id, child_count, session_start_time, time_window, status, subtotal_pence, discount_pence" as const;
 
 export type BookingListRow = Pick<
   BookingRow,
@@ -26,10 +26,11 @@ export type BookingListRow = Pick<
   | "time_window"
   | "status"
   | "subtotal_pence"
+  | "discount_pence"
 >;
 
 export const EXPORT_COLUMNS =
-  "id, created_at, status, event_id, parent_name, parent_email, parent_phone, child_count, session_start_time, time_window, attendance, subtotal_pence" as const;
+  "id, created_at, status, event_id, parent_name, parent_email, parent_phone, child_count, session_start_time, time_window, attendance, subtotal_pence, discount_pence, promo_code" as const;
 
 export type BookingExportRow = Pick<
   BookingRow,
@@ -45,6 +46,8 @@ export type BookingExportRow = Pick<
   | "time_window"
   | "attendance"
   | "subtotal_pence"
+  | "discount_pence"
+  | "promo_code"
 >;
 
 

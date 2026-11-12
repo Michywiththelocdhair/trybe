@@ -328,6 +328,10 @@ async function startCheckout(data: BookingInput): Promise<BookingResult> {
         currency: "gbp",
         customer_email: data.parentEmail,
         line_items: lineItems,
+        // Lets parents enter a Stripe promotion code (e.g. the email-list
+        // 10% code). It applies to the whole order, so it stacks on top of
+        // the sibling price. The webhook records the discount.
+        allow_promotion_codes: true,
         // `{CHECKOUT_SESSION_ID}` is a Stripe template token; keep it literal.
         success_url: `${siteUrl}/studio-stars/book/booking-confirmation?booking=${booking.id}&session={CHECKOUT_SESSION_ID}`,
         cancel_url: `${siteUrl}/studio-stars/book?resume=${booking.id}`,

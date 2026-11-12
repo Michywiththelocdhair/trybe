@@ -5,7 +5,7 @@ import { Button } from "@/components/button";
 import { Container } from "@/components/layout/container";
 import { formatEventDate } from "@/lib/dates";
 import { supabaseService } from "@/lib/supabase/service";
-import { formatGbp } from "@/lib/booking/pricing";
+import { amountPaidPence, formatGbp } from "@/lib/booking/pricing";
 import { formatClockTime } from "@/lib/dates";
 
 export const metadata: Metadata = {
@@ -94,7 +94,7 @@ async function loadOutcome(params: SearchParams): Promise<Outcome> {
     const { data: booking, error } = await db
       .from("bookings")
       .select(
-        "id, event_id, status, parent_name, parent_email, child_count, subtotal_pence, session_start_time, stripe_checkout_session_id",
+        "id, event_id, status, parent_name, parent_email, child_count, subtotal_pence, discount_pence, session_start_time, stripe_checkout_session_id",
       )
       .eq("id", parsedId.data)
       .maybeSingle();
@@ -132,7 +132,7 @@ async function loadOutcome(params: SearchParams): Promise<Outcome> {
       parentFirstName: booking.parent_name.trim().split(/\s+/)[0] ?? "",
       parentEmail: booking.parent_email,
       childCount: booking.child_count,
-      totalPence: booking.subtotal_pence,
+      totalPence: amountPaidPence(booking),
       sessionStartTime: booking.session_start_time,
       event: event
         ? {

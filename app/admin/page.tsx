@@ -15,7 +15,7 @@ import {
   Th,
   tableLinkClass,
 } from "@/components/admin/ui";
-import { formatGbp } from "@/lib/booking/pricing";
+import { amountPaidPence, formatGbp } from "@/lib/booking/pricing";
 
 export const metadata: Metadata = { title: { absolute: "Dashboard · Trybe Admin" } };
 
@@ -40,10 +40,10 @@ export default async function AdminDashboardPage() {
       .from("events")
       .select("id, name, event_date, status, max_children")
       .order("event_date", { ascending: true }),
-    db.from("bookings").select("status, subtotal_pence").gte("created_at", since),
+    db.from("bookings").select("status, subtotal_pence, discount_pence").gte("created_at", since),
     db
       .from("bookings")
-      .select("id, created_at, parent_name, event_id, child_count, status, subtotal_pence")
+      .select("id, created_at, parent_name, event_id, child_count, status, subtotal_pence, discount_pence")
       .order("created_at", { ascending: false })
       .limit(10),
   ]);
@@ -65,7 +65,7 @@ export default async function AdminDashboardPage() {
   const lastDay = lastDayRes.data ?? [];
   const confirmedLastDay = lastDay.filter((b) => b.status === "confirmed");
   const pendingLastDay = lastDay.filter((b) => b.status === "pending_payment").length;
-  const revenuePence = confirmedLastDay.reduce((sum, b) => sum + b.subtotal_pence, 0);
+  const revenuePence = confirmedLastDay.reduce((sum, b) => sum + amountPaidPence(b), 0);
 
   const eventById = new Map(events.map((e) => [e.id, e]));
   const recent = recentRes.data ?? [];
@@ -184,7 +184,7 @@ export default async function AdminDashboardPage() {
                         <Td>
                           <BookingStatusBadge status={b.status} />
                         </Td>
-                        <Td className="text-right tabular-nums">{formatGbp(b.subtotal_pence)}</Td>
+                        <Td className="text-right tabular-nums">{formatGbp(amountPaidPence(b))}</Td>
                       </tr>
                     ))}
                   </tbody>

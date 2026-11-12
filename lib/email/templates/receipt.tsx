@@ -15,6 +15,10 @@ export type ReceiptEmailProps = {
   children: { firstName: string; position: number }[];
   firstTicketPence: number;
   siblingTicketPence: number;
+  /** Promotion-code discount taken off at Stripe Checkout (0 if none). */
+  discountPence?: number;
+  promoCode?: string | null;
+  /** Amount actually paid, after any discount. */
   totalPence: number;
   bookingRef: string;
   confirmedAt: string;
@@ -42,7 +46,7 @@ const cell = (align: "left" | "right", bold = false): React.CSSProperties => ({
 });
 
 export function ReceiptEmail(props: ReceiptEmailProps) {
-  const { parentName, parentEmail, eventName, eventDate, venue, children, firstTicketPence, siblingTicketPence, totalPence, bookingRef, confirmedAt } = props;
+  const { parentName, parentEmail, eventName, eventDate, venue, children, firstTicketPence, siblingTicketPence, discountPence = 0, promoCode, totalPence, bookingRef, confirmedAt } = props;
   const siblings = Math.max(children.length - 1, 0);
   const total = formatGbp(totalPence);
 
@@ -71,6 +75,12 @@ export function ReceiptEmail(props: ReceiptEmailProps) {
                   Sibling × {siblings}
                 </td>
                 <td style={cell("right")}>{formatGbp(siblingTicketPence)} each</td>
+              </tr>
+            )}
+            {discountPence > 0 && (
+              <tr>
+                <td style={cell("left")}>Discount{promoCode ? ` (${promoCode})` : ""}</td>
+                <td style={cell("right")}>−{formatGbp(discountPence)}</td>
               </tr>
             )}
             <tr>

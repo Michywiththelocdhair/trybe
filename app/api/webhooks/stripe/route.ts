@@ -191,22 +191,28 @@ async function confirmBooking(
     return;
   }
 
-  // Totals are recomputed server-side: what Stripe took must equal what we
-  // priced (stored subtotal) and what calculateTotal says for this child count.
+  // Totals are recomputed server-side: Stripe's pre-discount subtotal must
+  // equal what we priced (stored subtotal) and what calculateTotal says for
+  // this child count, and the amount taken must be that minus the discount.
   const expectedPence = calculateTotal(booking.child_count).subtotalPence;
+  const discountPence = Math.max(session.total_details?.amount_discount ?? 0, 0);
   if (
-    session.amount_total !== booking.subtotal_pence ||
+    session.amount_subtotal !== booking.subtotal_pence ||
+    session.amount_total !== booking.subtotal_pence - discountPence ||
     booking.subtotal_pence !== expectedPence
   ) {
     // Money has been taken, so still confirm, but flag it for a human.
     console.error("[stripe-webhook] amount mismatch", {
       bookingId: booking.id,
       sessionId: session.id,
+      amountSubtotal: session.amount_subtotal,
       amountTotal: session.amount_total,
+      discountPence,
       bookingSubtotal: booking.subtotal_pence,
       expectedPence,
     });
   }
+  const promoCode = discountPence > 0 ? await promotionCodeFor(session) : null;
 
   if (booking.status === "expired") {
     // The hold lapsed before payment landed; capacity may have been re-sold.
@@ -227,6 +233,9 @@ async function confirmBooking(
       status: "confirmed",
       confirmed_at: new Date().toISOString(),
       stripe_payment_intent_id: paymentIntentId,
+      // Clamped so a surprising Stripe payload can't break the DB check.
+      discount_pence: Math.min(discountPence, booking.subtotal_pence),
+      promo_code: promoCode,
     })
     .eq("id", booking.id)
     .in("status", ["pending_payment", "expired"])
@@ -246,6 +255,29 @@ async function confirmBooking(
   // throw: a failure would release the event claim and Stripe would retry a
   // webhook whose work is already done.
   await sendConfirmationEmails(db, booking.id);
+}
+
+/**
+ * The customer-facing code (e.g. "STARS10") behind the session's discount.
+ * Best effort: the booking is still confirmed, with the discount amount, if
+ * Stripe can't be reached here.
+ */
+async function promotionCodeFor(
+  session: Stripe.Checkout.Session,
+): Promise<string | null> {
+  const ref = session.discounts?.find((d) => d.promotion_code)?.promotion_code;
+  if (!ref) return null;
+  if (typeof ref !== "string") return ref.code;
+  try {
+    return (await stripe().promotionCodes.retrieve(ref)).code;
+  } catch (err) {
+    console.warn("[stripe-webhook] could not look up promotion code", {
+      sessionId: session.id,
+      promotionCodeId: ref,
+      message: err instanceof Error ? err.message : String(err),
+    });
+    return ref;
+  }
 }
 
 async function sendConfirmationEmails(db: Db, bookingId: string): Promise<void> {

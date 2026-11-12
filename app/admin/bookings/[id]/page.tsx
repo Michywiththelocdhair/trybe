@@ -25,7 +25,7 @@ import {
   SectionHeading,
   tableLinkClass,
 } from "@/components/admin/ui";
-import { formatGbp } from "@/lib/booking/pricing";
+import { amountPaidPence, formatGbp } from "@/lib/booking/pricing";
 import { formatClockTime } from "@/lib/dates";
 import { isUuid } from "../filters";
 
@@ -139,6 +139,13 @@ export default async function AdminBookingDetailPage({
                   <BookingStatusBadge status={booking.status} />
                 </Detail>
                 <Detail label="Subtotal">{formatGbp(booking.subtotal_pence)}</Detail>
+                {booking.discount_pence > 0 ? (
+                  <Detail label="Discount">
+                    −{formatGbp(booking.discount_pence)}
+                    {booking.promo_code ? ` (code ${booking.promo_code})` : ""}
+                  </Detail>
+                ) : null}
+                <Detail label="Paid">{formatGbp(amountPaidPence(booking))}</Detail>
                 <Detail label="Children">{booking.child_count}</Detail>
                 <Detail label={booking.session_start_time ? "First session start" : "Legacy preferred time window"}>
                   {booking.session_start_time
@@ -241,7 +248,7 @@ export default async function AdminBookingDetailPage({
                   bookingId={booking.id}
                   parentName={booking.parent_name}
                   childCount={booking.child_count}
-                  refundLabel={willRefund ? formatGbp(booking.subtotal_pence) : null}
+                  refundLabel={willRefund ? formatGbp(amountPaidPence(booking)) : null}
                   disabled={!editable}
                 />
               ) : (
