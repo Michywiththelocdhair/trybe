@@ -366,18 +366,19 @@ export default function HomePage() {
               <ul className="m-0 flex list-none flex-col gap-2 p-0 text-base">
                 <li>Date: Sat 19 December 2026</li>
                 <li>Tickets: Free</li>
-                <li>
+                {/*<li>
                   Location: <Tag variant="tbc">[Venue TBC]</Tag>
-                </li>
+                </li>*/}
+                <li>More details coming soon!</li>
               </ul>
-              <Button
+              {/* <Button
                 as="a"
                 href="/christmas-fair"
                 variant="outline"
                 className="mt-auto w-full md:w-auto md:self-start"
               >
                 Find out more
-              </Button>
+              </Button> */}
             </div>
           </article>
         </div>
@@ -405,12 +406,7 @@ export default function HomePage() {
               </h2>
               {/* Bio copy is verbatim from the design brief — do not paraphrase. */}
               <p className="max-w-[680px] text-[17px] leading-[1.55] md:text-xl md:leading-[1.6]">
-                Singer, songwriter and the voice behind Frontline, Big Boys and
-                Hooligans, Nyah is the founder of Trybe, throwing events for
-                millennials that fuse funky house with a
-                reminder every mum needs to hear: you can want the best for your
-                kids and still be dope doing it. Mums have a life, and
-                Nyah&apos;s making sure they get to live it.
+                Founder of Trybe, mum to Kizzy, and the voice behind Frontline, Big Boys and Hooligans. Nyah builds spaces where parents and children can learn, have fun and be themselves — events that fuse funky house with a reminder every parent needs to hear: you can want the best for your kids and still be dope doing it.
               </p>
             </div>
 
