@@ -161,7 +161,7 @@ export default async function ChristmasFairPage() {
           <Question title="Where is it?">At {FAIR.venue}, {FAIR.address}: right by the Westway, just off Portobello Road.</Question>
           <Question title="How do I get in on the day?">Your ticket arrives by email with a QR code as soon as you’ve paid. Show it at the door to be scanned in. We’ll also send a reminder the day before.</Question>
           <Question title="Vendors: how much is a table?">Early bird tables are {formatPence(FAIR.earlyBirdPricePence)}. You only pay once you’re approved. We’ll email you a payment link, and you’ll have {FAIR.vendorPaymentDays} days to pay before your space is offered to someone else.</Question>
-          <Question title="Vendors: what’s provided, and when do I set up?">Tables and chairs are provided. You can set up from {FAIR.setUpLabel} and need to be packed down by {FAIR.packDownLabel}. Tell us on your application if you need power.</Question>
+          <Question title="Vendors: what’s provided, and when do I set up?">All stalls are indoors. Each vendor gets a 6ft table and 2 chairs. You can set up from {FAIR.setUpLabel} and need to be packed down by {FAIR.packDownLabel}. Tell us on your application if you need power.</Question>
           <Question title="Vendors: can I sell food, drinks or paid sessions?">Food is welcome, and hot drinks served alongside food are fine, but we’re not taking drinks-only stalls. Paid sessions or experiences are fine too. You take and manage your own bookings.</Question>
           <Question title="Vendors: do I need insurance?">Yes, basic one-day event public liability insurance. Applications close on {FAIR.vendorDeadlineLabel}.</Question>
         </div></div></section>
