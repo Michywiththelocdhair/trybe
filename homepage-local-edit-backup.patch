@@ -1,0 +1,18 @@
+diff --git a/app/(site)/page.tsx b/app/(site)/page.tsx
+index 79feda4..e4e4b30 100644
+--- a/app/(site)/page.tsx
++++ b/app/(site)/page.tsx
+@@ -366,10 +366,10 @@ export default function HomePage() {
+               <ul className="m-0 flex list-none flex-col gap-2 p-0 text-base">
+                 <li>Date: Sat 19 December 2026</li>
+                 <li>Tickets: Free</li>
+-                {/*<li>
++                <li>
+                   Location: <Tag variant="tbc">[Venue TBC]</Tag>
+-                </li>*/}
+-                <li>More details coming soon!</li>
++                </li>
++                {/*<li>More details coming soon!</li>*/}
+               </ul>
+               {/* <Button
+                 as="a"

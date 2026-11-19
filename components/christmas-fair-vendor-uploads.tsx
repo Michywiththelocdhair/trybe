@@ -64,14 +64,14 @@ export function VendorFileFields({
   const accept = ALLOWED_UPLOAD_TYPES.join(",") + ",.heic,.heif";
   return (
     <fieldset className="grid gap-4 border-0 p-0 sm:grid-cols-2">
-      <legend className="mb-2 font-extrabold">Your logo and photos <span className="font-semibold text-[color:var(--muted-plum)]">(we’ll use these on the website and socials)</span></legend>
+      <legend className="mb-2 font-extrabold">Your logo and photos <span className="font-semibold text-[color:var(--muted-plum)]">(optional, but they help us promote your stall on the website and socials)</span></legend>
       <label className="flex flex-col gap-2 rounded-[16px] border-2 border-dashed border-[#BA85BA] bg-[#FBF5EC] p-4 font-bold">
         Logo{requireLogo ? "" : " (optional)"}
         <input type="file" accept={accept} required={requireLogo} onChange={(e) => onLogo(e.currentTarget.files?.[0] ?? null)} className="text-sm font-semibold" />
         <span className="text-sm font-semibold text-[color:var(--muted-plum)]">{logo ? `Selected: ${logo.name}` : "JPG, PNG, WebP or HEIC, up to 5MB."}</span>
       </label>
       <label className="flex flex-col gap-2 rounded-[16px] border-2 border-dashed border-[#BA85BA] bg-[#FBF5EC] p-4 font-bold">
-        Photos (1 to {FAIR.maxVendorPhotos})
+        Photos (optional, up to {FAIR.maxVendorPhotos})
         <input type="file" accept={accept} multiple onChange={(e) => onPhotos(Array.from(e.currentTarget.files ?? []).slice(0, FAIR.maxVendorPhotos))} className="text-sm font-semibold" />
         <span className="text-sm font-semibold text-[color:var(--muted-plum)]">{photos.length ? `${photos.length} selected` : "Your stall, products or activity in action."}</span>
       </label>
@@ -98,7 +98,7 @@ export function VendorUploadForm({ token, hasLogo, hasPhotos }: { token: string;
   return (
     <form onSubmit={submit} className="flex flex-col gap-4">
       <VendorFileFields logo={logo} photos={photos} onLogo={setLogo} onPhotos={setPhotos} requireLogo={false} />
-      {!hasLogo || !hasPhotos ? <p className="m-0 text-sm font-bold">We still need {!hasLogo && !hasPhotos ? "your logo and photos" : !hasLogo ? "your logo" : "a few photos"}.</p> : null}
+      {!hasLogo || !hasPhotos ? <p className="m-0 text-sm font-bold">Optional: add a logo or photos and we’ll use them to promote your stall.</p> : null}
       {message ? <p role={message.ok ? "status" : "alert"} className={`m-0 rounded-xl p-3 font-semibold ${message.ok ? "bg-emerald-100 text-emerald-900" : "bg-red-100 text-red-900"}`}>{message.text}</p> : null}
       <div><Button type="submit" disabled={pending} className="min-h-12 bg-[#1E5B47] px-6">{pending ? "Uploading…" : "Upload images"}</Button></div>
     </form>

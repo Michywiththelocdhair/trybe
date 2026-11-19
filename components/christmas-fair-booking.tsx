@@ -137,11 +137,19 @@ function VendorApplicationForm({ remaining, open }: { remaining: number; open: b
   const [logo, setLogo] = useState<File | null>(null);
   const [photos, setPhotos] = useState<File[]>([]);
   const [token, setToken] = useState<string | null>(null);
+  const [step, setStep] = useState<1 | 2>(1);
+
+  function next() {
+    const fields = Array.from(document.querySelectorAll<HTMLInputElement>("#vendor-step-1 input"));
+    for (const field of fields) if (!field.reportValidity()) return;
+    setError(null);
+    setStep(2);
+  }
 
   function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(null);
-    const problem = checkVendorFiles(logo, photos, { requireLogo: true, requirePhotos: true });
+    const problem = checkVendorFiles(logo, photos, { requireLogo: false, requirePhotos: false });
     if (problem) return setError(problem);
     const data = new FormData(event.currentTarget);
     startTransition(async () => {
@@ -157,7 +165,7 @@ function VendorApplicationForm({ remaining, open }: { remaining: number; open: b
         vendorToken = created.token;
         setToken(created.token);
       }
-      setStatus("Uploading your logo and photos…");
+      if (logo || photos.length) setStatus("Uploading your logo and photos…");
       const uploaded = await uploadVendorFiles(vendorToken, logo, photos);
       setStatus(null);
       if (!uploaded.ok) return setError(`${uploaded.error} Your details are saved, so just press the button again.`);
@@ -181,16 +189,21 @@ function VendorApplicationForm({ remaining, open }: { remaining: number; open: b
     <form onSubmit={submit} className="flex flex-col gap-5">
       <div>
         <h2 className="m-0 text-[28px] font-extrabold">Apply for a table</h2>
-        <p className="m-0 mt-1 text-[18px] text-[color:var(--muted-plum)]">No payment now. If you’re approved, we’ll email you a link to pay for your table: {formatPence(FAIR.earlyBirdPricePence)} early bird for the first {FAIR.earlyBirdTables} tables, then {formatPence(FAIR.standardPricePence)}.</p>
+        <p className="m-0 mt-1 text-[18px] text-[color:var(--muted-plum)]">Takes about 3 minutes. No payment now: if you’re approved, we’ll email you a link to pay for your table. Early bird tables are {formatPence(FAIR.earlyBirdPricePence)}.</p>
       </div>
+      <ol aria-label="Application steps" className="m-0 flex list-none gap-2 p-0 text-sm font-extrabold">
+        <li aria-current={step === 1 ? "step" : undefined} className={`rounded-full px-4 py-2 ${step === 1 ? "bg-[#1E5B47] text-white" : "bg-[#F4E7F3]"}`}>1. Your details</li>
+        <li aria-current={step === 2 ? "step" : undefined} className={`rounded-full px-4 py-2 ${step === 2 ? "bg-[#1E5B47] text-white" : "bg-[#F4E7F3]"}`}>2. Your stall</li>
+      </ol>
       {error ? <p role="alert" className="m-0 rounded-xl bg-red-100 p-4 font-semibold text-red-900">{error}</p> : null}
       <fieldset disabled={Boolean(token)} className="m-0 flex flex-col gap-5 border-0 p-0">
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div id="vendor-step-1" className={`grid gap-4 sm:grid-cols-2 ${step === 1 ? "" : "hidden"}`}>
           <Field label="Business or stall name" htmlFor="business-name"><TextInput id="business-name" name="businessName" autoComplete="organization" required maxLength={120} /></Field>
           <Field label="Your name" htmlFor="vendor-name"><TextInput id="vendor-name" name="contactName" autoComplete="name" required maxLength={100} /></Field>
           <Field label="Email address" htmlFor="vendor-email"><TextInput id="vendor-email" name="email" type="email" autoComplete="email" required maxLength={254} /></Field>
           <Field label="Mobile number" htmlFor="vendor-phone"><TextInput id="vendor-phone" name="phone" type="tel" autoComplete="tel" required maxLength={30} /></Field>
         </div>
+        <div className={`flex flex-col gap-5 ${step === 2 ? "" : "hidden"}`}>
         <fieldset className="border-0 p-0">
           <legend className="mb-2 font-extrabold">What kind of stall?</legend>
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">{VENDOR_CATEGORIES.map(({ value, label }) => <label key={value} className={`flex min-h-14 cursor-pointer items-center gap-2 rounded-xl border-2 px-3 text-sm font-bold ${category === value ? "border-[#452C86] bg-[#F4E7F3]" : "border-[#D9C8E3] bg-white"}`}><input type="radio" name="category" value={value} checked={category === value} onChange={() => setCategory(value)} className="accent-[#452C86]" />{label}{value === "kids" ? <span className="ml-auto rounded-full bg-[#F7C6DA] px-2 py-0.5 text-xs">Most wanted</span> : null}</label>)}</div>
@@ -199,17 +212,25 @@ function VendorApplicationForm({ remaining, open }: { remaining: number; open: b
         <label className={fieldClass}><span className="font-bold">Tell us about your stall</span><textarea name="description" required minLength={20} maxLength={2000} rows={4} className="w-full rounded-input border-[1.5px] border-[color:var(--border-plum)] bg-white p-4 text-[17px] text-night" placeholder="What you’ll sell or run, and how families can get involved. If you’re offering paid sessions or experiences, tell us here. You’ll take and manage those bookings yourself." /></label>
         <Field label="Website or social link (optional)" htmlFor="vendor-website"><TextInput id="vendor-website" name="website" type="url" maxLength={500} placeholder="https://" /></Field>
         <RadioYesNo name="needsPower" label="Do you need power at your table?" />
-        <VendorFileFields logo={logo} photos={photos} onLogo={setLogo} onPhotos={setPhotos} requireLogo />
+        <VendorFileFields logo={logo} photos={photos} onLogo={setLogo} onPhotos={setPhotos} requireLogo={false} />
         <div className="flex flex-col gap-3">
           <Checkbox id="vendor-insurance" name="insurance" value="yes" required label={<span>I have, or will have by the day, basic one-day event public liability insurance.</span>} />
           <Checkbox id="vendor-no-drinks" name="noDrinksOnly" value="yes" required label={<span>My stall isn’t a drinks-only stall.</span>} />
           <Checkbox id="vendor-agree" name="agreed" value="yes" required label={<span>I agree to Trybe’s <Link href="/terms" className="font-bold underline">Terms &amp; Conditions</Link>, have read the <Link href="/privacy" className="font-bold underline">Privacy Policy</Link>, and I’m happy for Trybe and Acres to use my logo and photos to promote my stall.</span>} />
         </div>
+        </div>
       </fieldset>
       {status ? <p role="status" className="m-0 font-bold">{status}</p> : null}
       <div className="flex flex-wrap items-center justify-between gap-3 border-t-2 border-dashed border-[#F7C6DA] pt-5">
         <span className="text-sm font-bold text-[color:var(--muted-plum)]">Applications close {FAIR.vendorDeadlineLabel}.</span>
-        <Button type="submit" disabled={pending || remaining < 1} className="min-h-14 bg-[#1E5B47] px-7">{pending ? "Sending…" : remaining < 1 ? "All tables are taken" : token ? "Try the upload again" : "Send my application"}</Button>
+        {step === 1 ? (
+          <Button type="button" onClick={next} disabled={remaining < 1} className="min-h-14 bg-[#1E5B47] px-7">{remaining < 1 ? "All tables are taken" : "Next: your stall"}</Button>
+        ) : (
+          <span className="flex flex-wrap gap-3">
+            {!token ? <button type="button" onClick={() => setStep(1)} className="min-h-14 rounded-full border-2 border-[#452C86] px-6 font-extrabold text-[#452C86]">Back</button> : null}
+            <Button type="submit" disabled={pending || remaining < 1} className="min-h-14 bg-[#1E5B47] px-7">{pending ? "Sending…" : token ? "Try the upload again" : "Send my application"}</Button>
+          </span>
+        )}
       </div>
     </form>
   );

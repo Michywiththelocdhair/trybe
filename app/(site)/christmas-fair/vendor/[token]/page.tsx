@@ -83,7 +83,7 @@ export default async function VendorPage({ params, searchParams }: PageProps<"/c
             </Panel>
           ) : (
             <Panel title="We’re reviewing your application">
-              <p>Thanks for applying. If you’re approved, we’ll email you a link to pay for your table: {formatPence(FAIR.earlyBirdPricePence)} early bird for the first {FAIR.earlyBirdTables} tables, then {formatPence(FAIR.standardPricePence)}. You’ll have {FAIR.vendorPaymentDays} days to pay.</p>
+              <p>Thanks for applying. If you’re approved, we’ll email you a link to pay for your table, and you’ll have {FAIR.vendorPaymentDays} days to pay.</p>
             </Panel>
           )}
         </div>

@@ -26,6 +26,7 @@ supabase/migrations/20261104000006_admin_booking_email.sql
 supabase/migrations/20261112000007_booking_discounts.sql
 supabase/migrations/20261112000008_slots_taken_on_payment.sql
 supabase/migrations/20261119000009_christmas_fair_paid.sql
+supabase/migrations/20261119000010_christmas_fair_day_of_sales.sql
 ```
 
 The final migration adds the `admin_booking` email-log type used to safely retry Studio Stars admin notifications.

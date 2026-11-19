@@ -20,7 +20,7 @@ export default async function ChristmasFairBookPage({
       <main className="mx-auto flex max-w-[1200px] flex-col gap-6 pb-12">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div><p className="m-0 text-[13px] font-black uppercase tracking-[.14em] text-[#C8312B]">Trybe Christmas Fair · {FAIR.shortDateLabel} · {FAIR.timeLabel} · {FAIR.venue}</p><h1 className="display m-0 mt-1 text-[clamp(44px,6vw,72px)] uppercase leading-[.9]">{isVendor ? "Become a vendor" : "Family tickets"}</h1></div>
-          <span className="inline-flex rounded-full border border-dashed border-[#9273B1] bg-white px-4 py-2 text-sm font-bold">{isVendor ? `Tables from ${formatPence(FAIR.earlyBirdPricePence)} · apply by ${FAIR.vendorDeadlineLabel}` : "Entry by donation: £2 adults · £1 children"}</span>
+          <span className="inline-flex rounded-full border border-dashed border-[#9273B1] bg-white px-4 py-2 text-sm font-bold">{isVendor ? `Early bird tables ${formatPence(FAIR.earlyBirdPricePence)} · apply by ${FAIR.vendorDeadlineLabel}` : "£2 adults · £1 kids, donated to Acres"}</span>
         </div>
         <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_320px]">
           <ChristmasFairBooking
@@ -42,7 +42,7 @@ export default async function ChristmasFairBookPage({
               <div className="rounded-[22px] bg-[#1E5B47] p-6 text-white">
                 <strong className="display text-[30px] uppercase">Vendor tables</strong>
                 <ul className="mb-0 mt-3 flex list-none flex-col gap-2 p-0 text-[15px] leading-snug">
-                  <li><strong>{formatPence(FAIR.earlyBirdPricePence)}</strong> early bird for the first {FAIR.earlyBirdTables} tables ({fair.earlyBirdTablesRemaining} left), then <strong>{formatPence(FAIR.standardPricePence)}</strong></li>
+                  <li><strong>{formatPence(FAIR.earlyBirdPricePence)}</strong> early bird tables{fair.earlyBirdTablesRemaining < FAIR.earlyBirdTables ? ` (${fair.earlyBirdTablesRemaining} left)` : ""}</li>
                   <li>Pay only once you’re approved, within {FAIR.vendorPaymentDays} days</li>
                   <li>Tables and chairs provided</li>
                   <li>Set up from {FAIR.setUpLabel}, packed down by {FAIR.packDownLabel}</li>

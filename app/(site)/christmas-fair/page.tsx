@@ -6,7 +6,7 @@ import { FAIR, formatPence } from "@/lib/christmas-fair/config";
 
 export const metadata: Metadata = {
   title: "Trybe Christmas Fair 2026 at Acres",
-  description: "A festive family day out on Saturday 19 December, 12–5pm at Acres, 12 Acklam Road, London W10 5QZ. Entry by donation (£2 adults, £1 children), all going to Acres’ Christmas Day dinner. Vendor tables available.",
+  description: "Workshops, a DJ and local stalls for the whole family on Saturday 19 December, 12–5pm at Acres, London W10. Every ticket helps put Christmas dinner on the table for someone having a tough year.",
 };
 export const instant = false;
 
@@ -20,10 +20,12 @@ export default async function ChristmasFairPage() {
           <div className="contents">
             <p className="order-1 m-0 flex w-full items-center gap-3 text-sm font-black uppercase tracking-[.14em] text-[#1E5B47] lg:col-start-1 lg:row-start-1 lg:self-end">
               <Image src="/images/acres-logo.png" alt="Acres" width={800} height={181} className="h-6 w-auto sm:h-7" />
-              <span aria-hidden="true">×</span> Trybe present
+              <span aria-hidden="true" className="text-lg">×</span>
+              <Image src="/images/trybe-logo-wordmark.png" alt="Trybe" width={746} height={495} className="h-9 w-auto sm:h-10" />
+              <span>present</span>
             </p>
             <h1 className="order-1 display my-0 w-full text-[clamp(60px,8vw,128px)] uppercase leading-[.88] tracking-[-.01em] lg:col-start-1 lg:row-start-2">Trybe <span className="text-[#C8312B]">Christmas</span> Fair</h1>
-            <p className="order-2 w-full max-w-[570px] text-[20px] leading-[1.5] sm:text-[21px] lg:col-start-1 lg:row-start-3">A festive day out for the whole family at Acres, with workshops and activities for the kids, a DJ, local stalls and plenty of Christmas cheer.</p>
+            <p className="order-2 w-full max-w-[570px] text-[20px] leading-[1.5] sm:text-[21px] lg:col-start-1 lg:row-start-3">Workshops, a DJ and local stalls for the whole family. Every ticket helps put Christmas dinner on the table for someone having a tough year.</p>
             <div className="fair-ticket order-4 my-5 flex w-full max-w-[600px] overflow-hidden rounded-[22px] bg-white shadow-[0_7px_0_#452C86] sm:my-6 lg:col-start-1 lg:row-start-4">
               <div className="flex w-[118px] shrink-0 flex-col items-center justify-center bg-[#C8312B] px-3 py-4 text-center text-white sm:w-[144px]">
                 <span className="text-xs font-black uppercase tracking-widest">Saturday</span><strong className="display text-[56px] leading-none sm:text-[76px]">19</strong><span className="text-xs font-black uppercase tracking-widest">Dec 2026</span>
@@ -31,12 +33,12 @@ export default async function ChristmasFairPage() {
               <div className="flex flex-1 flex-col justify-center gap-1 border-l-2 border-dashed border-[#F7C6DA] px-4 py-4 sm:px-6">
                 <strong className="text-[18px] sm:text-[20px]">{FAIR.timeLabel} · arrive any time</strong>
                 <span className="text-[14px] font-semibold sm:text-[16px]">{FAIR.venue}, {FAIR.address}</span>
-                <span className="text-[14px] font-semibold sm:text-[16px]">Entry by donation: £2 adults · £1 kids</span>
+                <span className="text-[14px] font-semibold sm:text-[16px]">£2 adults · £1 kids, donated to Acres’ Christmas dinner</span>
               </div>
             </div>
             <div className="order-5 flex flex-wrap gap-3 lg:col-start-1 lg:row-start-5">
-              <FairButton href="/christmas-fair/book">Get family tickets <span aria-hidden="true">→</span></FairButton>
-              <FairButton href="/christmas-fair/book?type=vendor" secondary>Apply to be a vendor</FairButton>
+              <FairButton href="/christmas-fair/book">Book family tickets · from £2 <span aria-hidden="true">→</span></FairButton>
+              <Link href="/christmas-fair/book?type=vendor" className="inline-flex min-h-14 items-center px-2 text-[16px] font-extrabold text-[#452C86] underline underline-offset-4">Got a stall? Apply for a table</Link>
             </div>
           </div>
           <div className="fair-hero-collage order-3 relative mx-auto mt-3 h-[390px] w-full max-w-[570px] sm:h-[500px] lg:col-start-2 lg:row-start-1 lg:row-span-5 lg:mt-0 lg:h-[560px]">
@@ -47,8 +49,23 @@ export default async function ChristmasFairPage() {
             <div className="fair-sticker absolute bottom-[2%] right-[1%] z-20 w-[58%] rotate-[8deg] bg-white p-2 pb-7 sm:p-3 sm:pb-9">
               <Image src="/images/christmas-fair-2.png" alt="Children at a past Trybe Christmas event" width={1200} height={900} className="h-[175px] w-full object-cover sm:h-[230px]" />
             </div>
-            <div className="fair-stamp absolute right-[2%] top-[2%] z-30 flex size-[108px] rotate-[12deg] flex-col items-center justify-center rounded-full bg-[#C8312B] text-center text-white sm:size-[138px]"><strong className="display text-[24px] uppercase leading-none sm:text-[34px]">£2 · £1</strong><span className="mt-1 text-[10px] font-black uppercase tracking-widest sm:text-[12px]">Entry donation</span></div>
-            <div className="absolute bottom-[1%] left-[3%] z-30 flex size-[96px] -rotate-[12deg] flex-col items-center justify-center rounded-full border-[5px] border-white bg-[#F7C6DA] text-center shadow-lg sm:size-[120px]"><strong className="display text-[33px] leading-none sm:text-[46px]">{FAIR.vendorCapacity}</strong><span className="text-[10px] font-black uppercase leading-tight tracking-wider sm:text-xs">Vendor<br />tables</span></div>
+            <div className="fair-stamp absolute right-[2%] top-[2%] z-30 flex size-[108px] rotate-[12deg] flex-col items-center justify-center rounded-full bg-[#C8312B] text-center text-white sm:size-[138px]"><strong className="display text-[22px] uppercase leading-none sm:text-[30px]">Donate</strong><span className="mt-1 px-2 text-[10px] font-black uppercase leading-tight tracking-widest sm:text-[12px]">to feed a family</span></div>
+            <div className="absolute bottom-[1%] left-[3%] z-30 flex size-[96px] -rotate-[12deg] flex-col items-center justify-center rounded-full border-[5px] border-white bg-[#F7C6DA] text-center shadow-lg sm:size-[120px]"><strong className="display text-[33px] leading-none sm:text-[46px]">25+</strong><span className="text-[10px] font-black uppercase leading-tight tracking-wider sm:text-xs">Vendors</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="acres" className="bg-[#FBF5EC] px-5 py-14 sm:px-8 sm:py-20">
+        <div className="mx-auto grid max-w-[1200px] items-center gap-8 rounded-[32px] border-2 border-[#452C86] bg-white p-6 shadow-[0_8px_0_#452C86] sm:p-10 lg:grid-cols-[.8fr_1.2fr] lg:gap-14">
+          <div className="flex flex-col items-start gap-5">
+            <p className="m-0 text-sm font-black uppercase tracking-[.16em] text-[#C8312B]">Acres × Trybe</p>
+            <a href={FAIR.acresUrl} target="_blank" rel="noreferrer" aria-label="Acres website (opens in a new tab)" className="block"><Image src="/images/acres-logo.png" alt="Acres" width={800} height={181} className="h-auto w-[240px] sm:w-[300px]" /></a>
+            <h2 className="display m-0 text-[clamp(40px,5vw,72px)] uppercase leading-[.9]">Your ticket feeds someone on Christmas Day</h2>
+          </div>
+          <div className="flex flex-col gap-4 text-[18px] leading-relaxed sm:text-[19px]">
+            <p className="m-0">The Trybe Christmas Fair is a joint venture between <a href={FAIR.acresUrl} target="_blank" rel="noreferrer" className="font-bold underline">Acres</a> and <a href={FAIR.trybeUrl} className="font-bold underline">Trybe</a>. Trybe puts on events every year, and this Christmas we’re teaming up with Acres to give back.</p>
+            <p className="m-0">Entry is a <strong>£2 donation per adult and £1 per child</strong>. <strong>All of it goes to Acres</strong>, who are cooking Christmas dinner on 25 December for people having a tough year. Add a little extra when you book if you can.</p>
+            <Link href="/christmas-fair/book" className="mt-2 inline-flex min-h-14 items-center self-start rounded-full bg-[#C8312B] px-7 text-[17px] font-extrabold text-white no-underline shadow-[0_5px_0_#452C86]">Book family tickets · from £2</Link>
           </div>
         </div>
       </section>
@@ -58,48 +75,34 @@ export default async function ChristmasFairPage() {
         <div className="mx-auto max-w-[1180px] overflow-hidden rounded-[28px] bg-[#FBF5EC]">
           <div className="fair-holes mb-3 flex justify-around px-3 sm:mb-5" aria-hidden="true">{Array.from({ length: 8 }, (_, i) => <span key={i} />)}</div>
           <div className="flex flex-col items-center gap-6 px-4 pb-9 sm:gap-9 sm:px-10 sm:pb-14">
-            <div className="text-center"><p className="m-0 text-sm font-black uppercase tracking-[.12em] text-[#C8312B]">Open the doors</p><h2 className="display m-0 mt-1 text-[clamp(36px,6vw,88px)] uppercase leading-[.9]"><span className="sm:hidden">What&apos;s on</span><span className="hidden sm:inline">What&apos;s on at the fair</span></h2><p className="m-0 mt-2 max-w-[560px] text-[17px] sm:text-[19px]">We’re expecting around {FAIR.expectedFamilies} families over the day. More doors will open as the line-up is confirmed.</p></div>
+            <div className="text-center"><p className="m-0 text-sm font-black uppercase tracking-[.12em] text-[#C8312B]">Open the doors</p><h2 className="display m-0 mt-1 text-[clamp(36px,6vw,88px)] uppercase leading-[.9]"><span className="sm:hidden">What&apos;s on</span><span className="hidden sm:inline">What&apos;s on at the fair</span></h2><p className="m-0 mt-2 max-w-[560px] text-[17px] sm:text-[19px]">We’re expecting around {FAIR.expectedFamilies} families. Here’s what’s behind the doors so far, with more to come.</p></div>
             <ol className="m-0 grid w-full list-none grid-cols-2 gap-3 p-0 sm:grid-cols-4 sm:gap-4">
               <FairDoor number="1" title="DJ" body="Festive tunes to keep the whole family moving." color="bg-[#452C86]" text="text-white" icon="♫" />
-              <FairDoor number="2" title={<><span className="sm:hidden">Money stall</span><span className="hidden sm:inline">Money jars</span></>} body={<>A hands-on activity helping kids learn about money. <span className="text-sm">[Stall name TBC]</span></>} color="bg-[#1E5B47]" text="text-white" icon="£" />
+              <FairDoor number="2" title="Money jars" body="Kids learn to save, spend and share." color="bg-[#1E5B47]" text="text-white" icon="£" />
               <FairDoor number="3" title="Workshops & activities" body="Hands-on fun for little ones. Line-up announced soon." color="bg-[#F7C6DA]" text="text-[#452C86]" icon="☆" />
               <FairDoor number="4" title="Food & treats" body="Festive food from local vendors. Line-up announced soon." color="bg-white" text="text-[#452C86]" icon="♧" />
               <FairDoor number="5" title="Crafts & gifts" body="Pick up Christmas presents from local makers." color="bg-[#BA85BA]" text="text-[#452C86]" icon="✦" />
-              <FairDoor number="6" title="Giving back" body="Every entry donation goes to Acres’ Christmas Day dinner." color="bg-[#C8312B]" text="text-white" icon="♥" />
+              <FairDoor number="6" title="Giving back" body="Your entry pays towards Acres’ Christmas Day dinner." color="bg-[#C8312B]" text="text-white" icon="♥" />
               <li className="fair-door hidden min-h-[225px] flex-col items-center justify-center gap-2 rounded-[24px] border-[3px] border-dashed border-[#BA85BA] p-5 text-center text-[#452C86] sm:flex"><strong className="display text-[64px] text-[#BA85BA]">7</strong><b className="text-[19px]">To be revealed</b><span className="text-sm">More to be announced</span></li>
               <li className="fair-door hidden min-h-[225px] flex-col items-center justify-center gap-2 rounded-[24px] border-[3px] border-dashed border-[#BA85BA] p-5 text-center text-[#452C86] sm:flex"><strong className="display text-[64px] text-[#BA85BA]">8</strong><b className="text-[19px]">To be revealed</b><span className="text-sm">More to be announced</span></li>
             </ol>
-            <Link href="/christmas-fair/book" className="inline-flex min-h-14 items-center rounded-full bg-[#C8312B] px-7 text-[17px] font-extrabold text-white no-underline">Get family tickets</Link>
+            <Link href="/christmas-fair/book" className="inline-flex min-h-14 items-center rounded-full bg-[#C8312B] px-7 text-[17px] font-extrabold text-white no-underline">Book family tickets · from £2</Link>
           </div>
         </div>
       </section>
       <div className="fair-checker" aria-hidden="true" />
 
-      <section id="acres" className="bg-[#FBF5EC] px-5 pt-14 sm:px-8 sm:pt-20">
-        <div className="mx-auto grid max-w-[1200px] items-center gap-8 rounded-[32px] border-2 border-[#452C86] bg-white p-6 shadow-[0_8px_0_#452C86] sm:p-10 lg:grid-cols-[.8fr_1.2fr] lg:gap-14">
-          <div className="flex flex-col items-start gap-5">
-            <p className="m-0 text-sm font-black uppercase tracking-[.16em] text-[#C8312B]">Acres × Trybe</p>
-            <a href={FAIR.acresUrl} target="_blank" rel="noreferrer" aria-label="Acres website (opens in a new tab)" className="block"><Image src="/images/acres-logo.png" alt="Acres" width={800} height={181} className="h-auto w-[240px] sm:w-[300px]" /></a>
-            <h2 className="display m-0 text-[clamp(40px,5vw,72px)] uppercase leading-[.9]">Every ticket gives back</h2>
-          </div>
-          <div className="flex flex-col gap-4 text-[18px] leading-relaxed sm:text-[19px]">
-            <p className="m-0">The Trybe Christmas Fair is a joint venture between <a href={FAIR.acresUrl} target="_blank" rel="noreferrer" className="font-bold underline">Acres</a> and <a href={FAIR.trybeUrl} className="font-bold underline">Trybe</a>. Trybe puts on events every year, and this Christmas we’re teaming up with Acres.</p>
-            <p className="m-0">Entry is a donation of <strong>£2 per adult and £1 per child</strong>, and you’re welcome to give more. <strong>All of it goes to Acres</strong>, who are putting on a Christmas dinner on Christmas Day for people having a tough year.</p>
-            <Link href="/christmas-fair/book" className="mt-2 inline-flex min-h-14 items-center self-start rounded-full bg-[#C8312B] px-7 text-[17px] font-extrabold text-white no-underline shadow-[0_5px_0_#452C86]">Book your family ticket</Link>
-          </div>
-        </div>
-      </section>
 
       <section className="bg-[#FBF5EC] py-14 sm:py-20">
         <div className="mx-auto grid max-w-[1200px] gap-10 px-5 sm:px-8 lg:grid-cols-[1fr_.85fr] lg:items-center lg:gap-16">
           <div>
             <p className="mb-3 text-sm font-black uppercase tracking-[.16em] text-[#C8312B]">For families</p>
-            <h2 className="display m-0 text-[clamp(46px,5.5vw,84px)] uppercase leading-[.9]">Entry by donation. Ticket required.</h2>
-            <p className="mt-5 max-w-[590px] text-[19px] leading-relaxed">Places are limited to {fair.familyLimit} families, so book early. One ticket covers your whole family (up to {FAIR.maxPeoplePerTicket} people): just tell us how many adults and children are coming.</p>
+            <h2 className="display m-0 text-[clamp(46px,5.5vw,84px)] uppercase leading-[.9]">Book once, bring everyone</h2>
+            <p className="mt-5 max-w-[590px] text-[19px] leading-relaxed">One ticket covers up to {FAIR.maxPeoplePerTicket} of you. Tell us how many adults and children are coming, pay your donation, and your QR ticket lands in your inbox. Only {fair.familyLimit} family tickets are available.</p>
             <ol className="mt-7 flex list-none flex-col gap-4 p-0">
-              {[["1", "Book your family ticket", "£2 per adult and £1 per child, plus an extra donation if you’d like."], ["2", "Pay securely", "Checkout is handled by Stripe."], ["3", "Check your inbox", "Your QR ticket arrives by email, with a reminder the day before."], ["4", "Scan & enjoy", `Show your QR code at the door. Arrive any time, ${FAIR.timeLabel}.`]].map(([n, title, detail]) => <li key={n} className="flex items-start gap-4"><span className="fair-step-number flex size-[52px] shrink-0 items-center justify-center font-black text-white">{n}</span><span className="flex flex-col"><strong className="text-[19px]">{title}</strong><span className="text-[17px] leading-snug">{detail}</span></span></li>)}
+              {[["1", "Book your family ticket", "£2 per adult and £1 per child, plus a little extra if you can."], ["2", "Pay securely", "Checkout is handled by Stripe."], ["3", "Check your inbox", "Your QR ticket arrives by email, with a reminder the day before."], ["4", "Scan & enjoy", `Show your QR code at the door. Arrive any time, ${FAIR.timeLabel}.`]].map(([n, title, detail]) => <li key={n} className="flex items-start gap-4"><span className="fair-step-number flex size-[52px] shrink-0 items-center justify-center font-black text-white">{n}</span><span className="flex flex-col"><strong className="text-[19px]">{title}</strong><span className="text-[17px] leading-snug">{detail}</span></span></li>)}
             </ol>
-            <Link href="/christmas-fair/book" className="mt-7 inline-flex min-h-14 items-center rounded-full bg-[#C8312B] px-7 text-[17px] font-extrabold text-white no-underline shadow-[0_5px_0_#452C86] hover:-translate-y-0.5">Get family tickets</Link>
+            <Link href="/christmas-fair/book" className="mt-7 inline-flex min-h-14 items-center rounded-full bg-[#C8312B] px-7 text-[17px] font-extrabold text-white no-underline shadow-[0_5px_0_#452C86] hover:-translate-y-0.5">Book family tickets · from £2</Link>
           </div>
           <div role="img" aria-label="Example family ticket with QR code" className="fair-ticket relative mx-auto hidden w-full max-w-[520px] rotate-[-3deg] overflow-hidden rounded-[26px] bg-[#452C86] text-white shadow-[0_12px_28px_#452C8629] md:flex">
             <div className="flex min-w-0 flex-1 flex-col gap-3 px-8 py-8"><span className="text-sm font-extrabold tracking-[.14em] text-[#F7C6DA]">ADMIT ONE FAMILY</span><h3 className="display text-[40px] uppercase leading-[.9]">Trybe Christmas Fair</h3><p className="text-[17px] text-[#F4E7F3]">Sat 19 Dec 2026 · {FAIR.timeLabel} · Acres</p><div className="mt-1 flex flex-wrap gap-2"><span className="rounded-full bg-white/15 px-3 py-1.5 text-sm font-bold">2 adults</span><span className="rounded-full bg-white/15 px-3 py-1.5 text-sm font-bold">3 children</span></div></div>
@@ -111,25 +114,24 @@ export default async function ChristmasFairPage() {
       <section id="vendors" className="scroll-mt-20 bg-[#FBF5EC] px-4 py-10 sm:px-8 sm:py-16">
         <div className="mx-auto max-w-[1250px] rounded-[28px] bg-[#1E5B47] px-5 py-9 text-white sm:rounded-[36px] sm:px-10 sm:py-14 lg:px-16">
           <p className="mb-2 text-sm font-black uppercase tracking-[.16em] text-[#F7C6DA]"><span className="hidden sm:inline">Calling all makers, bakers &amp; play-makers</span><span className="sm:hidden">Makers, bakers &amp; play-makers</span></p>
-          <h2 className="display m-0 text-[clamp(44px,6vw,78px)] uppercase leading-[.88]">Become a vendor</h2>
-          <p className="mt-4 max-w-[800px] text-[18px] leading-relaxed sm:text-[20px]">We’re expecting around {FAIR.expectedFamilies} families over the day, joining in the workshops and activities. We’d especially love children’s activities and food, plus crafts and gifts, but all stall types are welcome to apply.</p>
+          <h2 className="display m-0 text-[clamp(44px,6vw,78px)] uppercase leading-[.88]">Sell to around {FAIR.expectedFamilies} local families in one afternoon</h2>
+          <p className="mt-4 max-w-[800px] text-[18px] leading-relaxed sm:text-[20px]">We’re after children’s activities and festive food most, plus crafts and gifts. Your table and chairs are ready when you arrive. Apply now and pay only once we’ve said yes.</p>
           <div className="my-5 flex flex-wrap gap-2 text-sm font-extrabold"><span className="rounded-full bg-[#F7C6DA] px-4 py-2 text-[#452C86]">Children&apos;s activities · most wanted</span><span className="rounded-full bg-[#FBF5EC] px-4 py-2 text-[#452C86]">Food &amp; treats</span><span className="rounded-full bg-[#BA85BA] px-4 py-2 text-[#452C86]">Crafts &amp; gifts</span></div>
           <div className="my-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            <VendorFact big={formatPence(FAIR.earlyBirdPricePence)} text={`Early bird, for the first ${FAIR.earlyBirdTables} tables${fair.earlyBirdTablesRemaining < FAIR.earlyBirdTables ? ` (${fair.earlyBirdTablesRemaining} left)` : ""}`} />
-            <VendorFact big={formatPence(FAIR.standardPricePence)} text={`Tables ${FAIR.earlyBirdTables + 1} to ${FAIR.vendorCapacity}`} />
-            <VendorFact big={String(fair.vendorLimit)} text="Tables in total, with tables and chairs provided" />
+            <VendorFact big={formatPence(FAIR.earlyBirdPricePence)} text={`Early bird table${fair.earlyBirdTablesRemaining < FAIR.earlyBirdTables ? ` (${fair.earlyBirdTablesRemaining} left)` : ""}`} />
+            <VendorFact big="25+" text="Vendors, with tables and chairs provided" />
+            <VendorFact big="45 min" text={`Set-up and pack-down either side (${FAIR.setUpLabel} to ${FAIR.packDownLabel})`} />
             <VendorFact big="10 Dec" text="Applications close" />
           </div>
-          <ul className="my-7 grid list-none gap-x-8 gap-y-3 p-0 text-[17px] leading-snug sm:grid-cols-2">
-            <VendorPoint><strong>Set-up and pack-down:</strong> 45 minutes either side. Set up from {FAIR.setUpLabel}, packed down by {FAIR.packDownLabel}.</VendorPoint>
-            <VendorPoint><strong>Food is welcome</strong>, and hot drinks served alongside food are fine. We’re not taking drinks-only stalls.</VendorPoint>
-            <VendorPoint><strong>Selling paid sessions or experiences?</strong> That’s fine; you take and manage your own bookings.</VendorPoint>
+          <ul className="my-7 grid list-none gap-x-8 gap-y-3 p-0 text-[17px] leading-snug sm:grid-cols-2" aria-label="Good to know">
+                        <VendorPoint><strong>Food is welcome</strong>, and hot drinks served alongside food are fine. We’re not taking drinks-only stalls.</VendorPoint>
+            <VendorPoint><strong>Selling paid sessions or experiences?</strong> Go for it. You take and manage your own bookings.</VendorPoint>
             <VendorPoint><strong>Insurance:</strong> you’ll need basic one-day event public liability insurance.</VendorPoint>
             <VendorPoint><strong>Power:</strong> let us know on your application if you need it.</VendorPoint>
-            <VendorPoint><strong>You only pay once approved</strong>, through your own payment link, within {FAIR.vendorPaymentDays} days.</VendorPoint>
+            <VendorPoint><strong>Pay only once you’re approved</strong>, through your own link, within {FAIR.vendorPaymentDays} days.</VendorPoint>
           </ul>
-          <ol className="my-6 grid list-none gap-3 p-0 sm:grid-cols-4">{[["1", "Apply with your details, logo & photos"], ["2", "We review & email you"], ["3", `Approved? Pay within ${FAIR.vendorPaymentDays} days`], ["4", "Set up on the day"]].map(([n, label]) => <li key={n} className="flex items-center gap-3"><span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-[#F7C6DA] font-black text-[#452C86]">{n}</span><strong className="text-[17px]">{label}</strong></li>)}</ol>
-          <Link href="/christmas-fair/book?type=vendor" className="inline-flex min-h-14 items-center rounded-full bg-[#F7C6DA] px-7 font-extrabold text-[#452C86] no-underline">Apply to be a vendor</Link>
+          <ol className="my-6 grid list-none gap-3 p-0 sm:grid-cols-4">{[["1", "Apply with a few details"], ["2", "We review & email you"], ["3", `Approved? Pay within ${FAIR.vendorPaymentDays} days`], ["4", "Set up on the day"]].map(([n, label]) => <li key={n} className="flex items-center gap-3"><span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-[#F7C6DA] font-black text-[#452C86]">{n}</span><strong className="text-[17px]">{label}</strong></li>)}</ol>
+          <Link href="/christmas-fair/book?type=vendor" className="inline-flex min-h-14 items-center rounded-full bg-[#F7C6DA] px-7 font-extrabold text-[#452C86] no-underline">Apply for a table</Link>
         </div>
       </section>
 
@@ -152,19 +154,20 @@ export default async function ChristmasFairPage() {
       </section>
 
       <section id="faq" className="bg-[#FBF5EC] py-14 sm:py-20"><div className="mx-auto grid max-w-[1200px] gap-8 px-5 sm:px-8 md:grid-cols-[.7fr_1.3fr]"><div><p className="mb-2 text-sm font-black uppercase tracking-widest text-[#C8312B]">FAQs</p><h2 className="display m-0 text-[clamp(42px,5vw,64px)] uppercase leading-[.9]">Good to know</h2></div><div className="flex flex-col gap-3">
-          <Question defaultOpen title="How much is entry?">Entry is a donation of £2 per adult and £1 per child, and you can add an extra donation if you’d like. All of it goes to Acres, who are putting on a Christmas dinner on Christmas Day for people having a tough year.</Question>
+          <Question defaultOpen title="How much is entry?">A £2 donation per adult and £1 per child, plus a little extra if you can. All of it goes to Acres’ Christmas Day dinner for people having a tough year.</Question>
           <Question title="How many tickets do we need?">One ticket covers your whole family, up to {FAIR.maxPeoplePerTicket} people. When you book, just tell us how many adults and children are coming. Places are limited to {fair.familyLimit} families.</Question>
+          <Question title="Can we just turn up on the day?">Yes, as long as there are tickets left. We’ll sell them on the day until they run out, so booking ahead is the safest way to make sure you get in.</Question>
           <Question title="What time should we arrive?">Any time between 12 and 5pm.</Question>
           <Question title="Where is it?">At {FAIR.venue}, {FAIR.address}: right by the Westway, just off Portobello Road.</Question>
           <Question title="How do I get in on the day?">Your ticket arrives by email with a QR code as soon as you’ve paid. Show it at the door to be scanned in. We’ll also send a reminder the day before.</Question>
-          <Question title="Vendors: how much is a table?">{formatPence(FAIR.earlyBirdPricePence)} early bird for the first {FAIR.earlyBirdTables} tables, then {formatPence(FAIR.standardPricePence)}. You only pay once you’re approved: we’ll email you a payment link and you’ll have {FAIR.vendorPaymentDays} days to pay before your space is offered to someone else.</Question>
-          <Question title="Vendors: what’s provided, and when do I set up?">Tables and chairs are provided. Set-up and pack-down are 45 minutes either side of the fair: from {FAIR.setUpLabel}, and packed down by {FAIR.packDownLabel}. Tell us on your application if you need power.</Question>
-          <Question title="Vendors: can I sell food, drinks or paid sessions?">Food is welcome, and hot drinks served alongside food are fine, but we’re not taking drinks-only stalls. Paid sessions or experiences are fine too; you take and manage your own bookings.</Question>
+          <Question title="Vendors: how much is a table?">Early bird tables are {formatPence(FAIR.earlyBirdPricePence)}. You only pay once you’re approved. We’ll email you a payment link, and you’ll have {FAIR.vendorPaymentDays} days to pay before your space is offered to someone else.</Question>
+          <Question title="Vendors: what’s provided, and when do I set up?">Tables and chairs are provided. You can set up from {FAIR.setUpLabel} and need to be packed down by {FAIR.packDownLabel}. Tell us on your application if you need power.</Question>
+          <Question title="Vendors: can I sell food, drinks or paid sessions?">Food is welcome, and hot drinks served alongside food are fine, but we’re not taking drinks-only stalls. Paid sessions or experiences are fine too. You take and manage your own bookings.</Question>
           <Question title="Vendors: do I need insurance?">Yes, basic one-day event public liability insurance. Applications close on {FAIR.vendorDeadlineLabel}.</Question>
         </div></div></section>
 
-      <section className="bg-[#FBF5EC] px-5 py-12 sm:px-8 sm:py-16"><div className="relative mx-auto flex max-w-[1320px] flex-col items-center gap-6 overflow-hidden rounded-[36px] bg-[#C8312B] px-6 py-12 text-center text-white sm:px-12 sm:py-20"><span aria-hidden="true" className="fair-final-stamp absolute left-[6%] top-[18%] flex size-[72px] rotate-[-10deg] items-center justify-center bg-[#F7C6DA] text-[30px] font-black text-[#452C86] sm:size-[92px]">19</span><h2 className="display max-w-[900px] text-[clamp(50px,6.5vw,100px)] uppercase leading-[.9]">See you at the fair</h2><p className="text-[18px] sm:text-[20px]">{FAIR.dateLabel} · {FAIR.timeLabel} · {FAIR.venue}, W10 · £2 adults, £1 kids, all to Acres</p><div className="flex flex-wrap justify-center gap-3"><Link href="/christmas-fair/book" className="inline-flex min-h-14 items-center rounded-full bg-white px-7 text-[18px] font-extrabold text-[#C8312B] no-underline">Get family tickets</Link><Link href="#vendors" className="inline-flex min-h-14 items-center rounded-full border-2 border-white px-7 text-[18px] font-extrabold text-white no-underline">Apply to be a vendor</Link></div></div></section>
-      <div className="fair-mobile-ticket-bar fixed inset-x-0 bottom-0 z-30 flex items-center justify-between gap-3 border-t-2 border-[#452C86] bg-[#F7C6DA] px-4 py-3 text-[#452C86] shadow-[0_-5px_20px_#452C8640] md:hidden"><div className="leading-tight"><strong className="block text-sm">£2 adults · £1 kids</strong><span className="text-xs font-semibold">{FAIR.shortDateLabel} · {FAIR.timeLabel} · Acres</span></div><Link href="/christmas-fair/book" className="inline-flex min-h-11 items-center rounded-full bg-[#C8312B] px-5 text-sm font-extrabold text-white no-underline">Get tickets</Link></div>
+      <section className="bg-[#FBF5EC] px-5 py-12 sm:px-8 sm:py-16"><div className="relative mx-auto flex max-w-[1320px] flex-col items-center gap-6 overflow-hidden rounded-[36px] bg-[#C8312B] px-6 py-12 text-center text-white sm:px-12 sm:py-20"><span aria-hidden="true" className="fair-final-stamp absolute left-[6%] top-[18%] flex size-[72px] rotate-[-10deg] items-center justify-center bg-[#F7C6DA] text-[30px] font-black text-[#452C86] sm:size-[92px]">19</span><h2 className="display max-w-[900px] text-[clamp(50px,6.5vw,100px)] uppercase leading-[.9]">See you at the fair</h2><p className="text-[18px] sm:text-[20px]">Saturday 19 December, 12–5pm at Acres. Book now while family tickets last.</p><div className="flex flex-wrap justify-center gap-3"><Link href="/christmas-fair/book" className="inline-flex min-h-14 items-center rounded-full bg-white px-7 text-[18px] font-extrabold text-[#C8312B] no-underline">Book family tickets · from £2</Link><Link href="#vendors" className="inline-flex min-h-14 items-center rounded-full border-2 border-white px-7 text-[18px] font-extrabold text-white no-underline">Apply for a table</Link></div></div></section>
+      <div className="fair-mobile-ticket-bar fixed inset-x-0 bottom-0 z-30 flex items-center justify-between gap-3 border-t-2 border-[#452C86] bg-[#F7C6DA] px-4 py-3 text-[#452C86] shadow-[0_-5px_20px_#452C8640] md:hidden"><div className="leading-tight"><strong className="block text-sm">Donate to enter · from £2</strong><span className="text-xs font-semibold">{FAIR.shortDateLabel} · {FAIR.timeLabel} · Acres</span></div><Link href="/christmas-fair/book" className="inline-flex min-h-11 items-center rounded-full bg-[#C8312B] px-5 text-sm font-extrabold text-white no-underline">Get tickets</Link></div>
     </div>
   );
 }
