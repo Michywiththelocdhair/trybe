@@ -29,9 +29,10 @@ async function deliver(opts: {
   subject: string;
   component: React.ReactElement;
   attachments?: Attachment[];
-}): Promise<{ messageId?: string; error?: string }> {
+}): Promise<{ messageId?: string; error?: string; html?: string }> {
+  let html: string | undefined;
   try {
-    const html = await render(opts.component);
+    html = await render(opts.component);
     const text = await render(opts.component, { plainText: true });
     const { data, error } = await resend().emails.send({
       from: env.RESEND_FROM_EMAIL,
@@ -41,10 +42,10 @@ async function deliver(opts: {
       text,
       attachments: opts.attachments,
     });
-    if (error) return { error: error.message ?? errMessage(error) };
-    return { messageId: data?.id };
+    if (error) return { error: error.message ?? errMessage(error), html };
+    return { messageId: data?.id, html };
   } catch (e) {
-    return { error: errMessage(e) };
+    return { error: errMessage(e), html };
   }
 }
 
@@ -88,6 +89,10 @@ export async function sendBookingEmail(opts: {
     resend_message_id: result.messageId ?? null,
     error: result.error ?? null,
     sent_at: new Date().toISOString(),
+    subject: opts.subject,
+    html: result.html ?? null,
+    related_kind: "booking",
+    related_id: opts.bookingId,
   };
 
   const { error: logError } = existing
@@ -111,6 +116,41 @@ export async function sendEmail(opts: {
   attachments?: Attachment[];
 }): Promise<{ sent: boolean; messageId?: string; error?: string }> {
   const result = await deliver(opts);
+  if (result.error) return { sent: false, error: result.error };
+  return { sent: true, messageId: result.messageId };
+}
+
+/**
+ * Send an email and record it in email_log (with a copy of the HTML) so admins
+ * can see exactly what went out. Not idempotent: callers track their own
+ * "already sent" timestamps. Never throws.
+ */
+export async function sendLoggedEmail(opts: {
+  recipientEmail: string;
+  subject: string;
+  component: React.ReactElement;
+  attachments?: Attachment[];
+  template: EmailTemplate;
+  relatedKind?: string;
+  relatedId?: string;
+}): Promise<{ sent: boolean; messageId?: string; error?: string }> {
+  const result = await deliver(opts);
+  try {
+    const { error } = await supabaseService().from("email_log").insert({
+      booking_id: null,
+      recipient_email: opts.recipientEmail,
+      template: opts.template,
+      resend_message_id: result.messageId ?? null,
+      error: result.error ?? null,
+      subject: opts.subject,
+      html: result.html ?? null,
+      related_kind: opts.relatedKind ?? null,
+      related_id: opts.relatedId ?? null,
+    });
+    if (error) console.error("[email] failed to write email_log", error);
+  } catch (err) {
+    console.error("[email] failed to write email_log", err);
+  }
   if (result.error) return { sent: false, error: result.error };
   return { sent: true, messageId: result.messageId };
 }

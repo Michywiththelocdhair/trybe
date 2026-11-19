@@ -5,6 +5,7 @@ import { Container } from "@/components/layout/container";
 import { formatEventDate } from "@/lib/dates";
 import { supabaseService } from "@/lib/supabase/service";
 import { christmasFairTicketUrl } from "@/lib/email/templates/christmas-fair";
+import { FAIR } from "@/lib/christmas-fair/config";
 
 export const metadata: Metadata = { title: "Your Christmas Fair Ticket" };
 export const instant = false;
@@ -25,7 +26,8 @@ export default async function ChristmasFairTicketPage({ params }: PageProps<"/ch
         <div className="rounded-[30px] bg-white p-6 text-center shadow-sm sm:p-10">
           <p className="m-0 text-sm font-extrabold uppercase tracking-[.14em] text-[#C8312B]">Trybe Christmas Fair</p>
           <h1 className="display mt-3 text-4xl uppercase sm:text-5xl">Your family ticket</h1>
-          <p className="mt-2 text-lg">{formatEventDate("2026-12-19")} · Venue and opening hours TBC</p>
+          <p className="mt-2 text-lg">{formatEventDate(FAIR.date)} · {FAIR.timeLabel} · arrive any time</p>
+          <p className="m-0 text-base font-semibold">{FAIR.venue}, {FAIR.address}</p>
           <img src={qr} alt="Your Christmas Fair entry QR code" width={240} height={240} className="mx-auto mt-5 size-60" />
           <p className="text-sm font-bold uppercase tracking-widest text-[color:var(--muted-plum)]">Ticket code</p>
           <p className="display m-0 text-3xl">{ticket.ticket_code.slice(0, 8).toUpperCase()}</p>

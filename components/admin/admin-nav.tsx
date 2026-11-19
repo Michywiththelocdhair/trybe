@@ -8,6 +8,7 @@ const LINKS = [
   { label: "Bookings", href: "/admin/bookings", match: "prefix" },
   { label: "Events", href: "/admin/events", match: "prefix" },
   { label: "Christmas Fair", href: "/admin/christmas-fair", match: "prefix" },
+  { label: "Emails", href: "/admin/emails", match: "prefix" },
 ] as const;
 
 /**

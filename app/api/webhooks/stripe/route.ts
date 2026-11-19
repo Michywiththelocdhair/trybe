@@ -16,6 +16,14 @@ import { formatLondonTime } from "@/lib/dates";
 import { requireEnv } from "@/lib/env";
 import { stripe } from "@/lib/stripe";
 import { supabaseService } from "@/lib/supabase/service";
+import { formatPence } from "@/lib/christmas-fair/config";
+import {
+  sendFairAdminNotice,
+  sendTicketConfirmation,
+  sendVendorEmail,
+  TICKET_EMAIL_COLUMNS,
+  VENDOR_EMAIL_COLUMNS,
+} from "@/lib/christmas-fair/emails";
 
 /**
  * Stripe webhook receiver.
@@ -121,14 +129,24 @@ async function handleEvent(db: Db, event: Stripe.Event): Promise<void> {
   switch (event.type) {
     case "checkout.session.completed":
     // Only fires if async payment methods are enabled in Stripe; harmless otherwise.
-    case "checkout.session.async_payment_succeeded":
-      await confirmBooking(db, event.data.object);
+    case "checkout.session.async_payment_succeeded": {
+      const session = event.data.object;
+      const kind = session.metadata?.kind;
+      if (kind === "christmas_fair_ticket") await confirmFairTicket(db, session);
+      else if (kind === "christmas_fair_vendor") await confirmFairVendor(db, session);
+      else await confirmBooking(db, session);
       return;
-    case "checkout.session.expired":
-      await expireBooking(db, event.data.object);
+    }
+    case "checkout.session.expired": {
+      const session = event.data.object;
+      if (session.metadata?.kind === "christmas_fair_ticket") await expireFairTicket(db, session);
+      else if (session.metadata?.kind === "christmas_fair_vendor") return; // the approval window, not the session, governs vendors
+      else await expireBooking(db, session);
       return;
+    }
     case "charge.refunded":
       await refundBooking(db, event.data.object);
+      await refundFairPayments(db, event.data.object);
       return;
     default:
       // Unsubscribed/unknown event types are acknowledged and ignored.
@@ -447,4 +465,129 @@ async function refundBooking(db: Db, charge: Stripe.Charge): Promise<void> {
     .eq("stripe_payment_intent_id", paymentIntentId)
     .neq("status", "refunded");
   if (error) throw dbError(error);
+}
+
+// ---------------------------------------------------------------------------
+// Christmas Fair
+// ---------------------------------------------------------------------------
+
+function paymentIntentIdOf(session: Stripe.Checkout.Session): string | null {
+  return typeof session.payment_intent === "string" ? session.payment_intent : (session.payment_intent?.id ?? null);
+}
+
+async function confirmFairTicket(db: Db, session: Stripe.Checkout.Session): Promise<void> {
+  if (session.payment_status === "unpaid") return;
+  const columns = `${TICKET_EMAIL_COLUMNS}, status, confirmation_sent_at, admin_notified_at, phone` as const;
+  let { data: ticket, error } = await db.from("christmas_fair_tickets").select(columns).eq("stripe_checkout_session_id", session.id).maybeSingle();
+  if (error) throw dbError(error);
+  const metadataId = session.metadata?.ticket_id;
+  if (!ticket && metadataId) {
+    ({ data: ticket, error } = await db.from("christmas_fair_tickets").select(columns).eq("id", metadataId).maybeSingle());
+    if (error) throw dbError(error);
+  }
+  if (!ticket) {
+    console.error("[stripe-webhook] paid fair session has no matching ticket", { sessionId: session.id, metadataId });
+    return;
+  }
+  if (ticket.status === "confirmed") return;
+  if (ticket.status === "cancelled" || ticket.status === "refunded") {
+    console.error("[stripe-webhook] payment received for a closed fair ticket, needs manual refund", { ticketId: ticket.id, sessionId: session.id });
+    return;
+  }
+  const expected = ticket.minimum_donation_pence + ticket.extra_donation_pence;
+  if (session.amount_total !== expected) {
+    console.error("[stripe-webhook] fair ticket amount mismatch", { ticketId: ticket.id, amountTotal: session.amount_total, expected });
+  }
+  if (ticket.status === "expired") {
+    console.warn("[stripe-webhook] fair payment landed after the hold expired, confirming anyway", { ticketId: ticket.id });
+  }
+  const { data: updated, error: updateError } = await db.from("christmas_fair_tickets").update({
+    status: "confirmed",
+    amount_paid_pence: session.amount_total ?? expected,
+    paid_at: new Date().toISOString(),
+    stripe_checkout_session_id: session.id,
+    stripe_payment_intent_id: paymentIntentIdOf(session),
+  }).eq("id", ticket.id).in("status", ["pending_payment", "expired"]).select("id");
+  if (updateError) {
+    // 23505: this family already has a confirmed ticket under the same email.
+    if (updateError.code === UNIQUE_VIOLATION) {
+      console.error("[stripe-webhook] duplicate paid fair ticket for one email, needs manual refund", { ticketId: ticket.id, sessionId: session.id });
+      return;
+    }
+    throw dbError(updateError);
+  }
+  if (!updated || updated.length === 0) return;
+
+  // Paid and confirmed: emails are best effort and must never throw.
+  const paid = { ...ticket, amount_paid_pence: session.amount_total ?? expected };
+  const confirmation = await sendTicketConfirmation(paid, db);
+  if (!confirmation.sent) console.error("[stripe-webhook] fair ticket email failed", { ticketId: ticket.id, error: confirmation.error });
+  const notice = await sendFairAdminNotice("New Christmas Fair family ticket", [
+    `Family: ${ticket.family_name}`,
+    `Email: ${ticket.email}${ticket.phone ? ` · ${ticket.phone}` : ""}`,
+    `Party: ${ticket.adult_count} adults, ${ticket.child_count} children`,
+    `Donation paid: ${formatPence(paid.amount_paid_pence)}${ticket.extra_donation_pence > 0 ? ` (including ${formatPence(ticket.extra_donation_pence)} extra)` : ""}`,
+  ], { kind: "christmas_fair_ticket", id: ticket.id });
+  if (notice.sent) await db.from("christmas_fair_tickets").update({ admin_notified_at: new Date().toISOString() }).eq("id", ticket.id);
+}
+
+async function expireFairTicket(db: Db, session: Stripe.Checkout.Session): Promise<void> {
+  const { error } = await db.from("christmas_fair_tickets").update({ status: "expired" })
+    .eq("stripe_checkout_session_id", session.id).eq("status", "pending_payment");
+  if (error) throw dbError(error);
+}
+
+async function confirmFairVendor(db: Db, session: Stripe.Checkout.Session): Promise<void> {
+  if (session.payment_status === "unpaid") return;
+  const vendorId = session.metadata?.vendor_id;
+  const columns = `${VENDOR_EMAIL_COLUMNS}, status, phone` as const;
+  let { data: vendor, error } = await db.from("christmas_fair_vendors").select(columns).eq("stripe_checkout_session_id", session.id).maybeSingle();
+  if (error) throw dbError(error);
+  if (!vendor && vendorId) {
+    ({ data: vendor, error } = await db.from("christmas_fair_vendors").select(columns).eq("id", vendorId).maybeSingle());
+    if (error) throw dbError(error);
+  }
+  if (!vendor) {
+    console.error("[stripe-webhook] paid vendor session has no matching vendor", { sessionId: session.id, vendorId });
+    return;
+  }
+  if (vendor.status === "paid") return;
+  if (vendor.status !== "approved" && vendor.status !== "expired") {
+    console.error("[stripe-webhook] vendor paid while not approved, needs manual review/refund", { vendorId: vendor.id, status: vendor.status, sessionId: session.id });
+    return;
+  }
+  if (vendor.status === "expired") {
+    console.warn("[stripe-webhook] vendor paid after their window closed, confirming anyway", { vendorId: vendor.id });
+  }
+  const amount = session.amount_total ?? vendor.table_price_pence ?? 0;
+  const { data: updated, error: updateError } = await db.from("christmas_fair_vendors").update({
+    status: "paid",
+    amount_paid_pence: amount,
+    paid_at: new Date().toISOString(),
+    stripe_checkout_session_id: session.id,
+    stripe_payment_intent_id: paymentIntentIdOf(session),
+  }).eq("id", vendor.id).in("status", ["approved", "expired"]).select("id");
+  if (updateError) throw dbError(updateError);
+  if (!updated || updated.length === 0) return;
+
+  const paid = { ...vendor, amount_paid_pence: amount };
+  const sent = await sendVendorEmail("fair_vendor_paid", paid, db);
+  if (!sent.sent) console.error("[stripe-webhook] vendor paid email failed", { vendorId: vendor.id, error: sent.error });
+  await sendFairAdminNotice("Christmas Fair vendor table paid", [
+    `Business: ${vendor.business_name}`,
+    `Contact: ${vendor.contact_name} (${vendor.email}${vendor.phone ? `, ${vendor.phone}` : ""})`,
+    `Paid: ${formatPence(amount)}`,
+  ], { kind: "christmas_fair_vendor", id: vendor.id });
+}
+
+async function refundFairPayments(db: Db, charge: Stripe.Charge): Promise<void> {
+  if (!charge.refunded) return;
+  const paymentIntentId = typeof charge.payment_intent === "string" ? charge.payment_intent : charge.payment_intent?.id;
+  if (!paymentIntentId) return;
+  const [tickets, vendors] = await Promise.all([
+    db.from("christmas_fair_tickets").update({ status: "refunded" }).eq("stripe_payment_intent_id", paymentIntentId).neq("status", "refunded"),
+    db.from("christmas_fair_vendors").update({ status: "refunded" }).eq("stripe_payment_intent_id", paymentIntentId).neq("status", "refunded"),
+  ]);
+  if (tickets.error) throw dbError(tickets.error);
+  if (vendors.error) throw dbError(vendors.error);
 }

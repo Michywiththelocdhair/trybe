@@ -108,6 +108,10 @@
 .fair-scallop { height: 22px; background-image: radial-gradient(circle at 12px -1px, transparent 13px, #fbf5ec 13.5px); background-size: 24px 22px; }
 .fair-scallop-up { transform: rotate(180deg); }
 .fair-step-number { outline: 6px dotted #fbf5ec; outline-offset: -4px; }
+li:nth-child(4n+1) > .fair-step-number { background: #452c86; }
+li:nth-child(4n+2) > .fair-step-number { background: #c8312b; }
+li:nth-child(4n+3) > .fair-step-number { background: #1e5b47; }
+li:nth-child(4n+4) > .fair-step-number { background: #ba85ba; color: #452c86; }
 .tbc { border: 1px dashed #9273b1; border-radius: 6px; background: #f4e7f3; color: #452c86; padding: 0 6px; }
 .fair-final-stamp { outline: 7px dotted #c8312b; outline-offset: -4px; }
 .fair-door { transition: transform .2s ease; }

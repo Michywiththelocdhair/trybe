@@ -28,12 +28,12 @@ export default function TermsPage() {
 
         <section className="flex flex-col gap-3">
           <h2 className={HEADING}>Christmas Fair family tickets</h2>
-          <p className={COPY}>Family entry to the Trybe Christmas Fair on 19 December 2026 is free, but a ticket is required and places are limited. One ticket covers one family group of up to eight people. Please provide an accurate headcount. We send the ticket QR code to the email address supplied; bring it on the day for entry. Venue and opening hours are being confirmed and will be shared with ticket holders by email.</p>
+          <p className={COPY}>The Trybe Christmas Fair takes place on Saturday 19 December 2026, 12–5pm, at Acres, 12 Acklam Road, London W10 5QZ, and is a joint venture between Acres and Trybe. Entry is by a minimum donation of £2 per adult and £1 per child, paid when you book, and you may choose to add an extra donation. All entry donations go to Acres for their Christmas Day dinner. A ticket is required and places are limited. One ticket covers one family group of up to eight people; please provide an accurate headcount. Your ticket is confirmed once payment has been received, and we send the ticket QR code to the email address supplied; bring it on the day for entry. Tickets booked before entry donations were introduced remain valid.</p>
         </section>
 
         <section className="flex flex-col gap-3">
           <h2 className={HEADING}>Christmas Fair vendors</h2>
-          <p className={COPY}>Submitting a vendor application does not reserve a pitch or create an agreement to trade. Trybe reviews applications and will contact applicants about its decision. If an application is accepted, the £20 pitch fee is payable only after acceptance, following direct contact from Trybe. A pitch is confirmed once payment arrangements have been completed with Trybe. Submitting an application does not authorize a payment.</p>
+          <p className={COPY}>Submitting a vendor application does not reserve a table or create an agreement to trade. Trybe reviews applications and emails applicants with its decision. If an application is approved, we email a link to pay for the table: £25 for each of the first ten tables offered and £35 thereafter, with the price confirmed in the approval email. Payment must be made within three days of approval; if it isn’t, the table may be offered to another vendor. A table is confirmed once payment has been received. Tables and chairs are provided; set-up is from 11:15am and pack-down must be finished by 5:45pm. Vendors must hold basic one-day event public liability insurance, must not run drinks-only stalls (hot drinks served alongside food are fine), and are responsible for taking and managing any bookings for paid sessions or experiences they offer. Applications close on 10 December 2026.</p>
         </section>
 
         <section className="flex flex-col gap-3">

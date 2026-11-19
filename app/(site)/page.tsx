@@ -349,7 +349,7 @@ export default function HomePage() {
                 aria-label="Trybe Christmas Fair"
                 className="absolute inset-0"
               />
-              <Tag variant="featured" className="absolute left-4 top-4 md:left-5 md:top-5">Free family entry</Tag>
+              <Tag variant="featured" className="absolute left-4 top-4 md:left-5 md:top-5">Acres × Trybe</Tag>
             </div>
 
             <div className="flex flex-1 flex-col gap-3 p-[22px] md:gap-[14px] md:p-8">
@@ -361,24 +361,21 @@ export default function HomePage() {
                 Christmas Fair
               </h3>
               <p className="text-[17px] leading-normal text-ink-muted md:text-lg md:leading-[1.55]">
-                A festive day out for the whole family, with local makers, treats and activities for little ones.
+                A festive day out for the whole family, with workshops, local makers, treats and activities for little ones.
               </p>
               <ul className="m-0 flex list-none flex-col gap-2 p-0 text-base">
-                <li>Date: Sat 19 December 2026</li>
-                <li>Tickets: Free</li>
-                {/*<li>
-                  Location: <Tag variant="tbc">[Venue TBC]</Tag>
-                </li>*/}
-                <li>More details coming soon!</li>
+                <li>Date: Sat 19 December 2026, 12–5pm</li>
+                <li>Location: Acres, 12 Acklam Road, London W10 5QZ</li>
+                <li>Entry: £2 adults · £1 kids, donated to Acres</li>
               </ul>
-              {/* <Button
+              <Button
                 as="a"
                 href="/christmas-fair"
                 variant="outline"
                 className="mt-auto w-full md:w-auto md:self-start"
               >
                 Find out more
-              </Button> */}
+              </Button>
             </div>
           </article>
         </div>

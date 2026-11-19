@@ -25,9 +25,12 @@ supabase/migrations/20261029000003_rls_policies.sql
 supabase/migrations/20261104000006_admin_booking_email.sql
 supabase/migrations/20261112000007_booking_discounts.sql
 supabase/migrations/20261112000008_slots_taken_on_payment.sql
+supabase/migrations/20261119000009_christmas_fair_paid.sql
 ```
 
 The final migration adds the `admin_booking` email-log type used to safely retry Studio Stars admin notifications.
+
+`20261119000009_christmas_fair_paid.sql` switches the Christmas Fair to paid family entry (a £2 / £1 donation to Acres), adds the vendor apply → approve → pay flow, creates the private `christmas-fair-vendors` storage bucket for vendor logos and photos, keeps a copy of every email the site sends, and adds the `email_templates` table behind **Admin → Emails**. Tickets issued before it remain valid; earlier "accepted" vendors become "approved" so an admin can send them a payment link.
 
 These create:
 

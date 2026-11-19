@@ -37,7 +37,28 @@ export type EmailTemplate =
   | "thank_you"
   | "waitlist_opened"
   | "receipt"
-  | "admin_booking";
+  | "admin_booking"
+  | "fair_ticket_confirmation"
+  | "fair_ticket_reminder"
+  | "fair_vendor_received"
+  | "fair_vendor_approved"
+  | "fair_vendor_declined"
+  | "fair_vendor_paid"
+  | "fair_admin_notice"
+  | "other";
+
+/** Fair emails whose words an admin can edit (rows in email_templates). */
+export type EditableEmailKey =
+  | "fair_ticket_confirmation"
+  | "fair_ticket_reminder"
+  | "fair_vendor_received"
+  | "fair_vendor_approved"
+  | "fair_vendor_declined"
+  | "fair_vendor_paid";
+
+export type FairTicketStatus = "pending_payment" | "confirmed" | "expired" | "cancelled" | "refunded";
+export type FairVendorStatus = "pending" | "approved" | "paid" | "declined" | "expired" | "refunded";
+export type FairVendorCategory = "kids" | "food" | "crafts" | "other";
 
 export interface Database {
   public: {
@@ -133,26 +154,34 @@ export interface Database {
         Row: {
           id: string; event_id: string; ticket_code: string; family_name: string;
           email: string; phone: string | null; adult_count: number; child_count: number;
-          status: "confirmed" | "cancelled"; terms_version: string;
+          status: FairTicketStatus; terms_version: string;
           agreed_to_terms_at: string; confirmation_sent_at: string | null;
           reminder_sent_at: string | null; admin_notified_at: string | null;
           created_at: string; checked_in_at: string | null;
+          minimum_donation_pence: number; extra_donation_pence: number;
+          amount_paid_pence: number | null; stripe_checkout_session_id: string | null;
+          stripe_payment_intent_id: string | null; expires_at: string | null; paid_at: string | null;
         };
-        Insert: Omit<Database["public"]["Tables"]["christmas_fair_tickets"]["Row"], "id" | "ticket_code" | "created_at" | "agreed_to_terms_at" | "confirmation_sent_at" | "reminder_sent_at" | "admin_notified_at" | "checked_in_at"> & Partial<Pick<Database["public"]["Tables"]["christmas_fair_tickets"]["Row"], "id" | "ticket_code" | "created_at" | "agreed_to_terms_at" | "confirmation_sent_at" | "reminder_sent_at" | "admin_notified_at" | "checked_in_at">>;
+        Insert: Omit<Database["public"]["Tables"]["christmas_fair_tickets"]["Row"], "id" | "ticket_code" | "created_at" | "agreed_to_terms_at" | "confirmation_sent_at" | "reminder_sent_at" | "admin_notified_at" | "checked_in_at" | "minimum_donation_pence" | "extra_donation_pence" | "amount_paid_pence" | "stripe_checkout_session_id" | "stripe_payment_intent_id" | "expires_at" | "paid_at"> & Partial<Pick<Database["public"]["Tables"]["christmas_fair_tickets"]["Row"], "id" | "ticket_code" | "created_at" | "agreed_to_terms_at" | "confirmation_sent_at" | "reminder_sent_at" | "admin_notified_at" | "checked_in_at" | "minimum_donation_pence" | "extra_donation_pence" | "amount_paid_pence" | "stripe_checkout_session_id" | "stripe_payment_intent_id" | "expires_at" | "paid_at">>;
         Update: Partial<Database["public"]["Tables"]["christmas_fair_tickets"]["Insert"]>;
         Relationships: [];
       };
       christmas_fair_vendors: {
         Row: {
           id: string; event_id: string; business_name: string; contact_name: string;
-          email: string; phone: string; category: "kids" | "food" | "crafts" | "other";
+          email: string; phone: string; category: FairVendorCategory;
           description: string; website: string | null; needs_power: boolean;
           has_public_liability_insurance: boolean; food_hygiene_rating: string | null;
-          status: "pending" | "accepted" | "declined"; terms_version: string;
+          status: FairVendorStatus; terms_version: string;
           agreed_to_terms_at: string; applicant_confirmation_sent_at: string | null; admin_notified_at: string | null;
           created_at: string; updated_at: string;
+          access_token: string; table_price_pence: number | null; approved_at: string | null;
+          payment_due_at: string | null; paid_at: string | null; amount_paid_pence: number | null;
+          stripe_checkout_session_id: string | null; stripe_payment_intent_id: string | null;
+          logo_path: string | null; photo_paths: string[]; uploads_completed_at: string | null;
+          decision_email_sent_at: string | null; payment_confirmation_sent_at: string | null;
         };
-        Insert: Omit<Database["public"]["Tables"]["christmas_fair_vendors"]["Row"], "id" | "created_at" | "updated_at" | "agreed_to_terms_at" | "applicant_confirmation_sent_at" | "admin_notified_at" | "status"> & Partial<Pick<Database["public"]["Tables"]["christmas_fair_vendors"]["Row"], "id" | "created_at" | "updated_at" | "agreed_to_terms_at" | "applicant_confirmation_sent_at" | "admin_notified_at" | "status">>;
+        Insert: Pick<Database["public"]["Tables"]["christmas_fair_vendors"]["Row"], "event_id" | "business_name" | "contact_name" | "email" | "phone" | "category" | "description" | "website" | "needs_power" | "has_public_liability_insurance" | "terms_version"> & Partial<Omit<Database["public"]["Tables"]["christmas_fair_vendors"]["Row"], "event_id" | "business_name" | "contact_name" | "email" | "phone" | "category" | "description" | "website" | "needs_power" | "has_public_liability_insurance" | "terms_version">>;
         Update: Partial<Database["public"]["Tables"]["christmas_fair_vendors"]["Insert"]>;
         Relationships: [];
       };
@@ -186,13 +215,32 @@ export interface Database {
           resend_message_id: string | null;
           sent_at: string;
           error: string | null;
+          subject: string | null;
+          html: string | null;
+          related_kind: string | null;
+          related_id: string | null;
         };
         Insert: Omit<
           Database["public"]["Tables"]["email_log"]["Row"],
-          "id" | "sent_at"
+          "id" | "sent_at" | "subject" | "html" | "related_kind" | "related_id"
         > &
-          Partial<Pick<Database["public"]["Tables"]["email_log"]["Row"], "id" | "sent_at">>;
+          Partial<Pick<Database["public"]["Tables"]["email_log"]["Row"], "id" | "sent_at" | "subject" | "html" | "related_kind" | "related_id">>;
         Update: Partial<Database["public"]["Tables"]["email_log"]["Insert"]>;
+        Relationships: [];
+      };
+      email_templates: {
+        Row: {
+          key: EditableEmailKey;
+          subject: string;
+          heading: string;
+          body: string;
+          button_label: string | null;
+          updated_at: string;
+          updated_by: string | null;
+        };
+        Insert: Omit<Database["public"]["Tables"]["email_templates"]["Row"], "updated_at" | "updated_by"> &
+          Partial<Pick<Database["public"]["Tables"]["email_templates"]["Row"], "updated_at" | "updated_by">>;
+        Update: Partial<Database["public"]["Tables"]["email_templates"]["Insert"]>;
         Relationships: [];
       };
       stripe_webhook_events: {
@@ -245,16 +293,20 @@ export interface Database {
     };
     Views: Record<string, never>;
     Functions: {
-      create_christmas_fair_ticket: {
-        Args: { p_family_name: string; p_email: string; p_phone: string | null; p_adult_count: number; p_child_count: number; p_terms_version: string };
+      create_christmas_fair_ticket_hold: {
+        Args: { p_family_name: string; p_email: string; p_phone: string | null; p_adult_count: number; p_child_count: number; p_extra_donation_pence: number; p_terms_version: string; p_hold_minutes: number };
         Returns: Database["public"]["Tables"]["christmas_fair_tickets"]["Row"];
+      };
+      approve_christmas_fair_vendor: {
+        Args: { p_vendor_id: string; p_payment_days: number };
+        Returns: Database["public"]["Tables"]["christmas_fair_vendors"]["Row"];
+      };
+      decline_christmas_fair_vendor: {
+        Args: { p_vendor_id: string };
+        Returns: Database["public"]["Tables"]["christmas_fair_vendors"]["Row"];
       };
       update_christmas_fair_capacities: {
         Args: { p_max_families: number; p_max_vendors: number };
-        Returns: undefined;
-      };
-      set_christmas_fair_vendor_status: {
-        Args: { p_vendor_id: string; p_status: "accepted" | "declined" };
         Returns: undefined;
       };
       create_booking_with_children: {

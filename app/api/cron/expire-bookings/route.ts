@@ -72,5 +72,24 @@ export async function GET(req: NextRequest) {
     });
   }
 
-  return Response.json({ expired: expired.length });
+  // Christmas Fair: unpaid family holds and vendor approvals whose 3-day
+  // payment window has passed. Capacity already ignores both; this keeps the
+  // admin view honest.
+  const now = new Date().toISOString();
+  const [fairTickets, fairVendors] = await Promise.all([
+    supabaseService().from("christmas_fair_tickets").update({ status: "expired" })
+      .eq("status", "pending_payment").lt("expires_at", now).select("id, stripe_checkout_session_id"),
+    supabaseService().from("christmas_fair_vendors").update({ status: "expired" })
+      .eq("status", "approved").lt("payment_due_at", now).select("id"),
+  ]);
+  if (fairTickets.error) console.error("[cron:expire-bookings] fair ticket expiry failed", { message: fairTickets.error.message });
+  if (fairVendors.error) console.error("[cron:expire-bookings] fair vendor expiry failed", { message: fairVendors.error.message });
+  const fairSessionIds = (fairTickets.data ?? []).map((t) => t.stripe_checkout_session_id).filter((id): id is string => Boolean(id));
+  await Promise.allSettled(fairSessionIds.map((id) => stripe().checkout.sessions.expire(id)));
+
+  return Response.json({
+    expired: expired.length,
+    fairTicketsExpired: fairTickets.data?.length ?? 0,
+    fairVendorsExpired: fairVendors.data?.length ?? 0,
+  });
 }
