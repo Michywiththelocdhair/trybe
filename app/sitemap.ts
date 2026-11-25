@@ -13,12 +13,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.9,
     },
     {
-      url: `${BASE_URL}/studio-stars/book`,
-      lastModified,
-      changeFrequency: "weekly",
-      priority: 0.8,
-    },
-    {
       url: `${BASE_URL}/christmas-fair`,
       lastModified,
       changeFrequency: "weekly",

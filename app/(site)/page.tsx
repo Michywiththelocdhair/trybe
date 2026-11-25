@@ -174,7 +174,7 @@ export default function HomePage() {
             />
 
             <Link
-              href="/studio-stars"
+              href="/christmas-fair"
               className="relative flex h-[170px] flex-col justify-between overflow-hidden rounded-[24px] bg-trybe-purple p-[18px] text-white no-underline transition-transform hover:-translate-y-1 md:h-[240px] md:p-6 lg:h-auto lg:justify-start lg:gap-3 lg:rounded-[36px] lg:p-7"
             >
               <Star className="absolute right-6 top-6 hidden size-[34px] text-orchid lg:block" />
@@ -185,16 +185,16 @@ export default function HomePage() {
                 className="display text-[32px] lg:text-[44px]"
                 style={TIGHT}
               >
-                Studio Stars
+                Christmas Fair
               </span>
               <span className="text-[15px] leading-[1.45] text-blush lg:text-[17px]">
-                <span className="lg:hidden">Sat 5 Dec · The Qube</span>
+                <span className="lg:hidden">Sat 19 Dec · Acres</span>
                 <span className="hidden lg:inline">
-                  A Christmas singing experience · Sat 5 Dec 2026 · The Qube
+                  A festive family day out · Sat 19 Dec 2026 · Acres, London W10
                 </span>
               </span>
               <span className="hidden items-center gap-2 text-[17px] font-extrabold lg:inline-flex">
-                Discover Studio Stars
+                Discover the Christmas Fair
                 <ArrowRight className="size-4" />
               </span>
             </Link>
@@ -223,58 +223,37 @@ export default function HomePage() {
 
         {/* Event cards are inlined to support the structured facts and multiple calls to action. */}
         <div className="mt-[18px] grid gap-3 md:mt-8 md:gap-4 lg:grid-cols-[2fr_1fr]">
-          {/* Featured: Studio Stars */}
+          {/* Featured: Christmas Fair */}
           <article className="flex flex-col overflow-hidden rounded-card border-[1.5px] border-border bg-surface text-ink md:rounded-[36px] lg:flex-row">
-            <div className="relative flex h-[210px] items-center justify-center overflow-hidden bg-indigo md:h-[300px] lg:h-auto lg:min-h-[380px] lg:w-[38%] lg:shrink-0">
-              <div
-                aria-hidden="true"
-                className="absolute -top-10 left-1/2 h-[300px] w-[260px] -translate-x-1/2 bg-[radial-gradient(ellipse_at_top,rgba(186,133,186,0.55),rgba(186,133,186,0)_70%)] md:h-[420px] md:w-[340px]"
-              />
-              {/* Artwork stays as the design's mic-and-stars illustration until real event art exists. */}
+            <div
+              className="relative h-[210px] bg-periwinkle bg-cover bg-center md:h-[300px] lg:h-auto lg:min-h-[380px] lg:w-[42%] lg:shrink-0"
+              style={{ backgroundImage: "linear-gradient(0deg, rgba(36,18,63,.25), rgba(36,18,63,.08)), url('/images/christmas-fair-1.png')" }}
+            >
               <div
                 role="img"
-                aria-label="Studio Stars artwork: a microphone under a starry stage light"
-                className="absolute inset-0 flex items-center justify-center"
-              >
-                <svg
-                  aria-hidden="true"
-                  viewBox="0 0 48 72"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.3"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="relative h-[108px] w-[72px] text-white md:h-[180px] md:w-[120px]"
-                >
-                  <rect x="14" y="4" width="20" height="32" rx="10" />
-                  <path d="M14 18h20M14 25h20" />
-                  <path d="M8 30c0 9 7 16 16 16s16-7 16-16" />
-                  <path d="M24 46v16M14 66h20" />
-                </svg>
-                <Star className="absolute left-[30px] top-[70px] size-7 text-orchid md:left-9 md:top-16 md:size-10" />
-                <Star className="absolute right-10 top-[100px] size-[18px] text-blush md:right-11 md:top-[90px] md:size-[22px]" />
-                <Star className="absolute bottom-[54px] right-16 hidden size-7 text-lavender md:block" />
-              </div>
+                aria-label="Trybe Christmas Fair"
+                className="absolute inset-0"
+              />
               <Tag
                 variant="featured"
                 className="absolute left-4 top-4 md:left-5 md:top-5"
               >
-                Featured
+                Acres × Trybe
               </Tag>
             </div>
 
             <div className="flex flex-col gap-[14px] p-[22px] md:gap-[22px] md:p-9 lg:flex-1">
               <div className="flex flex-col gap-2">
-                <p className="eyebrow">Christmas singing experience</p>
+                <p className="eyebrow">Family event</p>
                 <h3
                   className="display text-[42px] md:text-[52px]"
                   style={TIGHT}
                 >
-                  Studio Stars
+                  Trybe Christmas Fair
                 </h3>
                 <p className="text-[17px] leading-normal text-ink-muted md:text-lg md:leading-[1.55]">
-                  Your child&apos;s very own 20-minute session in the spotlight,
-                  singing a Christmas song they choose.
+                  A festive day out for the whole family, with workshops, local
+                  makers, treats and activities for little ones.
                 </p>
               </div>
 
@@ -285,9 +264,9 @@ export default function HomePage() {
                     <path d="M3 10h18M8 3v4M16 3v4" />
                   </StrokeIcon>
                   <span>
-                    <strong>Sat 5 Dec 2026</strong>
+                    <strong>Sat 19 Dec 2026</strong>
                     <br />
-                    Sessions 10:00 am–2:00 pm
+                    12:00–5:00 pm
                   </span>
                 </li>
                 <li className="flex items-start gap-2.5">
@@ -296,20 +275,9 @@ export default function HomePage() {
                     <circle cx="12" cy="9" r="2.5" />
                   </StrokeIcon>
                   <span>
-                    <strong>The Qube</strong>
+                    <strong>Acres</strong>
                     <br />
-                    Parking available
-                  </span>
-                </li>
-                <li className="flex items-start gap-2.5">
-                  <StrokeIcon className="mt-px hidden size-5 shrink-0 text-trybe-purple xl:block">
-                    <circle cx="12" cy="12" r="9" />
-                    <path d="M12 7v5l3 2" />
-                  </StrokeIcon>
-                  <span>
-                    <strong>20-minute session</strong>
-                    <br />
-                    One per child
+                    12 Acklam Road, London W10 5QZ
                   </span>
                 </li>
                 <li className="flex items-start gap-2.5">
@@ -318,64 +286,85 @@ export default function HomePage() {
                     <circle cx="7.5" cy="7.5" r="1.5" />
                   </StrokeIcon>
                   <span>
-                    <strong>£100 per child</strong>
+                    <strong>£2 adults · £1 kids</strong>
                     <br />
-                    20% off each extra sibling
+                    Donated to Acres
+                  </span>
+                </li>
+                <li className="flex items-start gap-2.5">
+                  <StrokeIcon className="mt-px hidden size-5 shrink-0 text-trybe-purple xl:block">
+                    <circle cx="8" cy="8" r="3" />
+                    <circle cx="16.5" cy="9" r="2.5" />
+                    <path d="M2.5 20c0-3.3 2.5-6 5.5-6s5.5 2.7 5.5 6M13 15.5c1-.9 2.2-1.5 3.5-1.5 2.8 0 5 2.4 5 5.5" />
+                  </StrokeIcon>
+                  <span>
+                    <strong>All ages</strong>
+                    <br />
+                    Workshops, makers &amp; treats
                   </span>
                 </li>
               </ul>
 
               <div className="mt-auto flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-                <Button as="a" href="/studio-stars" className="w-full sm:w-auto">
-                  Discover Studio Stars
+                <Button as="a" href="/christmas-fair/book" className="w-full sm:w-auto">
+                  Book family tickets
                 </Button>
                 <Button
                   as="a"
-                  href="/studio-stars/book"
+                  href="/christmas-fair"
                   variant="outline"
                   className="w-full sm:w-auto"
                 >
-                  Book a slot
+                  Find out more
                 </Button>
               </div>
             </div>
           </article>
 
-          {/* Christmas Fair */}
+          {/* Studio Stars: sold out, next dates to be announced */}
           <article className="flex flex-col overflow-hidden rounded-card border-[1.5px] border-border bg-surface text-ink md:rounded-[36px]">
-            <div className="relative flex h-[150px] items-center justify-center bg-periwinkle bg-cover bg-center md:h-60" style={{ backgroundImage: "linear-gradient(0deg, rgba(36,18,63,.25), rgba(36,18,63,.08)), url('/images/christmas-fair-1.png')" }}>
+            <div className="relative flex h-[150px] items-center justify-center overflow-hidden bg-indigo md:h-60">
               <div
-                role="img"
-                aria-label="Trybe Christmas Fair"
-                className="absolute inset-0"
+                aria-hidden="true"
+                className="absolute -top-10 left-1/2 h-[260px] w-[220px] -translate-x-1/2 bg-[radial-gradient(ellipse_at_top,rgba(186,133,186,0.55),rgba(186,133,186,0)_70%)]"
               />
-              <Tag variant="featured" className="absolute left-4 top-4 md:left-5 md:top-5">Acres × Trybe</Tag>
+              <svg
+                aria-hidden="true"
+                viewBox="0 0 48 72"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.3"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="relative h-[90px] w-[60px] text-white md:h-[130px] md:w-[86px]"
+              >
+                <rect x="14" y="4" width="20" height="32" rx="10" />
+                <path d="M14 18h20M14 25h20" />
+                <path d="M8 30c0 9 7 16 16 16s16-7 16-16" />
+                <path d="M24 46v16M14 66h20" />
+              </svg>
+              <Star className="absolute left-[22%] top-[30%] size-6 text-orchid md:size-8" />
+              <Star className="absolute right-[22%] top-[45%] size-4 text-blush md:size-5" />
+              <Tag
+                variant="featured"
+                className="absolute left-4 top-4 md:left-5 md:top-5"
+              >
+                Sold out
+              </Tag>
             </div>
 
             <div className="flex flex-1 flex-col gap-3 p-[22px] md:gap-[14px] md:p-8">
-              <p className="eyebrow">Family event</p>
+              <p className="eyebrow">Singing experience</p>
               <h3
                 className="display text-[38px] md:text-[44px]"
                 style={TIGHT}
               >
-                Christmas Fair
+                Studio Stars
               </h3>
               <p className="text-[17px] leading-normal text-ink-muted md:text-lg md:leading-[1.55]">
-                A festive day out for the whole family, with workshops, local makers, treats and activities for little ones.
+                We&apos;ve sold out! We&apos;ll be announcing the next dates
+                soon.
               </p>
-              <ul className="m-0 flex list-none flex-col gap-2 p-0 text-base">
-                <li>Date: Sat 19 December 2026, 12–5pm</li>
-                <li>Location: Acres, 12 Acklam Road, London W10 5QZ</li>
-                <li>Entry: £2 adults · £1 kids, donated to Acres</li>
-              </ul>
-              <Button
-                as="a"
-                href="/christmas-fair"
-                variant="outline"
-                className="mt-auto w-full md:w-auto md:self-start"
-              >
-                Find out more
-              </Button>
             </div>
           </article>
         </div>

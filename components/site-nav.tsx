@@ -16,8 +16,8 @@ const NAV_LINKS = [
   { label: "About Trybe", href: "/#about" },
 ] as const;
 
-const BOOK_HREF = "/studio-stars/book";
-const BOOK_LABEL = "Book Studio Stars";
+const BOOK_HREF = "/christmas-fair";
+const BOOK_LABEL = "Trybe Christmas Fair";
 
 /**
  * SiteNav — sticky brand-palette header.
@@ -60,13 +60,13 @@ export function SiteNav() {
 
         <div className="hidden md:block">
           <Button as="a" href={BOOK_HREF} size="sm">
-            Book Studio Stars
+            {BOOK_LABEL}
           </Button>
         </div>
 
         <div className="flex items-center gap-2 md:hidden">
           <Button as="a" href={BOOK_HREF} size="sm" className="whitespace-nowrap px-3 text-sm">
-            Book Studio Stars
+            Christmas Fair
           </Button>
           <MobileMenu
             links={NAV_LINKS}

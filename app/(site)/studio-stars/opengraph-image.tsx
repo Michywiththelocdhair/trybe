@@ -4,7 +4,7 @@ import {
   Star, frame, loadOgFonts,
 } from "../../../lib/og";
 
-export const alt = "Studio Stars - Christmas Singing Experience, Sat 5 Dec 2026 at The Qube";
+export const alt = "Studio Stars - a singing experience for kids. New dates coming soon";
 export const size = OG_SIZE;
 export const contentType = OG_CONTENT_TYPE;
 
@@ -22,13 +22,10 @@ export default async function Image() {
           Studio Stars
         </div>
         <div style={{ display: "flex", fontFamily: BODY_FONT, fontSize: 56, fontWeight: 600, color: "#ffffff", marginTop: 20 }}>
-          Christmas Singing Experience
+          Let your little star shine
         </div>
         <div style={{ display: "flex", fontFamily: BODY_FONT, fontSize: 40, fontWeight: 600, color: C.orchid, marginTop: 28 }}>
-          Sat 5 Dec 2026 · The Qube
-        </div>
-        <div style={{ display: "flex", fontFamily: BODY_FONT, fontSize: 38, fontWeight: 600, color: "#ffffff", marginTop: 12 }}>
-          From £100 per child
+          New dates coming soon
         </div>
         <Domain bottom={28} />
       </div>

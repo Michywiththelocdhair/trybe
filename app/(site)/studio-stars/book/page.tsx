@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { Container } from "@/components/layout/container";
 import { BookingForm, type BookingEvent } from "./booking-form";
 
@@ -21,7 +22,11 @@ const EVENT: BookingEvent = {
  * and <main>, and the studio-stars layout paints night behind us, so this page
  * lays down its own light full-bleed surface (the design's booking flow is light).
  */
+/** Studio Stars is sold out: send anyone who lands here back to the event page. */
+const SOLD_OUT = true;
+
 export default function BookPage() {
+  if (SOLD_OUT) redirect("/studio-stars");
   return (
     <div className="bg-[color:var(--surface-sunk)] text-night">
       <Container>

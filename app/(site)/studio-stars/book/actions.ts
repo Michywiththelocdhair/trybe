@@ -33,6 +33,9 @@ import {
 
 const STUDIO_STARS_SLUG = "studio-stars-2026-12";
 
+/** Studio Stars 2026 is sold out — no new bookings. */
+const BOOKINGS_OPEN = false as boolean;
+
 /**
  * Stripe rejects Checkout Sessions that expire sooner than 30 minutes after
  * creation (and later than 24 hours). The DB hold is shorter (15 min), so the
@@ -180,6 +183,15 @@ async function releaseHold(bookingId: string, reason: string): Promise<void> {
 export async function createBookingSession(
   input: unknown,
 ): Promise<BookingResult> {
+  // Studio Stars (5 Dec 2026) sold out via another platform. Refuse any new
+  // checkout even if someone still has the old booking form open. Flip
+  // BOOKINGS_OPEN back to true when the next dates go on sale.
+  if (!BOOKINGS_OPEN) {
+    return formError(
+      "Studio Stars is sold out. We'll be announcing the next dates soon.",
+    );
+  }
+
   const parsed = BookingSchema.safeParse(input);
   if (!parsed.success) {
     return { ok: false, errors: toFieldErrors(parsed.error) };
