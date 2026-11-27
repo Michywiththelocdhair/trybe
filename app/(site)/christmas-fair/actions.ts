@@ -9,6 +9,7 @@ import { supabaseService } from "@/lib/supabase/service";
 import {
   ALLOWED_UPLOAD_TYPES,
   FAIR,
+  charityLine,
   formatPence,
   vendorApplicationsOpen,
   vendorCategoryLabel,
@@ -99,7 +100,7 @@ export async function startFamilyTicketCheckout(formData: FormData): Promise<Fam
       price_data: {
         currency: "gbp",
         unit_amount: FAIR.adultMinimumPence,
-        product_data: { name: "Entry donation: adult", description: "Trybe Christmas Fair, Sat 19 Dec. Every penny goes to Acres’ Christmas Day dinner." },
+        product_data: { name: "Entry donation: adult", description: `Trybe Christmas Fair, Sat 19 Dec. Every penny goes to ${charityLine}.` },
       },
     },
   ];
@@ -109,7 +110,7 @@ export async function startFamilyTicketCheckout(formData: FormData): Promise<Fam
       price_data: {
         currency: "gbp",
         unit_amount: FAIR.childMinimumPence,
-        product_data: { name: "Entry donation: child", description: "Trybe Christmas Fair, Sat 19 Dec. Every penny goes to Acres’ Christmas Day dinner." },
+        product_data: { name: "Entry donation: child", description: `Trybe Christmas Fair, Sat 19 Dec. Every penny goes to ${charityLine}.` },
       },
     });
   }
@@ -119,7 +120,7 @@ export async function startFamilyTicketCheckout(formData: FormData): Promise<Fam
       price_data: {
         currency: "gbp",
         unit_amount: ticket.extra_donation_pence,
-        product_data: { name: "Extra donation to Acres", description: "Thank you! This goes to Acres’ Christmas Day dinner for people having a tough year." },
+        product_data: { name: "Extra donation", description: `Thank you! This also goes to ${charityLine}.` },
       },
     });
   }

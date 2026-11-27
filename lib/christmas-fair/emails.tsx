@@ -9,7 +9,7 @@ import { ChristmasFairAdminNotice } from "@/lib/email/templates/christmas-fair";
 import { Card, DetailRow, firstName, getSiteUrl, p } from "@/lib/email/templates/shared";
 import { supabaseService } from "@/lib/supabase/service";
 import type { Database, EditableEmailKey } from "@/lib/supabase/types";
-import { FAIR, formatLondonDeadline, formatPence, vendorCategoryLabel } from "./config";
+import { FAIR, charityLine, formatLondonDeadline, formatPence, vendorCategoryLabel } from "./config";
 
 type Db = ReturnType<typeof supabaseService>;
 type TicketRow = Database["public"]["Tables"]["christmas_fair_tickets"]["Row"];
@@ -108,7 +108,7 @@ export function buildTicketEmail(key: "fair_ticket_confirmation" | "fair_ticket_
       <DetailRow label="Family size" value={familySize(ticket)} />
       {key === "fair_ticket_confirmation" ? (
         <>
-          <DetailRow label="Entry donation" value={`${formatPence(ticketAmount(ticket))}, all going to Acres’ Christmas Day dinner`} />
+          <DetailRow label="Entry donation" value={`${formatPence(ticketAmount(ticket))}, all going to ${charityLine}`} />
           <Text style={{ ...p, textAlign: "center", marginTop: 24, fontWeight: 800 }}>Your entry QR code</Text>
           <Img src={qrSrc} alt={`QR code for ticket ${ticket.ticket_code.slice(0, 8).toUpperCase()}`} width="220" height="220" style={{ display: "block", margin: "0 auto" }} />
         </>

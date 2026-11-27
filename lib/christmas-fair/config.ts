@@ -43,6 +43,18 @@ export const FAIR = {
   termsVersion: "christmas-fair-v2-2026-11",
 } as const;
 
+/**
+ * The charity that receives every family's entry donation. It hasn't been
+ * announced yet: set its name here once it is, and every page, Stripe line and
+ * email that mentions it updates. (The Acres Christmas Day dinner is no longer
+ * happening.)
+ */
+export const FAIR_CHARITY_NAME: string | null = null;
+/** "a charity we’ll announce soon", or the charity's name once set. */
+export const charityLine = FAIR_CHARITY_NAME ?? "a charity we’ll announce soon";
+/** "charity", or the charity's name once set. Reads well after "donated to". */
+export const charityShort = FAIR_CHARITY_NAME ?? "charity";
+
 export const ALLOWED_UPLOAD_TYPES = ["image/jpeg", "image/png", "image/webp", "image/heic", "image/heif"] as const;
 
 export const VENDOR_CATEGORIES = [

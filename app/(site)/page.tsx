@@ -288,7 +288,7 @@ export default function HomePage() {
                   <span>
                     <strong>£2 adults · £1 kids</strong>
                     <br />
-                    Donated to Acres
+                    Donated to charity
                   </span>
                 </li>
                 <li className="flex items-start gap-2.5">

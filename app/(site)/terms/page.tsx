@@ -28,7 +28,7 @@ export default function TermsPage() {
 
         <section className="flex flex-col gap-3">
           <h2 className={HEADING}>Christmas Fair family tickets</h2>
-          <p className={COPY}>The Trybe Christmas Fair takes place on Saturday 19 December 2026, 12–5pm, at Acres, 12 Acklam Road, London W10 5QZ, and is a joint venture between Acres and Trybe. Entry is by a minimum donation of £2 per adult and £1 per child, paid when you book, and you may choose to add an extra donation. All entry donations go to Acres for their Christmas Day dinner. A ticket is required and places are limited. One ticket covers one family group of up to eight people; please provide an accurate headcount. Your ticket is confirmed once payment has been received, and we send the ticket QR code to the email address supplied; bring it on the day for entry. Tickets booked before entry donations were introduced remain valid.</p>
+          <p className={COPY}>The Trybe Christmas Fair takes place on Saturday 19 December 2026, 12–5pm, at Acres, 12 Acklam Road, London W10 5QZ, and is a joint venture between Acres and Trybe. Entry is by a minimum donation of £2 per adult and £1 per child, paid when you book, and you may choose to add an extra donation. All entry donations go to a charity that Trybe will announce before the fair. A ticket is required and places are limited. One ticket covers one family group of up to eight people; please provide an accurate headcount. Your ticket is confirmed once payment has been received, and we send the ticket QR code to the email address supplied; bring it on the day for entry. Tickets booked before entry donations were introduced remain valid.</p>
         </section>
 
         <section className="flex flex-col gap-3">

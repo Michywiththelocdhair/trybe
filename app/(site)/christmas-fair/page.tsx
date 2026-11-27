@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { ChristmasFairStallholders } from "@/components/christmas-fair-stallholders";
 import { getChristmasFairData } from "@/lib/christmas-fair/data";
-import { FAIR, formatPence } from "@/lib/christmas-fair/config";
+import { STALLHOLDERS } from "@/lib/christmas-fair/stallholders";
+import { FAIR, FAIR_CHARITY_NAME, charityLine, charityShort, formatPence } from "@/lib/christmas-fair/config";
 
 export const metadata: Metadata = {
   title: "Trybe Christmas Fair 2026 at Acres",
-  description: "Workshops, a DJ and local stalls for the whole family on Saturday 19 December, 12–5pm at Acres, London W10. Every ticket helps put Christmas dinner on the table for someone having a tough year.",
+  description: "Workshops, a DJ and local stalls for the whole family on Saturday 19 December, 12–5pm at Acres, London W10. Every ticket is a donation, and all of it goes to charity.",
 };
 export const instant = false;
 
@@ -25,7 +27,7 @@ export default async function ChristmasFairPage() {
               <span>present</span>
             </p>
             <h1 className="order-1 display my-0 w-full text-[clamp(60px,8vw,128px)] uppercase leading-[.88] tracking-[-.01em] lg:col-start-1 lg:row-start-2">Trybe <span className="text-[#C8312B]">Christmas</span> Fair</h1>
-            <p className="order-2 w-full max-w-[570px] text-[20px] leading-[1.5] sm:text-[21px] lg:col-start-1 lg:row-start-3">Workshops, a DJ and local stalls for the whole family. Every ticket helps put Christmas dinner on the table for someone having a tough year.</p>
+            <p className="order-2 w-full max-w-[570px] text-[20px] leading-[1.5] sm:text-[21px] lg:col-start-1 lg:row-start-3">Workshops, a DJ and local stalls for the whole family. Every ticket is a donation, and all of it goes to {charityLine}.</p>
             <div className="fair-ticket order-4 my-5 flex w-full max-w-[600px] overflow-hidden rounded-[22px] bg-white shadow-[0_7px_0_#452C86] sm:my-6 lg:col-start-1 lg:row-start-4">
               <div className="flex w-[118px] shrink-0 flex-col items-center justify-center bg-[#C8312B] px-3 py-4 text-center text-white sm:w-[144px]">
                 <span className="text-xs font-black uppercase tracking-widest">Saturday</span><strong className="display text-[56px] leading-none sm:text-[76px]">19</strong><span className="text-xs font-black uppercase tracking-widest">Dec 2026</span>
@@ -33,7 +35,7 @@ export default async function ChristmasFairPage() {
               <div className="flex flex-1 flex-col justify-center gap-1 border-l-2 border-dashed border-[#F7C6DA] px-4 py-4 sm:px-6">
                 <strong className="text-[18px] sm:text-[20px]">{FAIR.timeLabel} · arrive any time</strong>
                 <span className="text-[14px] font-semibold sm:text-[16px]">{FAIR.venue}, {FAIR.address}</span>
-                <span className="text-[14px] font-semibold sm:text-[16px]">£2 adults · £1 kids, donated to Acres’ Christmas dinner</span>
+                <span className="text-[14px] font-semibold sm:text-[16px]">£2 adults · £1 kids, all donated to {charityShort}</span>
               </div>
             </div>
             <div className="order-5 flex flex-wrap gap-3 lg:col-start-1 lg:row-start-5">
@@ -49,7 +51,7 @@ export default async function ChristmasFairPage() {
             <div className="fair-sticker absolute bottom-[2%] right-[1%] z-20 w-[58%] rotate-[8deg] bg-white p-2 pb-7 sm:p-3 sm:pb-9">
               <Image src="/images/christmas-fair-2.png" alt="Children at a past Trybe Christmas event" width={1200} height={900} className="h-[175px] w-full object-cover sm:h-[230px]" />
             </div>
-            <div className="fair-stamp absolute right-[2%] top-[2%] z-30 flex size-[108px] rotate-[12deg] flex-col items-center justify-center rounded-full bg-[#C8312B] text-center text-white sm:size-[138px]"><strong className="display text-[22px] uppercase leading-none sm:text-[30px]">Donate</strong><span className="mt-1 px-2 text-[10px] font-black uppercase leading-tight tracking-widest sm:text-[12px]">to feed a family</span></div>
+            <div className="fair-stamp absolute right-[2%] top-[2%] z-30 flex size-[108px] rotate-[12deg] flex-col items-center justify-center rounded-full bg-[#C8312B] text-center text-white sm:size-[138px]"><strong className="display text-[22px] uppercase leading-none sm:text-[30px]">Donate</strong><span className="mt-1 px-2 text-[10px] font-black uppercase leading-tight tracking-widest sm:text-[12px]">to charity</span></div>
             <div className="absolute bottom-[1%] left-[3%] z-30 flex size-[96px] -rotate-[12deg] flex-col items-center justify-center rounded-full border-[5px] border-white bg-[#F7C6DA] text-center shadow-lg sm:size-[120px]"><strong className="display text-[33px] leading-none sm:text-[46px]">25+</strong><span className="text-[10px] font-black uppercase leading-tight tracking-wider sm:text-xs">Vendors</span></div>
           </div>
         </div>
@@ -60,11 +62,11 @@ export default async function ChristmasFairPage() {
           <div className="flex flex-col items-start gap-5">
             <p className="m-0 text-sm font-black uppercase tracking-[.16em] text-[#C8312B]">Acres × Trybe</p>
             <a href={FAIR.acresUrl} target="_blank" rel="noreferrer" aria-label="Acres website (opens in a new tab)" className="block"><Image src="/images/acres-logo.png" alt="Acres" width={800} height={181} className="h-auto w-[240px] sm:w-[300px]" /></a>
-            <h2 className="display m-0 text-[clamp(40px,5vw,72px)] uppercase leading-[.9]">Your ticket feeds someone on Christmas Day</h2>
+            <h2 className="display m-0 text-[clamp(40px,5vw,72px)] uppercase leading-[.9]">Every ticket gives back</h2>
           </div>
           <div className="flex flex-col gap-4 text-[18px] leading-relaxed sm:text-[19px]">
             <p className="m-0">The Trybe Christmas Fair is a joint venture between <a href={FAIR.acresUrl} target="_blank" rel="noreferrer" className="font-bold underline">Acres</a> and <a href={FAIR.trybeUrl} className="font-bold underline">Trybe</a>. Trybe puts on events every year, and this Christmas we’re teaming up with Acres to give back.</p>
-            <p className="m-0">Entry is a <strong>£2 donation per adult and £1 per child</strong>. <strong>All of it goes to Acres</strong>, who are cooking Christmas dinner on 25 December for people having a tough year. Add a little extra when you book if you can.</p>
+            <p className="m-0">Entry is a <strong>£2 donation per adult and £1 per child</strong>. <strong>All of it goes to {charityLine}</strong>{FAIR_CHARITY_NAME ? "." : ", and we’ll email everyone who’s booked when we name it."} Add a little extra when you book if you can.</p>
             <Link href="/christmas-fair/book" className="mt-2 inline-flex min-h-14 items-center self-start rounded-full bg-[#C8312B] px-7 text-[17px] font-extrabold text-white no-underline shadow-[0_5px_0_#452C86]">Book family tickets · from £2</Link>
           </div>
         </div>
@@ -76,21 +78,21 @@ export default async function ChristmasFairPage() {
           <div className="fair-holes mb-3 flex justify-around px-3 sm:mb-5" aria-hidden="true">{Array.from({ length: 8 }, (_, i) => <span key={i} />)}</div>
           <div className="flex flex-col items-center gap-6 px-4 pb-9 sm:gap-9 sm:px-10 sm:pb-14">
             <div className="text-center"><p className="m-0 text-sm font-black uppercase tracking-[.12em] text-[#C8312B]">Open the doors</p><h2 className="display m-0 mt-1 text-[clamp(36px,6vw,88px)] uppercase leading-[.9]"><span className="sm:hidden">What&apos;s on</span><span className="hidden sm:inline">What&apos;s on at the fair</span></h2><p className="m-0 mt-2 max-w-[560px] text-[17px] sm:text-[19px]">We’re expecting around {FAIR.expectedFamilies} families. Here’s what’s behind the doors so far, with more to come.</p></div>
-            <ol className="m-0 grid w-full list-none grid-cols-2 gap-3 p-0 sm:grid-cols-4 sm:gap-4">
+            <ol className="m-0 grid w-full list-none grid-cols-2 gap-3 p-0 sm:grid-cols-3 sm:gap-4">
               <FairDoor number="1" title="DJ" body="Festive tunes to keep the whole family moving." color="bg-[#452C86]" text="text-white" icon="♫" />
-              <FairDoor number="2" title="Money jars" body="Kids learn to save, spend and share." color="bg-[#1E5B47]" text="text-white" icon="£" />
+              <FairDoor number="2" title="Family portraits" body="Festive photos of the whole family." color="bg-[#1E5B47]" text="text-white" icon={<CameraIcon />} />
               <FairDoor number="3" title="Workshops & activities" body="Hands-on fun for little ones. Line-up announced soon." color="bg-[#F7C6DA]" text="text-[#452C86]" icon="☆" />
               <FairDoor number="4" title="Food & treats" body="Festive food from local vendors. Line-up announced soon." color="bg-white" text="text-[#452C86]" icon="♧" />
               <FairDoor number="5" title="Crafts & gifts" body="Pick up Christmas presents from local makers." color="bg-[#BA85BA]" text="text-[#452C86]" icon="✦" />
-              <FairDoor number="6" title="Giving back" body="Your entry pays towards Acres’ Christmas Day dinner." color="bg-[#C8312B]" text="text-white" icon="♥" />
-              <li className="fair-door hidden min-h-[225px] flex-col items-center justify-center gap-2 rounded-[24px] border-[3px] border-dashed border-[#BA85BA] p-5 text-center text-[#452C86] sm:flex"><strong className="display text-[64px] text-[#BA85BA]">7</strong><b className="text-[19px]">To be revealed</b><span className="text-sm">More to be announced</span></li>
-              <li className="fair-door hidden min-h-[225px] flex-col items-center justify-center gap-2 rounded-[24px] border-[3px] border-dashed border-[#BA85BA] p-5 text-center text-[#452C86] sm:flex"><strong className="display text-[64px] text-[#BA85BA]">8</strong><b className="text-[19px]">To be revealed</b><span className="text-sm">More to be announced</span></li>
+              <FairDoor number="6" title="Giving back" body={`Every penny of your entry goes to ${charityShort}.`} color="bg-[#C8312B]" text="text-white" icon="♥" />
             </ol>
             <Link href="/christmas-fair/book" className="inline-flex min-h-14 items-center rounded-full bg-[#C8312B] px-7 text-[17px] font-extrabold text-white no-underline">Book family tickets · from £2</Link>
           </div>
         </div>
       </section>
       <div className="fair-checker" aria-hidden="true" />
+
+      <ChristmasFairStallholders stallholders={STALLHOLDERS} />
 
 
       <section className="bg-[#FBF5EC] py-14 sm:py-20">
@@ -154,7 +156,7 @@ export default async function ChristmasFairPage() {
       </section>
 
       <section id="faq" className="bg-[#FBF5EC] py-14 sm:py-20"><div className="mx-auto grid max-w-[1200px] gap-8 px-5 sm:px-8 md:grid-cols-[.7fr_1.3fr]"><div><p className="mb-2 text-sm font-black uppercase tracking-widest text-[#C8312B]">FAQs</p><h2 className="display m-0 text-[clamp(42px,5vw,64px)] uppercase leading-[.9]">Good to know</h2></div><div className="flex flex-col gap-3">
-          <Question defaultOpen title="How much is entry?">A £2 donation per adult and £1 per child, plus a little extra if you can. All of it goes to Acres’ Christmas Day dinner for people having a tough year.</Question>
+          <Question defaultOpen title="How much is entry?">A £2 donation per adult and £1 per child, plus a little extra if you can. All of it goes to {charityLine}{FAIR_CHARITY_NAME ? "." : ", and we’ll email everyone who’s booked when we name it."}</Question>
           <Question title="How many tickets do we need?">One ticket covers your whole family, up to {FAIR.maxPeoplePerTicket} people. When you book, just tell us how many adults and children are coming. Places are limited to {fair.familyLimit} families.</Question>
           <Question title="Can we just turn up on the day?">Yes, as long as there are tickets left. We’ll sell them on the day until they run out, so booking ahead is the safest way to make sure you get in.</Question>
           <Question title="What time should we arrive?">Any time between 12 and 5pm.</Question>
@@ -180,8 +182,12 @@ function VendorPoint({ children }: { children: React.ReactNode }) { return <li c
 
 function VendorFact({ big, text }: { big: string; text: string }) { return <div className="rounded-[18px] bg-[#FBF5EC] p-5 text-[#452C86]"><strong className="display text-[36px] leading-none">{big}</strong><p className="mb-0 mt-2 text-sm font-bold leading-snug">{text}</p></div>; }
 
-function FairDoor({ number, title, body, color, text, icon }: { number: string; title: React.ReactNode; body: React.ReactNode; color: string; text: string; icon: string }) {
+function FairDoor({ number, title, body, color, text, icon }: { number: string; title: React.ReactNode; body: React.ReactNode; color: string; text: string; icon: React.ReactNode }) {
   return <li className={`fair-door relative flex min-h-[220px] flex-col gap-2 rounded-[24px] border-2 border-[#452C86] p-4 sm:min-h-[250px] sm:p-6 ${color} ${text}`}><span className="absolute right-3 top-3 flex size-9 items-center justify-center rounded-full bg-[#FBF5EC] font-black text-[#452C86] sm:size-11 sm:text-[22px]">{number}</span><span aria-hidden="true" className="display mt-1 text-[42px] leading-none sm:text-[56px]">{icon}</span><h3 className="display mt-auto text-[24px] uppercase leading-[.95] sm:text-[38px]">{title}</h3><p className="m-0 text-[14px] leading-snug sm:text-[17px]">{body}</p></li>;
+}
+
+function CameraIcon() {
+  return <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="inline-block"><path d="M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z" /><circle cx="12" cy="13" r="3.5" /></svg>;
 }
 
 function Question({ title, children, defaultOpen = false }: { title: string; children: React.ReactNode; defaultOpen?: boolean }) { return <details open={defaultOpen} className="group rounded-[20px] border-2 border-[#452C86] bg-white"><summary className="flex min-h-[44px] cursor-pointer list-none items-center justify-between gap-4 rounded-[20px] px-5 py-4 text-[18px] font-bold marker:hidden sm:px-6 sm:text-[20px]">{title}<span className="display text-[22px] text-[#C8312B] transition-transform group-open:rotate-45">+</span></summary><p className="mb-0 px-5 pb-4 text-[16px] leading-relaxed sm:px-6 sm:pb-5 sm:text-[18px]">{children}</p></details>; }

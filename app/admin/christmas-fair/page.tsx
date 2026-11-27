@@ -81,7 +81,7 @@ export default async function AdminChristmasFairPage({ searchParams }: PageProps
           <dl className="mb-0 mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3">
             <Stat label="Families booked" value={`${confirmed.length} / ${familyLimit}`} />
             <Stat label="People coming" value={String(people)} />
-            <Stat label="Raised for Acres" value={formatPence(raised)} />
+            <Stat label="Raised for charity" value={formatPence(raised)} />
             <Stat label="Vendor tables held" value={`${holding.length} / ${vendorLimit}`} />
             <Stat label="Tables paid" value={String(paidVendors.length)} />
             <Stat label="Early-bird tables used" value={`${earlyBirdUsed} / ${FAIR.earlyBirdTables}`} />

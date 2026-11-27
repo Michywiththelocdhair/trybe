@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { z } from "zod";
 import { supabaseService } from "@/lib/supabase/service";
-import { FAIR, formatPence } from "@/lib/christmas-fair/config";
+import { FAIR, charityLine, formatPence } from "@/lib/christmas-fair/config";
 
 export const metadata: Metadata = {
   title: "Your Christmas Fair ticket",
@@ -36,7 +36,7 @@ export default async function FairTicketConfirmationPage({ searchParams }: PageP
         ) : ticket.status === "confirmed" ? (
           <>
             <h1 className="display m-0 text-4xl uppercase sm:text-6xl">You’re coming to the fair!</h1>
-            <p className="m-0 text-lg">Thank you! Your donation of <strong>{formatPence(ticket.amount_paid_pence ?? ticket.minimum_donation_pence + ticket.extra_donation_pence)}</strong> goes to Acres’ Christmas Day dinner. We’ve emailed your QR ticket to <strong>{ticket.email}</strong>.</p>
+            <p className="m-0 text-lg">Thank you! Your donation of <strong>{formatPence(ticket.amount_paid_pence ?? ticket.minimum_donation_pence + ticket.extra_donation_pence)}</strong> goes to {charityLine}. We’ve emailed your QR ticket to <strong>{ticket.email}</strong>.</p>
             <div className="rounded-[20px] bg-[#F4E7F3] p-5 text-left">
               <p className="m-0"><strong>When:</strong> {FAIR.dateLabel}, {FAIR.timeLabel} (arrive any time)</p>
               <p className="m-0 mt-1"><strong>Where:</strong> {FAIR.venue}, {FAIR.address}</p>

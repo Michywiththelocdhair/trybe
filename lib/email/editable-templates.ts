@@ -63,7 +63,7 @@ export const EDITABLE_TEMPLATES: Record<EditableEmailKey, EditableTemplateDefini
     body: [
       "Hi {{first_name}},",
       "Thank you for booking. Your family ticket for the Trybe Christmas Fair is confirmed. Show the QR code below when you arrive. You can come any time between 12 and 5pm.",
-      "Your entry donation of {{amount_paid}} goes to Acres, who are putting on a Christmas Day dinner for people having a tough year. Thank you for being part of it.",
+      "Your entry donation of {{amount_paid}} goes to charity. We’ll let you know which one when we announce it. Thank you for being part of it.",
       "See you on {{event_date}}!",
     ].join("\n\n"),
     buttonLabel: "View your ticket",

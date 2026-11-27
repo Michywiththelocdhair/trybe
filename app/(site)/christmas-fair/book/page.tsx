@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import { ChristmasFairBooking } from "@/components/christmas-fair-booking";
 import { getChristmasFairData } from "@/lib/christmas-fair/data";
-import { FAIR, formatPence, vendorApplicationsOpen } from "@/lib/christmas-fair/config";
+import { FAIR, charityLine, charityShort, formatPence, vendorApplicationsOpen } from "@/lib/christmas-fair/config";
 
 export const metadata: Metadata = {
   title: "Family Tickets & Vendor Applications · Christmas Fair",
-  description: "Book your family ticket for the Trybe Christmas Fair at Acres (£2 adults, £1 children, all donated to Acres), or apply for a vendor table.",
+  description: "Book your family ticket for the Trybe Christmas Fair at Acres (£2 adults, £1 children, all donated to charity), or apply for a vendor table.",
 };
 export const instant = false;
 
@@ -20,7 +20,7 @@ export default async function ChristmasFairBookPage({
       <main className="mx-auto flex max-w-[1200px] flex-col gap-6 pb-12">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div><p className="m-0 text-[13px] font-black uppercase tracking-[.14em] text-[#C8312B]">Trybe Christmas Fair · {FAIR.shortDateLabel} · {FAIR.timeLabel} · {FAIR.venue}</p><h1 className="display m-0 mt-1 text-[clamp(44px,6vw,72px)] uppercase leading-[.9]">{isVendor ? "Become a vendor" : "Family tickets"}</h1></div>
-          <span className="inline-flex rounded-full border border-dashed border-[#9273B1] bg-white px-4 py-2 text-sm font-bold">{isVendor ? `Early bird tables ${formatPence(FAIR.earlyBirdPricePence)} · apply by ${FAIR.vendorDeadlineLabel}` : "£2 adults · £1 kids, donated to Acres"}</span>
+          <span className="inline-flex rounded-full border border-dashed border-[#9273B1] bg-white px-4 py-2 text-sm font-bold">{isVendor ? `Early bird tables ${formatPence(FAIR.earlyBirdPricePence)} · apply by ${FAIR.vendorDeadlineLabel}` : `£2 adults · £1 kids, donated to ${charityShort}`}</span>
         </div>
         <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_320px]">
           <ChristmasFairBooking
@@ -52,7 +52,7 @@ export default async function ChristmasFairBookPage({
             ) : (
               <div className="rounded-[22px] border-2 border-[#452C86] bg-white p-6">
                 <strong className="display text-[30px] uppercase">Where it goes</strong>
-                <p className="mb-0 mt-2 leading-relaxed">Your whole entry donation goes to Acres, who are putting on a Christmas Day dinner for people having a tough year. One ticket covers up to {FAIR.maxPeoplePerTicket} people, and we’ll email your QR ticket as soon as you’ve paid.</p>
+                <p className="mb-0 mt-2 leading-relaxed">Your whole entry donation goes to {charityLine}. One ticket covers up to {FAIR.maxPeoplePerTicket} people, and we’ll email your QR ticket as soon as you’ve paid.</p>
               </div>
             )}
             <p className="m-0 px-1 text-sm font-semibold">Questions? <a className="font-extrabold underline" href={`mailto:${FAIR.adminEmail}`}>Email Trybe</a></p>

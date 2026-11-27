@@ -7,7 +7,7 @@ import { Checkbox } from "@/components/form/checkbox";
 import { Field } from "@/components/form/field";
 import { TextInput } from "@/components/form/text-input";
 import { startFamilyTicketCheckout, startVendorApplication } from "@/app/(site)/christmas-fair/actions";
-import { FAIR, VENDOR_CATEGORIES, formatPence, minimumDonationPence } from "@/lib/christmas-fair/config";
+import { FAIR, VENDOR_CATEGORIES, charityLine, charityShort, formatPence, minimumDonationPence } from "@/lib/christmas-fair/config";
 import { checkVendorFiles, uploadVendorFiles, VendorFileFields } from "@/components/christmas-fair-vendor-uploads";
 
 const fieldClass = "flex flex-col gap-2";
@@ -75,7 +75,7 @@ function FamilyTicketForm({ remaining, cancelled }: { remaining: number; cancell
     <form onSubmit={submit} className="flex flex-col gap-5">
       <div>
         <h2 className="m-0 text-[28px] font-extrabold">Get your family ticket</h2>
-        <p className="m-0 mt-1 text-[18px] text-[color:var(--muted-plum)]">One ticket covers your whole family. Entry is a donation of £2 per adult and £1 per child, and every penny goes to Acres’ Christmas Day dinner for people having a tough year.</p>
+        <p className="m-0 mt-1 text-[18px] text-[color:var(--muted-plum)]">One ticket covers your whole family. Entry is a donation of £2 per adult and £1 per child, and every penny goes to {charityLine}.</p>
       </div>
       {cancelled ? <p role="status" className="m-0 rounded-xl bg-[#F4E7F3] p-4 font-semibold">Payment cancelled. Your ticket hasn’t been booked; you can try again below.</p> : null}
       {error ? <p role="alert" className="m-0 rounded-xl bg-red-100 p-4 font-semibold text-red-900">{error}</p> : null}
@@ -87,7 +87,7 @@ function FamilyTicketForm({ remaining, cancelled }: { remaining: number; cancell
 
       <fieldset className="flex flex-col gap-3 rounded-[18px] border-2 border-[#F7C6DA] bg-[#FBF5EC] p-4 sm:p-5">
         <legend className="px-1 font-extrabold">Add an extra donation? <span className="font-semibold text-[color:var(--muted-plum)]">(optional)</span></legend>
-        <p className="m-0 text-[15px]">Want to give a little more? It all goes to Acres’ Christmas Day dinner.</p>
+        <p className="m-0 text-[15px]">Want to give a little more? It all goes to the same charity.</p>
         <div className="flex flex-wrap gap-2">
           {EXTRA_OPTIONS.map((amount) => (
             <button key={amount} type="button" aria-pressed={extraChoice === amount} onClick={() => setExtraChoice(amount)} className={`min-h-11 rounded-full border-2 px-5 font-extrabold ${extraChoice === amount ? "border-[#C8312B] bg-[#C8312B] text-white" : "border-[#D9C8E3] bg-white text-[#452C86]"}`}>
@@ -116,7 +116,7 @@ function FamilyTicketForm({ remaining, cancelled }: { remaining: number; cancell
         <div className="flex justify-between gap-4"><dt>{adults} {adults === 1 ? "adult" : "adults"} × £2</dt><dd className="m-0 font-bold">{formatPence(adults * FAIR.adultMinimumPence)}</dd></div>
         {children > 0 ? <div className="flex justify-between gap-4"><dt>{children} {children === 1 ? "child" : "children"} × £1</dt><dd className="m-0 font-bold">{formatPence(children * FAIR.childMinimumPence)}</dd></div> : null}
         {extraPence > 0 ? <div className="flex justify-between gap-4"><dt>Extra donation</dt><dd className="m-0 font-bold">{formatPence(extraPence)}</dd></div> : null}
-        <div className="mt-2 flex justify-between gap-4 border-t-2 border-dashed border-[#BA85BA] pt-2 text-[19px]"><dt className="font-extrabold">Total donation to Acres</dt><dd className="m-0 font-black">{formatPence(totalPence)}</dd></div>
+        <div className="mt-2 flex justify-between gap-4 border-t-2 border-dashed border-[#BA85BA] pt-2 text-[19px]"><dt className="font-extrabold">Total donation to {charityShort}</dt><dd className="m-0 font-black">{formatPence(totalPence)}</dd></div>
       </dl>
 
       <Checkbox id="family-agree" name="agreed" value="yes" required label={<span>I agree to Trybe’s <Link href="/terms" className="font-bold underline">Terms &amp; Conditions</Link> and have read the <Link href="/privacy" className="font-bold underline">Privacy Policy</Link>.</span>} />
